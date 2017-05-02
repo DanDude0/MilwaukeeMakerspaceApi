@@ -1,0 +1,166 @@
+﻿@model Mms.Database.fund
+@{
+	Layout = null;
+}
+
+<html>
+<head>
+	<title>
+		Member Status
+	</title>
+	<style>
+		body {
+			background-color: #000;
+			color: #fff;
+			font-size: 32pt;
+			font-family: helvetica;
+			font-weight: normal;
+			overflow: hidden;
+		}
+
+		.wrapper {
+			position: relative;
+			display: block;
+			width: 40em;
+			margin: auto;
+			vertical-align: middle;
+			text-align: center;
+		}
+
+		table {
+			font-size: inherit;
+			width: 100%;
+			text-align: inherit;
+			vertical-align: inherit;
+			margin: 0;
+		}
+
+		h1 {
+			font-size: 4.5em;
+			font-weight: normal;
+			margin: -0.15em 0;
+		}
+
+		h2 {
+			font-size: 2.8em;
+			font-weight: normal;
+			margin: 0;
+		}
+
+		h3 {
+			font-size: 2em;
+			font-weight: normal;
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<div class='wrapper'>
+		<h2 style='margin: -0.23em 0 0.1em 0;'>Member Count</h2>
+		<table style='margin: 0.1em 5em; width: 30em;'>
+			<tr>
+				<td rowspan='2'>
+					<h1>@Model.members</h1>
+				</td>
+				<td>
+					<h3>General: @Model.general</h3>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h3>Family: @Model.family</h3>
+				</td>
+			</tr>
+		</table>
+		<h2 style='margin: 0.3em 0 0.25em 0;'>This Month's Area Funding</h2>
+		<table>
+			<tr>
+				<td>
+					Total Funds: $@Model.total
+				</td>
+				<td>
+					Craft Lab: $@Model.craft
+				</td>
+				<td>
+					Paint Room: $@Model.paint
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Building Purchase: $@Model.building_purchase
+				</td>
+				<td>
+					Electronic Lab: $@Model.electronic
+				</td>
+				<td>
+					Power Wheels: $@Model.power_wheel
+				</td>
+			</tr>
+			<tr>
+				<td>
+					3D Printers: $@Model.threed_printer
+				</td>
+				<td>
+					Finishing: $@Model.finishing
+				</td>
+				<td>
+					Print Shop: $@Model.print
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Annodizing: $@Model.annodizing
+				</td>
+				<td>
+					Jewelry: $@Model.jewelry
+				</td>
+				<td>
+					Soda Fund: $@Model.soda
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Forge: $@Model.forge
+				</td>
+				<td>
+					Laser Cutters: $@Model.laser
+				</td>
+				<td>
+					Vacuum Former: $@Model.vacuum
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Casting: $@Model.casting
+				</td>
+				<td>
+					Leather Working: $@Model.leather
+				</td>
+				<td>
+					Welders: $@Model.welding
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Ceramic Studio: $@Model.ceramic
+				</td>
+				<td>
+					Maker Faire: $@Model.makerfaire
+				</td>
+				<td>
+					Wood Shop: $@Model.wood
+				</td>
+			</tr>
+			<tr>
+				<td>
+					CNC Room: $@Model.cnc
+				</td>
+				<td>
+					Metal Shop: $@Model.metal
+				</td>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+﻿@model Mms.Database.balance
+@{
+	Layout = null;
+}
+
+<html>
+<head>
+	<title>
+		Total Area Funds Available
+	</title>
+	<style>
+		body {
+			background-color: #000;
+			color: #fff;
+			font-size: 42pt;
+			font-family: helvetica;
+			font-weight: normal;
+			overflow: hidden;
+		}
+
+		.wrapper {
+			position: relative;
+			display: block;
+			width: 30em;
+			margin: auto;
+			vertical-align: middle;
+			text-align: center;
+		}
+
+		table {
+			font-size: inherit;
+			width: 100%;
+			text-align: inherit;
+			vertical-align: inherit;
+			line-height: 55pt;
+			margin: 0;
+		}
+
+		h1 {
+			font-size: 1.85em;
+			font-weight: normal;
+			margin: -0.15em 0;
+		}
+	</style>
+</head>
+<body>
+	<div class='wrapper'>
+		<h1 style='margin: -0.2em 0 0.25em 0;'>Total Area Funds Available</h1>
+		<table>
+			<tr>
+				<td>
+					3D Printers: @Model.threed_printer<br />
+					Annodizing: @Model.annodizing<br />
+					Casting: @Model.casting<br />
+					Ceramic Studio: @Model.ceramic<br />
+					CNC Room: @Model.cnc<br />
+					Craft Lab: @Model.craft<br />
+					Electronic Lab: @Model.electronic<br />
+					Finishing: @Model.finishing<br />
+					Forge: @Model.forge<br />
+					Jewelry: @Model.jewelry<br />
+					Laser Cutters: @Model.laser
+				</td>
+				<td>
+					Leather Working: @Model.leather<br />
+					Maker Faire: @Model.makerfaire<br />
+					Metal Shop: @Model.metal<br />
+					Paint Room: @Model.paint<br />
+					Power Wheels: @Model.power_wheel<br />
+					Print Shop: @Model.print<br />
+					Soda Fund: @Model.soda<br />
+					Vacuum Former: @Model.vacuum<br />
+					Welders: @Model.welding<br />
+					Wood Shop: @Model.wood
+				</td>
+		</table>
+	</div>
+</body>
+</html>
