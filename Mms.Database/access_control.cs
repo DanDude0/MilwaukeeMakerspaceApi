@@ -41,7 +41,7 @@ namespace Mms.Database
 	public partial class AccessControlDatabase : global::NPoco.Database
 	{
 		public AccessControlDatabase() 
-			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=access_control", 
+			: base("Server=127.0.0.1;User=accessuser;Password=mkemaker!34;Database=access_control", 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{

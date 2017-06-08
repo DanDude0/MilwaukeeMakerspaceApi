@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "MilwaukeeMakerspaceApi": {
+    "Mms.Api": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:80",

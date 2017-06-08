@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MilwaukeeMakerspaceApi.Controllers
+namespace Mms.Api
 {
     public class HomeController : Controller
     {
@@ -13,21 +13,7 @@ namespace MilwaukeeMakerspaceApi.Controllers
             return View();
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
+		public IActionResult Error()
         {
             return View();
         }

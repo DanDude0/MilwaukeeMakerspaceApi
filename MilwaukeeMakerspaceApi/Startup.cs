@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace MilwaukeeMakerspaceApi
+namespace Mms.Api
 {
     public class Startup
     {
@@ -54,7 +54,7 @@ namespace MilwaukeeMakerspaceApi
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}/{key?}");
             });
         }
     }

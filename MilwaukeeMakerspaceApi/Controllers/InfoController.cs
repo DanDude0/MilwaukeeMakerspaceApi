@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Database;
 
-namespace MilwaukeeMakerspaceApi.Controllers
+namespace Mms.Api
 {
     public class InfoController : Controller
     {

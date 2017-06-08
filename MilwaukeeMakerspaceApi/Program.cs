@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace MilwaukeeMakerspaceApi
+namespace Mms.Api
 {
 	public class Program
 	{
@@ -16,7 +16,7 @@ namespace MilwaukeeMakerspaceApi
 				.UseKestrel()
 				.UseContentRoot(Directory.GetCurrentDirectory())
 				.UseStartup<Startup>()
-				.UseUrls("http://localhost:80")
+				.UseUrls("http://*:80")
 				.Build();
 
 			host.Run();
