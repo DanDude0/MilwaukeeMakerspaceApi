@@ -1,39 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
 	<PropertyGroup>
-		<TargetFramework>netcoreapp1.1</TargetFramework>
-		<RuntimeIdentifiers>win10-x64;debian.8-x64</RuntimeIdentifiers>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningsAsErrors />
+		<WarningLevel>4</WarningLevel>
 		<RootNamespace>Mms.Api</RootNamespace>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<TreatSpecificWarningsAsErrors />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<TreatSpecificWarningsAsErrors />
-	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
-		<PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+		<PackageReference Include="MySql.Data" Version="8.0.10-rc" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Mms.Database\Mms.Database.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-	</ItemGroup>
-
 </Project>

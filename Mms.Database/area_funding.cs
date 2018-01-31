@@ -41,7 +41,7 @@ namespace Mms.Database
 	public partial class AreaFundingDatabase : global::NPoco.Database
 	{
 		public AreaFundingDatabase() 
-			: base("Server=127.0.0.1;User=accessuser;Password=mkemaker!34;Database=area_funding", 
+			: base("Server=127.0.0.1;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{
@@ -151,7 +151,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal? cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal? craft { get; set; }
+
+
+
+
+
+		[Column] public decimal? dalek { get; set; }
 
 
 
@@ -303,7 +315,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal craft { get; set; }
+
+
+
+
+
+		[Column] public decimal dalek { get; set; }
 
 
 
@@ -489,7 +513,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal craft { get; set; }
+
+
+
+
+
+		[Column] public decimal dalek { get; set; }
 
 
 
@@ -665,7 +701,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal craft { get; set; }
+
+
+
+
+
+		[Column] public decimal dalek { get; set; }
 
 
 
@@ -841,7 +889,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal craft { get; set; }
+
+
+
+
+
+		[Column] public decimal dalek { get; set; }
 
 
 
@@ -1003,7 +1063,19 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal cosplay { get; set; }
+
+
+
+
+
 		[Column] public decimal craft { get; set; }
+
+
+
+
+
+		[Column] public decimal dalek { get; set; }
 
 
 
