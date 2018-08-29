@@ -62,7 +62,7 @@ namespace Mms.Api.Controllers
 							INNER JOIN keycode k
 								ON m.member_id = k.member_id 
 						WHERE
-							0x00FFFFFE & CONV(k.keycode_id, 16, 10) = CONV('@0', 16, 10)
+							0x00FFFFFE & CONV(k.keycode_id, 16, 10) = CONV(@0, 16, 10)
 						LIMIT 1;";
 
 					result = db.Single<AuthenticationResult>(sql, key.Substring(6));
