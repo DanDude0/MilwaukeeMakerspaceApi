@@ -25,7 +25,7 @@
 // 
 //     Connection String Name: `access_control`
 //     Provider:               `MySql.Data.MySqlClient`
-//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;Database=access_control`
+//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;SslMode=none`
 //     Schema:                 ``
 //     Include Views:          `True`
 
@@ -41,7 +41,7 @@ namespace Mms.Database
 	public partial class AccessControlDatabase : global::NPoco.Database
 	{
 		public AccessControlDatabase() 
-			: base("Server=127.0.0.1;User=accessuser;Password=mkemaker!34;Database=access_control;SslMode=none", 
+			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=access_control;SslMode=none", 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{

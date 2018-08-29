@@ -25,7 +25,7 @@
 // 
 //     Connection String Name: `area_funding`
 //     Provider:               `MySql.Data.MySqlClient`
-//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;Database=area_funding`
+//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;SslMode=none`
 //     Schema:                 ``
 //     Include Views:          `True`
 
@@ -41,7 +41,7 @@ namespace Mms.Database
 	public partial class AreaFundingDatabase : global::NPoco.Database
 	{
 		public AreaFundingDatabase() 
-			: base("Server=127.0.0.1;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
+			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{
@@ -164,6 +164,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal? dalek { get; set; }
+
+
+
+
+
+		[Column] public decimal? digital { get; set; }
 
 
 
@@ -328,6 +334,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal dalek { get; set; }
+
+
+
+
+
+		[Column] public decimal digital { get; set; }
 
 
 
@@ -531,6 +543,12 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal digital { get; set; }
+
+
+
+
+
 		[Column] public decimal electronic { get; set; }
 
 
@@ -714,6 +732,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal dalek { get; set; }
+
+
+
+
+
+		[Column] public decimal digital { get; set; }
 
 
 
@@ -907,6 +931,12 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal digital { get; set; }
+
+
+
+
+
 		[Column] public decimal electronic { get; set; }
 
 
@@ -1076,6 +1106,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal dalek { get; set; }
+
+
+
+
+
+		[Column] public decimal digital { get; set; }
 
 
 

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Mms.Api.Models;
 using Mms.Database;
 
-namespace Mms.Api
+namespace Mms.Api.Controllers
 {
 	public class AuthenticateController : Controller
 	{
@@ -14,7 +15,7 @@ namespace Mms.Api
 			try
 			{
 				var result = Authenticate(id, key);
-				var output = $"{result.Reader}|{result.Id}|{result.Name}|{result.Type}|{result.Admin}|{result.Joined.ToString("yyyy-MM-dd")}|{result.Expiration.ToString("yyyy-MM-dd")}|{result.AccessGranted}";
+				var output = $"{result.Id}|{result.Name}|{result.Type}|{result.Admin}|{result.Joined.ToString("yyyy-MM-dd")}|{result.Expiration.ToString("yyyy-MM-dd")}|{result.AccessGranted}";
 
 				return Content(output);
 			}
@@ -42,11 +43,13 @@ namespace Mms.Api
 		{
 			AuthenticationResult result = null;
 
-			using (var db = new AccessControlDatabase())
+			//Support checking only the lower 26 bits of the key, because of stupid Wiegand protocol!
+			if (key.StartsWith("W26#"))
 			{
-				var sql = @"
+				using (var db = new AccessControlDatabase())
+				{
+					var sql = @"
 						SELECT 
-							r.name AS Reader, 
 							m.member_id AS 'Id',
 							m.name AS 'Name',
 							m.type AS 'Type',
@@ -55,19 +58,40 @@ namespace Mms.Api
 							m.expires AS Expiration,
 							DATE_ADD(m.expires, INTERVAL 7 DAY) > NOW() AS AccessGranted
 						FROM
-							reader r
-							INNER JOIN
 							member m
 							INNER JOIN keycode k
 								ON m.member_id = k.member_id 
 						WHERE
-							r.reader_id = @0
-							AND k.keycode_id = @1
+							0x03FFFFFF & CONV(k.keycode_id, 16, 10) = CONV(@1, 16, 10)
 						LIMIT 1;";
 
-				result = db.Single<AuthenticationResult>(sql, id, key);
+					result = db.Single<AuthenticationResult>(sql, id, key.Substring(4));
+				}
 			}
+			else
+			{
+				using (var db = new AccessControlDatabase())
+				{
+					var sql = @"
+						SELECT 
+							m.member_id AS 'Id',
+							m.name AS 'Name',
+							m.type AS 'Type',
+							m.apricot_admin AS Admin,
+							m.joined AS Joined,
+							m.expires AS Expiration,
+							DATE_ADD(m.expires, INTERVAL 7 DAY) > NOW() AS AccessGranted
+						FROM
+							member m
+							INNER JOIN keycode k
+								ON m.member_id = k.member_id 
+						WHERE
+							k.keycode_id = @1
+						LIMIT 1;";
 
+					result = db.Single<AuthenticationResult>(sql, id, key);
+				}
+			}
 			RecordAttempt(id, result.Id, result.AccessGranted);
 
 			return result;

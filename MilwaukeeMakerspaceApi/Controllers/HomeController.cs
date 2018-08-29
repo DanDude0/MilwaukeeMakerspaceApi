@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mms.Api
+namespace Mms.Api.Controllers
 {
     public class HomeController : Controller
     {
