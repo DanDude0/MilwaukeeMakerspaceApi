@@ -17,7 +17,6 @@
     },
     "Mms.Api": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "http://localhost:80",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

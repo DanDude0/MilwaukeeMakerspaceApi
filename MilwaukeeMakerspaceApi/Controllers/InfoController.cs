@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Database;
 
-namespace Mms.Api
+namespace Mms.Api.Controllers
 {
     public class InfoController : Controller
     {
