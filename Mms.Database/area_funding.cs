@@ -41,7 +41,7 @@ namespace Mms.Database
 	public partial class AreaFundingDatabase : global::NPoco.Database
 	{
 		public AreaFundingDatabase() 
-			: base("Server=127.0.0.1;Port=3306;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
+			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{
