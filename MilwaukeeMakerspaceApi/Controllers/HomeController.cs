@@ -6,16 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mms.Api.Controllers
 {
-    public class HomeController : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
+	public class HomeController : Controller
+	{
+		public IActionResult Index()
+		{
+			return View();
+		}
+
+		public IActionResult Service()
+		{
+			return Content(Program.SsdpDescription, "application/xml");
+		}
 
 		public IActionResult Error()
-        {
-            return View();
-        }
-    }
+		{
+			return View();
+		}
+	}
 }

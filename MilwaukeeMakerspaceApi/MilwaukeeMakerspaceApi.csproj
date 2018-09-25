@@ -11,8 +11,14 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.3" />
 		<PackageReference Include="MySql.Data" Version="8.0.12" />
+		<PackageReference Include="Rssdp" Version="4.0.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Mms.Database\Mms.Database.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Update="Views\Home\Service.cshtml">
+	    <Pack>$(IncludeRazorContentInPack)</Pack>
+	  </Content>
 	</ItemGroup>
 </Project>
