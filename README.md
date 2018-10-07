@@ -68,3 +68,11 @@ If it loaded correctly, you are ready to test. It should be publishing a website
 And it should be broadcasting an SSDP service on the local network for key readers to locate. One such implementation is over here:
 
 <https://github.com/DanDude0/MilwaukeeMakerspacePiFobReader>
+
+### It runs but nothing works!
+
+You probably don't have a database server setup that it can work with. Use the following scripts to create the necessary tables and databases on on MariaDB/MySQL server of your choice.
+
+[access_control_schema.sql](access_control_schema.sql)
+
+[area_fundingl_schema.sql](area_fundingl_schema.sql)
