@@ -70,7 +70,7 @@ namespace Mms.Api.Controllers
 							0x00FFFFFE & CONV(k.keycode_id, 16, 10) = CONV(@0, 16, 10)
 						LIMIT 1;";
 
-					result = db.Single<AuthenticationResult>(sql, key.Substring(6));
+					result = db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6));
 				}
 			}
 			else {
@@ -92,10 +92,13 @@ namespace Mms.Api.Controllers
 							k.keycode_id = @1
 						LIMIT 1;";
 
-					result = db.Single<AuthenticationResult>(sql, id, key);
+					result = db.SingleOrDefault<AuthenticationResult>(sql, id, key);
 				}
 			}
 			RecordAttempt(id, key, result?.Id ?? -1, result?.AccessGranted ?? false, true, false);
+
+			if (result == null)
+				throw new Exception("Code not found");
 
 			return result;
 		}
