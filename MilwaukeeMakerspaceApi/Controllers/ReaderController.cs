@@ -21,12 +21,10 @@ namespace Mms.Api.Controllers
 
 		public IActionResult Lookup(string id)
 		{
-			try
-			{
+			try {
 				DbResult result;
 
-				using (var db = new AccessControlDatabase())
-				{
+				using (var db = new AccessControlDatabase()) {
 					var sql = @"
 						SELECT 
 							r.name,
@@ -53,8 +51,7 @@ namespace Mms.Api.Controllers
 				if (result.address != clientAddress)
 					RecordClientAddress(id, clientAddress);
 
-				var output = new ReaderResult
-				{
+				var output = new ReaderResult {
 					Name = result.name,
 					Timeout = result.timeout,
 					Enabled = result.enabled,
@@ -63,16 +60,14 @@ namespace Mms.Api.Controllers
 
 				return new JsonResult(output);
 			}
-			catch
-			{
+			catch {
 				return StatusCode(500);
 			}
 		}
 
 		private void RecordClientAddress(string id, string address)
 		{
-			using (var db = new AccessControlDatabase())
-			{
+			using (var db = new AccessControlDatabase()) {
 				db.Execute(@"
 					UPDATE
 						reader

@@ -1,4 +1,4 @@
-﻿<#
+<#
 if (string.IsNullOrEmpty(Namespace)) Namespace=ConnectionStringName;
 if (string.IsNullOrEmpty(RepoName) && !string.IsNullOrEmpty(ConnectionStringName)) RepoName=ConnectionStringName + "DB";
 if (string.IsNullOrEmpty(Namespace)) Namespace="PetaPoco";
@@ -13,16 +13,10 @@ namespace <#=Namespace #>
 <# if (GenerateCommon) { #>
 	public partial class <#=RepoName#> : global::NPoco.Database
 	{
-		public <#=RepoName#>() 
-			: base("<#=_connectionString#>", 
-				DatabaseType.MySQL, 
-				new MySql.Data.MySqlClient.MySqlClientFactory())
-		{
-			CommonConstruct();
-		}
+		public static new string ConnectionString = "";
 
-		public <#=RepoName#>(string connectionStringName) 
-			: base(connectionStringName, 
+		public <#=RepoName#>() 
+			: base(ConnectionString, 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{

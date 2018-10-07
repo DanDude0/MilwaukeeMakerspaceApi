@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,29 +12,25 @@ namespace Mms.Api.Controllers
 	{
 		public IActionResult Csv(string id, string key)
 		{
-			try
-			{
+			try {
 				var result = Authenticate(id, key);
 				var output = $"{result.Id}|{result.Name}|{result.Type}|{result.Admin}|{result.Joined.ToString("yyyy-MM-dd")}|{result.Expiration.ToString("yyyy-MM-dd")}|{result.AccessGranted}";
 
 				return Content(output);
 			}
-			catch
-			{
+			catch {
 				return StatusCode(500);
 			}
 		}
 
 		public IActionResult Json(string id, string key)
 		{
-			try
-			{
+			try {
 				var result = Authenticate(id, key);
 
 				return new JsonResult(result);
 			}
-			catch
-			{
+			catch {
 				return StatusCode(500);
 			}
 		}
@@ -44,10 +40,8 @@ namespace Mms.Api.Controllers
 			AuthenticationResult result = null;
 
 			//Support checking only the lower 26 bits of the key, because of stupid Wiegand protocol!
-			if (key.StartsWith("W26#"))
-			{
-				using (var db = new AccessControlDatabase())
-				{
+			if (key.StartsWith("W26#")) {
+				using (var db = new AccessControlDatabase()) {
 					var sql = @"
 						SELECT 
 							m.member_id AS 'Id',
@@ -68,10 +62,8 @@ namespace Mms.Api.Controllers
 					result = db.Single<AuthenticationResult>(sql, key.Substring(6));
 				}
 			}
-			else
-			{
-				using (var db = new AccessControlDatabase())
-				{
+			else {
+				using (var db = new AccessControlDatabase()) {
 					var sql = @"
 						SELECT 
 							m.member_id AS 'Id',
@@ -92,32 +84,40 @@ namespace Mms.Api.Controllers
 					result = db.Single<AuthenticationResult>(sql, id, key);
 				}
 			}
-			RecordAttempt(id, result.Id, result.AccessGranted);
+			RecordAttempt(id, key, result?.Id ?? -1, result?.AccessGranted ?? false, true, false);
 
 			return result;
 		}
 
-		private void RecordAttempt(string readerId, int memberId, bool granted)
+		private void RecordAttempt(string readerId, string key, int memberId, bool granted, bool login, bool logout)
 		{
-			using (var db = new AccessControlDatabase())
-			{
+			using (var db = new AccessControlDatabase()) {
 				db.Execute(@"
 					INSERT INTO
 						attempt (
 							reader_id,
+							keycode,
 							member_id,
 							access_granted,
+							login,
+							logout,
 							attempt_time
 						)
 					VALUES	(
 						@0,
 						@1,
 						@2,
+						@3,
+						@4,
+						@5,
 						NOW()
 					);",
 					readerId,
+					key,
 					memberId,
-					granted);
+					granted,
+					login,
+					logout);
 			}
 		}
 	}

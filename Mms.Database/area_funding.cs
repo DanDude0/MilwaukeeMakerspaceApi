@@ -40,16 +40,10 @@ namespace Mms.Database
 
 	public partial class AreaFundingDatabase : global::NPoco.Database
 	{
-		public AreaFundingDatabase() 
-			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none", 
-				DatabaseType.MySQL, 
-				new MySql.Data.MySqlClient.MySqlClientFactory())
-		{
-			CommonConstruct();
-		}
+		public static new string ConnectionString = "";
 
-		public AreaFundingDatabase(string connectionStringName) 
-			: base(connectionStringName, 
+		public AreaFundingDatabase() 
+			: base(ConnectionString, 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{
@@ -1223,3 +1217,4 @@ namespace Mms.Database
 
 
 }
+

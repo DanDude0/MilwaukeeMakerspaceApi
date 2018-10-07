@@ -7,14 +7,13 @@ using Mms.Database;
 
 namespace Mms.Api.Controllers
 {
-    public class InfoController : Controller
-    {
-        public IActionResult Index()
-        {
+	public class InfoController : Controller
+	{
+		public IActionResult Index()
+		{
 			fund data = null;
 
-			using (var db = new AreaFundingDatabase())
-			{
+			using (var db = new AreaFundingDatabase()) {
 				var sql = @"
 					SELECT 
 						* 
@@ -31,11 +30,10 @@ namespace Mms.Api.Controllers
 		}
 
 		public IActionResult Balances()
-        {
+		{
 			balance data = null;
 
-			using (var db = new AreaFundingDatabase())
-			{
+			using (var db = new AreaFundingDatabase()) {
 				var sql = @"
 				SELECT
 					*
@@ -47,6 +45,6 @@ namespace Mms.Api.Controllers
 			}
 
 			return View(data);
-        }
-    }
+		}
+	}
 }
