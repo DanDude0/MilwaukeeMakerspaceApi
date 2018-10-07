@@ -76,3 +76,7 @@ You probably don't have a database server setup that it can work with. Use the f
 [access_control_schema.sql](access_control_schema.sql)
 
 [area_fundingl_schema.sql](area_fundingl_schema.sql)
+
+The setup the necessary connection strings in
+
+[MilwaukeeMakerspaceApi/appsettings.json](MilwaukeeMakerspaceApi/appsettings.json)
