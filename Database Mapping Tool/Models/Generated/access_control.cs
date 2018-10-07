@@ -40,16 +40,10 @@ namespace Mms.Database
 
 	public partial class AccessControlDatabase : global::NPoco.Database
 	{
-		public AccessControlDatabase() 
-			: base("Server=192.168.86.32;Port=9587;User=accessuser;Password=mkemaker!34;Database=access_control;SslMode=none", 
-				DatabaseType.MySQL, 
-				new MySql.Data.MySqlClient.MySqlClientFactory())
-		{
-			CommonConstruct();
-		}
+		public static new string ConnectionString = "";
 
-		public AccessControlDatabase(string connectionStringName) 
-			: base(connectionStringName, 
+		public AccessControlDatabase() 
+			: base(ConnectionString, 
 				DatabaseType.MySQL, 
 				new MySql.Data.MySqlClient.MySqlClientFactory())
 		{
@@ -125,6 +119,12 @@ namespace Mms.Database
 
 
 
+		[Column] public string keycode { get; set; }
+
+
+
+
+
 		[Column] public int member_id { get; set; }
 
 
@@ -143,7 +143,77 @@ namespace Mms.Database
 
 
 
+		[Column] public sbyte login { get; set; }
+
+
+
+
+
+		[Column] public sbyte logout { get; set; }
+
+
+
+
+
 		[Column] public DateTime attempt_time { get; set; }
+
+
+
+	}
+
+    
+
+	[TableName("access_control.group")]
+
+
+
+	[PrimaryKey("group_id")]
+
+
+
+
+	[ExplicitColumns]
+
+    public partial class group  
+    {
+
+
+
+		[Column] public int group_id { get; set; }
+
+
+
+
+
+		[Column] public string name { get; set; }
+
+
+
+	}
+
+    
+
+	[TableName("access_control.group_member")]
+
+
+
+	[PrimaryKey("group_id", AutoIncrement=false)]
+
+
+	[ExplicitColumns]
+
+    public partial class group_member  
+    {
+
+
+
+		[Column] public int group_id { get; set; }
+
+
+
+
+
+		[Column] public int member_id { get; set; }
 
 
 
@@ -309,7 +379,32 @@ namespace Mms.Database
 
 
 
+
+
+		[Column] public int timeout { get; set; }
+
+
+
+
+
+		[Column] public sbyte enabled { get; set; }
+
+
+
+
+
+		[Column] public int group_id { get; set; }
+
+
+
+
+
+		[Column] public string address { get; set; }
+
+
+
 	}
 
 
 }
+
