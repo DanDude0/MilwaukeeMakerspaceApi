@@ -34,6 +34,17 @@ namespace Mms.Api.Controllers
 				return StatusCode(500);
 			}
 		}
+		public IActionResult Logout(string id)
+		{
+			try {
+				RecordAttempt(id, "-1", -1, true, false, true);
+
+				return StatusCode(200);
+			}
+			catch {
+				return StatusCode(500);
+			}
+		}
 
 		private AuthenticationResult Authenticate(string id, string key)
 		{
