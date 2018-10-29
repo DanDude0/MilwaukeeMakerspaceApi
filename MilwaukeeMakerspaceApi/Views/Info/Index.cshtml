@@ -1,4 +1,4 @@
-﻿@model Mms.Database.fund
+@model Mms.Database.fund
 @{
 	Layout = null;
 }
@@ -21,7 +21,7 @@
 		.wrapper {
 			position: relative;
 			display: block;
-			width: 40em;
+			width: 100%;
 			margin: auto;
 			vertical-align: middle;
 			text-align: center;
@@ -36,19 +36,19 @@
 		}
 
 		h1 {
-			font-size: 4.5em;
+			font-size: 4.1em;
 			font-weight: normal;
 			margin: -0.15em 0;
 		}
 
 		h2 {
-			font-size: 2.8em;
+			font-size: 2.3em;
 			font-weight: normal;
 			margin: 0;
 		}
 
 		h3 {
-			font-size: 2em;
+			font-size: 1.7em;
 			font-weight: normal;
 			margin: 0;
 		}
@@ -56,8 +56,8 @@
 </head>
 <body>
 	<div class='wrapper'>
-		<h2 style='margin: -0.23em 0 0.1em 0;'>Member Count</h2>
-		<table style='margin: 0.1em 5em; width: 30em;'>
+		<h2 style='margin: -0.23em 0 -0.1em 0;'>Member Count</h2>
+		<table style='margin: 0.1em 5em; width: 35em;'>
 			<tr>
 				<td rowspan='2'>
 					<h1>@Model.members</h1>
@@ -72,16 +72,17 @@
 				</td>
 			</tr>
 		</table>
-		<h2 style='margin: 0.3em 0 0.25em 0;'>This Month's Area Funding</h2>
-		<table>
+		<h2 style='margin: 0.3em 0 0.1em 0;'>This Month's Area Funding</h2>
+		<table style='line-height: 46pt;'>
 			<tr>
 				<td>
 					Total Funds: $@Model.total<br />
-					Building Purchase: $@Model.building_purchase<br />
+					* Not Allocated *: $@Model.building_purchase<br />
 					3D Printers: $@Model.threed_printer<br />
 					Casting: $@Model.casting<br />
 					Ceramic Studio: $@Model.ceramic<br />
 					CNC Room: $@Model.cnc<br />
+					Community Outreach: $@Model.makerfaire<br />
 					Cosplay: $@Model.cosplay<br />
 					Craft Lab: $@Model.craft<br />
 				</td>
@@ -94,7 +95,6 @@
 					Jewelry: $@Model.jewelry<br />
 					Laser Cutters: $@Model.laser<br />
 					Leather Working: $@Model.leather<br />
-					Maker Faire: $@Model.makerfaire<br />
 				</td>
 				<td>
 					Metal Shop: $@Model.metal<br />
@@ -102,6 +102,7 @@
 					Power Wheels: $@Model.power_wheel<br />
 					Print Shop: $@Model.print<br />
 					Soda Fund: $@Model.soda<br />
+					Stained Glass: $@Model.stained_glass<br />
 					Vacuum Former: $@Model.vacuum<br />
 					Welders: $@Model.welding<br />
 					Wood Shop: $@Model.wood<br />

@@ -235,6 +235,12 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal? stained_glass { get; set; }
+
+
+
+
+
 		[Column] public decimal? vacuum { get; set; }
 
 
@@ -400,6 +406,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal soda { get; set; }
+
+
+
+
+
+		[Column] public decimal stained_glass { get; set; }
 
 
 
@@ -609,6 +621,12 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal stained_glass { get; set; }
+
+
+
+
+
 		[Column] public decimal vacuum { get; set; }
 
 
@@ -798,6 +816,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal soda { get; set; }
+
+
+
+
+
+		[Column] public decimal stained_glass { get; set; }
 
 
 
@@ -997,6 +1021,12 @@ namespace Mms.Database
 
 
 
+		[Column] public decimal stained_glass { get; set; }
+
+
+
+
+
 		[Column] public decimal vacuum { get; set; }
 
 
@@ -1172,6 +1202,12 @@ namespace Mms.Database
 
 
 		[Column] public decimal soda { get; set; }
+
+
+
+
+
+		[Column] public decimal stained_glass { get; set; }
 
 
 
