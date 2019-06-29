@@ -76,7 +76,7 @@ namespace Mms.Api.Controllers
 						@3,
 						@4,
 						@5,
-						@6
+						@6,
 						NOW()
 					);",
 						id,
