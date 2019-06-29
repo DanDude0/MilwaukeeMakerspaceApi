@@ -25,7 +25,7 @@
 // 
 //     Connection String Name: `access_control`
 //     Provider:               `MySql.Data.MySqlClient`
-//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;SslMode=none`
+//     Connection String:      `Server=10.1.1.15;Port=3306;User=accessuser;password=**zapped**;SslMode=none`
 //     Schema:                 ``
 //     Include Views:          `True`
 
@@ -150,6 +150,12 @@ namespace Mms.Database
 
 
 		[Column] public sbyte logout { get; set; }
+
+
+
+
+
+		[Column] public string action { get; set; }
 
 
 
@@ -400,6 +406,12 @@ namespace Mms.Database
 
 
 		[Column] public string address { get; set; }
+
+
+
+
+
+		[Column] public string settings { get; set; }
 
 
 

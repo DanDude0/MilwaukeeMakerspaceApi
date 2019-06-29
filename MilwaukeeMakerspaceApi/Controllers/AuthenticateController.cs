@@ -34,10 +34,53 @@ namespace Mms.Api.Controllers
 				return StatusCode(500);
 			}
 		}
+
 		public IActionResult Logout(string id)
 		{
 			try {
 				RecordAttempt(id, "-1", -1, true, false, true);
+
+				return StatusCode(200);
+			}
+			catch {
+				return StatusCode(500);
+			}
+		}
+
+		public IActionResult Action(string id, string key)
+		{
+			try {
+				using (var db = new AccessControlDatabase()) {
+					db.Execute(@"
+					INSERT INTO
+						attempt (
+							reader_id,
+							keycode,
+							member_id,
+							access_granted,
+							login,
+							logout,
+							action,
+							attempt_time
+						)
+					VALUES	(
+						@0,
+						@1,
+						@2,
+						@3,
+						@4,
+						@5,
+						@6
+						NOW()
+					);",
+						id,
+						"-1",
+						-1,
+						true,
+						false,
+						false,
+						key);
+				}
 
 				return StatusCode(200);
 			}

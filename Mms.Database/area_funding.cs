@@ -25,7 +25,7 @@
 // 
 //     Connection String Name: `area_funding`
 //     Provider:               `MySql.Data.MySqlClient`
-//     Connection String:      `Server=192.168.86.32;Port=9587;User=accessuser;password=**zapped**;SslMode=none`
+//     Connection String:      `Server=10.1.1.15;Port=3306;User=accessuser;password=**zapped**;SslMode=none`
 //     Schema:                 ``
 //     Include Views:          `True`
 
