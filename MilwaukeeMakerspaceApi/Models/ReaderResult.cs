@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,5 +11,6 @@ namespace Mms.Api.Models
 		public int Timeout { get; set; }
 		public bool Enabled { get; set; }
 		public string Group { get; set; }
+		public string Settings { get; set; }
 	}
 }

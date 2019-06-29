@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +17,7 @@ namespace Mms.Api.Controllers
 			public bool enabled { get; set; }
 			public string groupName { get; set; }
 			public string address { get; set; }
+			public string settings { get; set; }
 		};
 
 		public IActionResult Lookup(string id)
@@ -31,7 +32,8 @@ namespace Mms.Api.Controllers
 							r.timeout,
 							r.enabled,
 							g.name AS groupName,
-							r.address
+							r.address,
+							r.settings
 						FROM
 							reader r
 							INNER JOIN `group` g
@@ -56,6 +58,7 @@ namespace Mms.Api.Controllers
 					Timeout = result.timeout,
 					Enabled = result.enabled,
 					Group = result.groupName,
+					Settings = result.settings,
 				};
 
 				return new JsonResult(output);
