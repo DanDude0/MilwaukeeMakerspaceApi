@@ -63,7 +63,9 @@ namespace Mms.Api.Controllers
 
 				return new JsonResult(output);
 			}
-			catch {
+			catch (Exception ex) {
+				Console.Write(ex.ToString());
+
 				return StatusCode(500);
 			}
 		}
