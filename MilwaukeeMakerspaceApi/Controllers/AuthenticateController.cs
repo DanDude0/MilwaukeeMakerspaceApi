@@ -18,7 +18,9 @@ namespace Mms.Api.Controllers
 
 				return Content(output);
 			}
-			catch {
+			catch (Exception ex) {
+				Console.Write(ex.ToString());
+
 				return StatusCode(500);
 			}
 		}
@@ -30,7 +32,9 @@ namespace Mms.Api.Controllers
 
 				return new JsonResult(result);
 			}
-			catch {
+			catch (Exception ex) {
+				Console.Write(ex.ToString());
+
 				return StatusCode(500);
 			}
 		}
@@ -42,7 +46,9 @@ namespace Mms.Api.Controllers
 
 				return StatusCode(200);
 			}
-			catch {
+			catch (Exception ex) {
+				Console.Write(ex.ToString());
+
 				return StatusCode(500);
 			}
 		}
@@ -84,7 +90,9 @@ namespace Mms.Api.Controllers
 
 				return StatusCode(200);
 			}
-			catch {
+			catch (Exception ex) {
+				Console.Write(ex.ToString());
+
 				return StatusCode(500);
 			}
 		}
