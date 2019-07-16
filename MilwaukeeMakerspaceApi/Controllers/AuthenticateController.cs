@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Api.Models;
 using Mms.Database;
@@ -55,6 +56,8 @@ namespace Mms.Api.Controllers
 
 		public IActionResult Action(string id, string key)
 		{
+			key = HttpUtility.UrlDecode(key);
+
 			try {
 				using (var db = new AccessControlDatabase()) {
 					db.Execute(@"
