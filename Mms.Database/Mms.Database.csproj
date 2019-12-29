@@ -1,12 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.12" />
-    <PackageReference Include="NPoco" Version="3.9.4" />
+    <PackageReference Include="MySql.Data" Version="8.0.18" />
+    <PackageReference Include="PetaPoco.Compiled" Version="6.0.441" />
+    <PackageReference Include="PetaPoco.DBEntityGenerator" Version="0.1.0" />
   </ItemGroup>
 
   <ItemGroup>
