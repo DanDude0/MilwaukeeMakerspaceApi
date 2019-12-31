@@ -26,7 +26,7 @@ CREATE TABLE `attempt` (
   `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `attempt_time` datetime NOT NULL,
   PRIMARY KEY (`attempt_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=491882 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=491889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group` */
 
@@ -85,6 +85,7 @@ CREATE TABLE `reader` (
   `group_id` int(11) NOT NULL DEFAULT 0,
   `address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `version` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `initialized` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `settings` varchar(8192) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `status` varchar(4096) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`reader_id`)

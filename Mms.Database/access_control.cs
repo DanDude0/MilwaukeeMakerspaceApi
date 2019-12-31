@@ -152,6 +152,9 @@ namespace Mms.Database
         public int group_id { get; set; }
 
         [Column]
+        public DateTime initialized { get; set; }
+
+        [Column]
         public string name { get; set; }
 
         [Column]
