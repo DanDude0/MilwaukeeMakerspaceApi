@@ -161,7 +161,13 @@ namespace Mms.Database
         public string settings { get; set; }
 
         [Column]
+        public string status { get; set; }
+
+        [Column]
         public int timeout { get; set; }
+
+        [Column]
+        public string version { get; set; }
 
     }
 
