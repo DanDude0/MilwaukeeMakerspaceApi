@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rssdp;
@@ -22,11 +23,14 @@ namespace Mms.Api
 
 		public static int Main(string[] args)
 		{
-			var host = new WebHostBuilder()
-				.UseKestrel()
+			var host = new HostBuilder()
 				.UseContentRoot(Directory.GetCurrentDirectory())
-				.UseStartup<Startup>()
-				.UseUrls("http://*:80")
+				.ConfigureWebHostDefaults(webBuilder =>
+				{
+					webBuilder.UseKestrel()
+					.UseStartup<Startup>()
+					.UseUrls("http://*:80");
+				})
 				.ConfigureLogging((hostingContext, logging) =>
 				{
 					logging.AddConsole();

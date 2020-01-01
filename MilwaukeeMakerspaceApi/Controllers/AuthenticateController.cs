@@ -9,8 +9,10 @@ using Mms.Database;
 
 namespace Mms.Api.Controllers
 {
-	public class AuthenticateController : Controller
+	[Obsolete("Use reader actions now.")]
+	public class AuthenticateController : ControllerBase
 	{
+		[Obsolete("Use reader actions now.")]
 		public IActionResult Csv(string id, string key)
 		{
 			try {
@@ -26,6 +28,7 @@ namespace Mms.Api.Controllers
 			}
 		}
 
+		[Obsolete("Use reader actions now.")]
 		public IActionResult Json(string id, string key)
 		{
 			try {
@@ -40,6 +43,7 @@ namespace Mms.Api.Controllers
 			}
 		}
 
+		[Obsolete("Use reader actions now.")]
 		public IActionResult Logout(string id)
 		{
 			try {
@@ -54,6 +58,7 @@ namespace Mms.Api.Controllers
 			}
 		}
 
+		[Obsolete("Use reader actions now.")]
 		public IActionResult Action(string id, string key)
 		{
 			key = HttpUtility.UrlDecode(key);
