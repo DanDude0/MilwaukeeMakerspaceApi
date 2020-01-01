@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ namespace Mms.Api
 {
 	public class Startup
 	{
-		public Startup(IHostingEnvironment env)
+		public Startup(IHostEnvironment env)
 		{
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
@@ -31,28 +31,29 @@ namespace Mms.Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Add framework services.
-			services.AddMvc();
+			services.AddControllersWithViews();
 			services.AddRouting(options => options.LowercaseUrls = true);
+			services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+		public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
 		{
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
-				app.UseBrowserLink();
 			}
 			else {
 				app.UseExceptionHandler("/Home/Error");
 			}
 
 			app.UseStaticFiles();
+			app.UseRouting();
 
-			app.UseMvc(routes =>
+			app.UseEndpoints(routes =>
 			{
-				routes.MapRoute(
-					name: "default",
-					template: "{controller=Home}/{action=Index}/{id?}/{key?}");
+				routes.MapControllerRoute(
+					"default",
+					"{controller=Home}/{action=Index}/{id?}/{key?}");
 			});
 		}
 	}
