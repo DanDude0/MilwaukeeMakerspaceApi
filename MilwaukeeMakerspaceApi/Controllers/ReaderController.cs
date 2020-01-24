@@ -21,57 +21,6 @@ namespace Mms.Api.Controllers
 			public string settings { get; set; }
 		};
 
-		[Obsolete("Use Initialize method instead")]
-		public IActionResult Lookup(string id)
-		{
-			try {
-				DbResult result;
-
-				using (var db = new AccessControlDatabase()) {
-					var sql = @"
-						SELECT 
-							r.name,
-							r.timeout,
-							r.enabled,
-							g.name AS groupName,
-							r.address,
-							r.settings
-						FROM
-							reader r
-							INNER JOIN `group` g
-								ON r.group_id = g.group_id
-						WHERE
-							r.reader_id = @0
-						LIMIT 1;";
-
-					result = db.SingleOrDefault<DbResult>(sql, id);
-				}
-
-				if (result == null)
-					return StatusCode(403);
-
-				var clientAddress = HttpContext.Connection.RemoteIpAddress.ToString();
-
-				if (result.address != clientAddress)
-					RecordClient(int.Parse(id), clientAddress, "?", "Obsolete Client");
-
-				var output = new ReaderResult {
-					Name = result.name,
-					Timeout = result.timeout,
-					Enabled = result.enabled,
-					Group = result.groupName,
-					Settings = result.settings,
-				};
-
-				return new JsonResult(output);
-			}
-			catch (Exception ex) {
-				Console.Write(ex.ToString());
-
-				return StatusCode(500);
-			}
-		}
-
 		[HttpPost]
 		[Route("reader/initialize")]
 		public IActionResult Initialize([FromBody] string payload)
@@ -143,7 +92,7 @@ namespace Mms.Api.Controllers
 				if (id < 1)
 					return StatusCode(401);
 
-				var credentials = Authenticate(id, key);
+				var credentials = Authenticate(key);
 
 				switch (type) {
 					case "Login":
@@ -172,7 +121,7 @@ namespace Mms.Api.Controllers
 			}
 		}
 
-		private AuthenticationResult Authenticate(int id, string key)
+		private AuthenticationResult Authenticate(string key)
 		{
 			AuthenticationResult result = null;
 
@@ -216,10 +165,12 @@ namespace Mms.Api.Controllers
 								INNER JOIN keycode k
 									ON m.member_id = k.member_id 
 							WHERE
-								k.keycode_id = @1
+								k.keycode_id = @0
+								OR k.keycode_id = @1
 							LIMIT 1;";
 
-							result = db.SingleOrDefault<AuthenticationResult>(sql, id, key);
+							// Check for older style keys with the trailing # in the database
+							result = db.SingleOrDefault<AuthenticationResult>(sql, key, key + "#");
 					}
 				}
 			}
