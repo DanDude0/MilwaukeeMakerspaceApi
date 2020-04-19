@@ -130,12 +130,12 @@ namespace Mms.Api.Controllers
 				using (var db = new AccessControlDatabase()) {
 					sql = @"
 						SELECT 
-							r.group_id
+							group_id
 						FROM
-							reader r
+							reader
 						WHERE
-							r.reader_id = @0
-							AND r.enabled = 1
+							reader_id = @0
+							AND enabled = 1
 						LIMIT 1;";
 
 					groupId = db.SingleOrDefault<int?>(sql, readerId);
@@ -203,8 +203,8 @@ namespace Mms.Api.Controllers
 								INNER JOIN group_member gm
 									ON m.member_id = gm.member_id
 							WHERE
-								k.keycode_id = @0
-								AND gm.group_id = @1
+								(k.keycode_id = @0 OR k.keycode_id = @1)
+								AND gm.group_id = @2
 							LIMIT 1;";
 						else
 							sql = @"
@@ -221,11 +221,11 @@ namespace Mms.Api.Controllers
 								INNER JOIN keycode k
 									ON m.member_id = k.member_id 
 							WHERE
-								k.keycode_id = @0
+								(k.keycode_id = @0 OR k.keycode_id = @1)
 							LIMIT 1;";
 
 						// Check for older style keys with the trailing # in the database
-						return db.SingleOrDefault<AuthenticationResult>(sql, key, groupId);
+						return db.SingleOrDefault<AuthenticationResult>(sql, key, $"{key}#", groupId);
 					}
 				}
 			}
