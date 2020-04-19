@@ -130,7 +130,7 @@ namespace Mms.Api.Controllers
 				using (var db = new AccessControlDatabase()) {
 					sql = @"
 						SELECT 
-							r.group
+							r.group_id
 						FROM
 							reader r
 						WHERE
