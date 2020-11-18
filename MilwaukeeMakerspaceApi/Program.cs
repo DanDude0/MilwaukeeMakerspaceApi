@@ -54,7 +54,7 @@ namespace Mms.Api
 			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 			var deviceDefinition4 = new SsdpRootDevice() {
-				Location = new Uri($"http://{ip4}/home/service"),
+				Location = new Uri($"http://{ip4}/info/service"),
 				PresentationUrl = new Uri($"http://{ip4}/"),
 				FriendlyName = "Milwaukee Makerspace Api",
 				Manufacturer = "Milwaukee Makerspace",

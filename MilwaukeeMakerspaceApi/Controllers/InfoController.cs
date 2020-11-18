@@ -9,6 +9,11 @@ namespace Mms.Api.Controllers
 {
 	public class InfoController : Controller
 	{
+		public IActionResult Service()
+		{
+			return Content(Program.SsdpDescription, "application/xml");
+		}
+
 		public IActionResult Index()
 		{
 			fund data = null;
