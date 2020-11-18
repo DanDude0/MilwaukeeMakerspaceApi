@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Mms.Api.Services;
 using Mms.Database;
 
 namespace Mms.Api
@@ -31,9 +32,12 @@ namespace Mms.Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Add framework services.
+			services.AddRazorPages();
+			services.AddServerSideBlazor();
 			services.AddControllersWithViews();
 			services.AddRouting(options => options.LowercaseUrls = true);
 			services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
+			services.AddSingleton<AttemptService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,17 +47,19 @@ namespace Mms.Api
 				app.UseDeveloperExceptionPage();
 			}
 			else {
-				app.UseExceptionHandler("/Home/Error");
+				app.UseExceptionHandler("/Error");
 			}
 
 			app.UseStaticFiles();
 			app.UseRouting();
 
-			app.UseEndpoints(routes =>
+			app.UseEndpoints(endpoints =>
 			{
-				routes.MapControllerRoute(
+				endpoints.MapBlazorHub();
+				endpoints.MapFallbackToPage("/_Host");
+				endpoints.MapControllerRoute(
 					"default",
-					"{controller=Home}/{action=Index}/{id?}/{key?}");
+					"{controller}/{action=Index}");
 			});
 		}
 	}

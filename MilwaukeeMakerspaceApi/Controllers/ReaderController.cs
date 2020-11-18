@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Api.Models;
 using Mms.Database;
+using SQLite;
 
 namespace Mms.Api.Controllers
 {
@@ -17,7 +19,6 @@ namespace Mms.Api.Controllers
 			public int timeout { get; set; }
 			public bool enabled { get; set; }
 			public string groupName { get; set; }
-			public string address { get; set; }
 			public string settings { get; set; }
 		};
 
@@ -40,7 +41,6 @@ namespace Mms.Api.Controllers
 							r.timeout,
 							r.enabled,
 							g.name AS groupName,
-							r.address,
 							r.settings
 						FROM
 							reader r
@@ -121,6 +121,62 @@ namespace Mms.Api.Controllers
 			}
 		}
 
+		[HttpGet]
+		[Route("reader/snapshot")]
+		public IActionResult Database()
+		{
+			var tmpFile = Path.GetTempPath() + "snapshot.sqlite3";
+
+			System.IO.File.Delete(tmpFile);
+
+			var snapshot = new SQLiteConnection(tmpFile, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite, false);
+
+			snapshot.BeginTransaction();
+
+			snapshot.CreateTable<attempt>();
+			snapshot.CreateTable<group>();
+			snapshot.CreateTable<group_member>();
+			snapshot.CreateTable<keycode>();
+			snapshot.CreateTable<member>();
+			snapshot.CreateTable<reader>();
+			
+			using (var db = new AccessControlDatabase()) {
+				snapshot.InsertAll(db.Query<group>());
+				snapshot.InsertAll(db.Query<group_member>());
+				snapshot.InsertAll(db.Query<member>());
+				snapshot.InsertAll(db.Query<reader>());
+
+				// We have to get a bit more creative with the keycodes, cleaning up the data
+				foreach (var code in db.Query<keycode>()) {
+					var key = code.keycode_id.Replace("#", "");
+
+					snapshot.Insert(new keycode {
+						keycode_id = key,
+						member_id = code.member_id,
+						updated = code.updated
+					});
+
+					// Create 2nd truncated copy for W26 crap
+					if (key.Length == 10) {
+						key = key.Substring(4, 6);
+
+						snapshot.Insert(new keycode {
+							keycode_id = key,
+							member_id = code.member_id,
+							updated = code.updated
+						});
+					}
+				}
+			}
+
+			snapshot.Commit();
+			snapshot.Close();
+
+			var stream = new FileStream(tmpFile, FileMode.Open, FileAccess.ReadWrite);
+
+			return File(stream, "application/vnd.sqlite3", "snapshot.sqlite3");
+		}
+
 		private AuthenticationResult Authenticate(string key)
 		{
 			AuthenticationResult result = null;
@@ -146,7 +202,7 @@ namespace Mms.Api.Controllers
 								0x00FFFFFF & CONV(k.keycode_id, 16, 10) = CONV(@0, 16, 10)
 							LIMIT 1;";
 
-							result = db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6));
+						result = db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6));
 					}
 				}
 				else {
@@ -169,8 +225,8 @@ namespace Mms.Api.Controllers
 								OR k.keycode_id = @1
 							LIMIT 1;";
 
-							// Check for older style keys with the trailing # in the database
-							result = db.SingleOrDefault<AuthenticationResult>(sql, key, key + "#");
+						// Check for older style keys with the trailing # in the database
+						result = db.SingleOrDefault<AuthenticationResult>(sql, key, key + "#");
 					}
 				}
 			}
