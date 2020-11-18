@@ -1,0 +1,43 @@
+@page "/attempts"
+@inject AttemptService service
+
+<h1>Reader Attempts</h1>
+
+
+@if (list == null)
+{
+	<h2 class="loading">Loading...</h2>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Time</th>
+				<th>Reader</th>
+				<th>Member</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in list)
+			{
+				<tr>
+					<td>@item.Time.ToString("yyyy-MM-dd hh:mm:sstt")</td>
+					<td>@item.Reader</td>
+					<td>@item.Member</td>
+					<td>@item.Action</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	Attempt[] list;
+
+	protected override async Task OnInitializedAsync()
+	{
+		list = await service.List(0);
+	}
+}
