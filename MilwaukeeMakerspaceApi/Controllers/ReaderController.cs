@@ -92,7 +92,7 @@ namespace Mms.Api.Controllers
 				if (id < 1)
 					return StatusCode(401);
 
-				var credentials = Authenticate(key);
+				var credentials = Authenticate(key, id);
 
 				switch (type) {
 					case "Login":
@@ -177,15 +177,32 @@ namespace Mms.Api.Controllers
 			return File(stream, "application/vnd.sqlite3", "snapshot.sqlite3");
 		}
 
-		private AuthenticationResult Authenticate(string key)
+		private AuthenticationResult Authenticate(string key, int readerId)
 		{
-			AuthenticationResult result = null;
-
 			if (!string.IsNullOrEmpty(key)) {
+				int? groupId = null;
+				string sql = null;
+
+				using (var db = new AccessControlDatabase()) {
+					sql = @"
+						SELECT 
+							group_id
+						FROM
+							reader
+						WHERE
+							reader_id = @0
+							AND enabled = 1
+						LIMIT 1;";
+
+					groupId = db.SingleOrDefault<int?>(sql, readerId);
+
+					if (groupId == null)
+						return null;
+
 				//Support checking only the lower 26 bits of the key, because of stupid Wiegand protocol!
 				if (key.StartsWith("W26#")) {
-					using (var db = new AccessControlDatabase()) {
-						var sql = @"
+						if (groupId != 0)
+							sql = @"
 							SELECT 
 								m.member_id AS 'Id',
 								m.name AS 'Name',
@@ -198,16 +215,55 @@ namespace Mms.Api.Controllers
 								member m
 								INNER JOIN keycode k
 									ON m.member_id = k.member_id 
+								INNER JOIN group_member gm
+									ON m.member_id = gm.member_id
+							WHERE
+								0x00FFFFFF & CONV(k.keycode_id, 16, 10) = CONV(@0, 16, 10)
+								AND gm.group_id = @1
+							LIMIT 1;";
+						else
+							sql = @"
+							SELECT 
+								m.member_id AS 'Id',
+								m.name AS 'Name',
+								m.type AS 'Type',
+								m.apricot_admin AS Admin,
+								m.joined AS Joined,
+								m.expires AS Expiration,
+								DATE_ADD(m.expires, INTERVAL 7 DAY) > NOW() AS AccessGranted
+							FROM
+								member m
+								INNER JOIN keycode k
+									ON m.member_id = k.member_id
 							WHERE
 								0x00FFFFFF & CONV(k.keycode_id, 16, 10) = CONV(@0, 16, 10)
 							LIMIT 1;";
 
-						result = db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6));
+						return db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6), groupId);
 					}
-				}
 				else {
-					using (var db = new AccessControlDatabase()) {
-						var sql = @"
+						if (groupId != 0)
+							sql = @"
+							SELECT 
+								m.member_id AS 'Id',
+								m.name AS 'Name',
+								m.type AS 'Type',
+								m.apricot_admin AS Admin,
+								m.joined AS Joined,
+								m.expires AS Expiration,
+								DATE_ADD(m.expires, INTERVAL 7 DAY) > NOW() AS AccessGranted
+							FROM
+								member m
+								INNER JOIN keycode k
+									ON m.member_id = k.member_id 
+								INNER JOIN group_member gm
+									ON m.member_id = gm.member_id
+							WHERE
+								(k.keycode_id = @0 OR k.keycode_id = @1)
+								AND gm.group_id = @2
+							LIMIT 1;";
+						else
+							sql = @"
 							SELECT 
 								m.member_id AS 'Id',
 								m.name AS 'Name',
@@ -221,17 +277,16 @@ namespace Mms.Api.Controllers
 								INNER JOIN keycode k
 									ON m.member_id = k.member_id 
 							WHERE
-								k.keycode_id = @0
-								OR k.keycode_id = @1
+								(k.keycode_id = @0 OR k.keycode_id = @1)
 							LIMIT 1;";
 
 						// Check for older style keys with the trailing # in the database
-						result = db.SingleOrDefault<AuthenticationResult>(sql, key, key + "#");
+						return db.SingleOrDefault<AuthenticationResult>(sql, key, $"{key}#", groupId);
 					}
 				}
 			}
 
-			return result;
+			return null;
 		}
 
 		private void RecordAttempt(int readerId, string key, AuthenticationResult credentials, bool login, bool logout, string action)
