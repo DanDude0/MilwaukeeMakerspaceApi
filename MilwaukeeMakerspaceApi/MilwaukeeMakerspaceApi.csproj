@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net5.0</TargetFramework>
-		<PlatformTarget>x64</PlatformTarget>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
 		<WarningLevel>4</WarningLevel>
 		<RootNamespace>Mms.Api</RootNamespace>
+		<NoWarn>1701;1702;NU1605</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
 		<PackageReference Include="MySql.Data" Version="8.0.22" />
-		<PackageReference Include="Rssdp" Version="4.0.3" />
+		<PackageReference Include="Rssdp" Version="4.0.4" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
 	</ItemGroup>
 	<ItemGroup>
