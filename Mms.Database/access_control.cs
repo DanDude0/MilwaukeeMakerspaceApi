@@ -76,6 +76,7 @@ namespace Mms.Database
     }
 
     [TableName("`access_control`.`keycode`")]
+    [PrimaryKey("keycode_id", AutoIncrement=false)]
     [ExplicitColumns]
     public partial class keycode
     {
