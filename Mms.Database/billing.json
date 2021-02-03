@@ -1,7 +1,7 @@
 {
 	"ProviderName": "MySql",
-	"ConnectionString": "Server=mmsaccess.vfdworld.com;Port=3306;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none;convert zero datetime=True",
-	"SchemaName": "area_funding",
+	"ConnectionString": "Server=mmsaccess.vfdworld.com;Port=3306;User=accessuser;Password=mkemaker!34;Database=billing;SslMode=none;convert zero datetime=True",
+	"SchemaName": "billing",
 	"ClassPrefix": null,
 	"ClassSuffix": null,
 	"IncludeViews": true,
