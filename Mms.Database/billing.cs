@@ -123,5 +123,27 @@ namespace Mms.Database
 
     }
 
+    [TableName("`billing`.`storage_notes`")]
+    [PrimaryKey("storage_notes")]
+    [ExplicitColumns]
+    public partial class storage_note
+    {
+        [Column]
+        public int contact_id { get; set; }
+
+        [Column]
+        public int invoice_id { get; set; }
+
+        [Column]
+        public string notes { get; set; }
+
+        [Column]
+        public DateTime snapshot_date { get; set; }
+
+        [Column]
+        public int storage_notes { get; set; }
+
+    }
+
 }
 
