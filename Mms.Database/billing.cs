@@ -117,16 +117,16 @@ namespace Mms.Database
     public partial class makers_village_invoice
     {
         [Column]
-        public string details { get; set; }
+        public DateTime created_date { get; set; }
 
         [Column]
-        public DateTime end_date { get; set; }
+        public string details { get; set; }
 
         [Column(Name = "makers_village_invoice")]
         public int _makers_village_invoice { get; set; }
 
         [Column]
-        public DateTime start_date { get; set; }
+        public int month { get; set; }
 
         [Column]
         public string title { get; set; }
@@ -142,6 +142,9 @@ namespace Mms.Database
 
         [Column]
         public decimal total_remainder { get; set; }
+
+        [Column]
+        public int year { get; set; }
 
     }
 
