@@ -43,22 +43,16 @@ namespace Mms.Database
         public decimal amount { get; set; }
 
         [Column]
-        public int contact_id { get; set; }
+        public long contact_id { get; set; }
 
         [Column]
         public string contact_name { get; set; }
 
         [Column]
-        public string contact_url { get; set; }
-
-        [Column]
         public DateTime created_date { get; set; }
 
         [Column]
-        public int creator_id { get; set; }
-
-        [Column]
-        public string creator_url { get; set; }
+        public long creator_id { get; set; }
 
         [Column]
         public string document_number { get; set; }
@@ -67,10 +61,7 @@ namespace Mms.Database
         public DateTime invoice_date { get; set; }
 
         [Column]
-        public int invoice_id { get; set; }
-
-        [Column]
-        public string invoice_url { get; set; }
+        public long invoice_id { get; set; }
 
         [Column]
         public sbyte is_paid { get; set; }
@@ -91,10 +82,7 @@ namespace Mms.Database
         public DateTime updated_date { get; set; }
 
         [Column]
-        public int updater_id { get; set; }
-
-        [Column]
-        public string updater_url { get; set; }
+        public long updater_id { get; set; }
 
         [Column]
         public DateTime voided_date { get; set; }
@@ -110,10 +98,10 @@ namespace Mms.Database
         public decimal amount { get; set; }
 
         [Column]
-        public int invoice_id { get; set; }
+        public long invoice_id { get; set; }
 
         [Column]
-        public int invoice_line_id { get; set; }
+        public long invoice_line_id { get; set; }
 
         [Column]
         public string notes { get; set; }
@@ -123,16 +111,50 @@ namespace Mms.Database
 
     }
 
+    [TableName("`billing`.`makers_village_invoice`")]
+    [PrimaryKey("makers_village_invoice")]
+    [ExplicitColumns]
+    public partial class makers_village_invoice
+    {
+        [Column]
+        public string details { get; set; }
+
+        [Column]
+        public DateTime end_date { get; set; }
+
+        [Column(Name = "makers_village_invoice")]
+        public int _makers_village_invoice { get; set; }
+
+        [Column]
+        public DateTime start_date { get; set; }
+
+        [Column]
+        public string title { get; set; }
+
+        [Column]
+        public decimal total_billed { get; set; }
+
+        [Column]
+        public decimal total_owed { get; set; }
+
+        [Column]
+        public decimal total_paid { get; set; }
+
+        [Column]
+        public decimal total_remainder { get; set; }
+
+    }
+
     [TableName("`billing`.`storage_notes`")]
-    [PrimaryKey("storage_notes")]
+    [PrimaryKey("storage_notes_id")]
     [ExplicitColumns]
     public partial class storage_note
     {
         [Column]
-        public int contact_id { get; set; }
+        public long contact_id { get; set; }
 
         [Column]
-        public int invoice_id { get; set; }
+        public long invoice_id { get; set; }
 
         [Column]
         public string notes { get; set; }
@@ -141,7 +163,7 @@ namespace Mms.Database
         public DateTime snapshot_date { get; set; }
 
         [Column]
-        public int storage_notes { get; set; }
+        public long storage_notes_id { get; set; }
 
     }
 
