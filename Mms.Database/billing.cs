@@ -135,6 +135,9 @@ namespace Mms.Database
         public decimal total_billed { get; set; }
 
         [Column]
+        public decimal total_collected { get; set; }
+
+        [Column]
         public decimal total_owed { get; set; }
 
         [Column]
@@ -145,6 +148,28 @@ namespace Mms.Database
 
         [Column]
         public int year { get; set; }
+
+    }
+
+    [TableName("`billing`.`payment_allocation`")]
+    [PrimaryKey("payment_allocation_id", AutoIncrement=false)]
+    [ExplicitColumns]
+    public partial class payment_allocation
+    {
+        [Column]
+        public decimal amount { get; set; }
+
+        [Column]
+        public int invoice_id { get; set; }
+
+        [Column]
+        public int payment_allocation_id { get; set; }
+
+        [Column]
+        public DateTime payment_date { get; set; }
+
+        [Column]
+        public int payment_id { get; set; }
 
     }
 
