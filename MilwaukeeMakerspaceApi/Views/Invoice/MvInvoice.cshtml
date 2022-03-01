@@ -1,0 +1,161 @@
+@model Mms.Api.Models.MakersVillageInvoice
+@{
+	Layout = null;
+}
+
+<html>
+<head>
+	<title>
+		@Model.Title
+	</title>
+	<style>
+		body {
+			background-color: #fff;
+			color: #000;
+			font-size: 12pt;
+			font-family: helvetica;
+			font-weight: normal;
+		}
+
+		table {
+			font-size: inherit;
+			text-align: inherit;
+			vertical-align: inherit;
+			margin: 1em 0em;
+			border-spacing: 0;
+			border-collapse: collapse;
+		}
+
+		h1 {
+			font-size: 2em;
+			font-weight: normal;
+			margin: 0;
+		}
+
+		h2 {
+			font-size: 1.6em;
+			font-weight: normal;
+			margin: 30px 0 0;
+		}
+
+		h3 {
+			font-size: 1.3em;
+			font-weight: normal;
+			margin: 0;
+		}
+
+		th {
+			padding: 0.4em 1em;
+		}
+
+		td {
+			padding: 0.4em 1em;
+		}
+
+		p {
+			padding: 0.4em 1em;
+		}
+
+		.money {
+			font-family: Courier New, Courier, monospace;
+			text-align: right;
+			font-size: 120%;
+		}
+
+		.overdue {
+			font-weight: 700;
+			color: #b00;
+		}
+
+		.subheading {
+			padding-left: 3em;
+			font-weight: 700
+		}
+	</style>
+</head>
+<body>
+	<h1>@Model.Title</h1>
+	<p>Pay Period from @Model.Start.ToString("yyyy-MM-dd") to @Model.End.ToString("yyyy-MM-dd")</p>
+	<h2>Member Invoices</h2>
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Account</th>
+		</tr>
+		@foreach (var invoice in Model.Invoices)
+		{
+			<tr><td colspan="3"><div style="margin: 10px 30px 0px; height: 1px; background-color: #666;" /></td></tr>
+			<tr>
+				<td>@invoice.Created</td>
+				<td colspan="2">@invoice.Name</td>
+			</tr>
+			<tr style="font-size: 11pt;">
+				<td class="subheading">Area Rented:</td>
+				<td colspan="2">@invoice.StorageNotes</td>
+			</tr>
+			<tr style="font-size: 11pt;">
+				<td class="subheading">Lines:</td>
+				<td colspan="2">
+					<table style="margin: 0; padding: 0; width: 100%; font-size: 10pt; border: 1px solid #999;">
+						@foreach (var line in invoice.Lines)
+						{
+							<tr>
+								<td>@line.Notes</td>
+								<td class="money">@line.Amount</td>
+							</tr>
+						}
+					</table>
+				</td>
+			</tr>
+			<tr style="font-size: 11pt;">
+				<td class="subheading">Total:</td>
+				<td style="text-align: right;">
+					@if (invoice.MvOutstanding != 0)
+					{@:Outstanding Balance: <span class="money overdue">@invoice.MvOutstanding</span>
+				}
+				</td>
+				<td style="text-align: right;">Paid: <span class="money">@invoice.MvPaid</span></td>
+			</tr>
+		}
+	</table>
+	<h2>Adjustments</h2>
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Reason</th>
+			<th>Amount</th>
+		</tr>
+		@foreach (var adjustment in Model.Adjustments)
+		{
+			<tr>
+				<td>@adjustment.Date.ToString("yyyy-MM-dd")</td>
+				<td>@adjustment.Reason</td>
+				<td class="money">@adjustment.Amount</td>
+			</tr>
+		}
+	</table>
+	<h2>Totals</h2>
+	<table>
+		<tr>
+			<td>Total Owed from Milwaukee Makerspace to Makers Village</td>
+			<td class="money">@Model.TotalMvOwed</td>
+		</tr>
+		<tr>
+			<td>Total Credited from Adjustments:</td>
+			<td class="money">@Model.TotalMvAdjustments</td>
+		</tr>
+		<tr>
+			<td>Total Credited from Previous Payments:</td>
+			<td class="money">@(-Model.TotalMvPrePaid)</td>
+		</tr>
+		<tr>
+			<td>Total Owed in Outstanding Payments:</td>
+			<td class="money overdue">@(-Model.TotalMvOutstanding)</td>
+		</tr>
+		<tr>
+			<td style="padding: 0.7em; font-size: 1.3em; font-weight: 700">Total Paid from Milwukee Makerspace to Makers Village:</td>
+			<td style="padding: 0.7em; font-size: 1.3em; font-weight: 700" class="money">@Model.TotalMvPaid</td>
+		</tr>
+	</table>
+</body>
+</html>

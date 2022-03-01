@@ -9,6 +9,7 @@
 		<NoWarn>1701;1702;NU1605</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="BlazorDateRangePicker" Version="3.3.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />

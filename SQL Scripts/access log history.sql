@@ -1,0 +1,1 @@
+SELECT m.name, a.attempt_time, r.name FROM member m INNER JOIN attempt a ON m.member_id = a.member_id INNER JOIN reader r ON a.reader_id = r.reader_id ORDER BY a.attempt_time DESC

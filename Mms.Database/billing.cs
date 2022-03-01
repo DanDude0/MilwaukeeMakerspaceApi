@@ -112,7 +112,7 @@ namespace Mms.Database
     }
 
     [TableName("`billing`.`makers_village_invoice`")]
-    [PrimaryKey("makers_village_invoice")]
+    [PrimaryKey("makers_village_invoice_id")]
     [ExplicitColumns]
     public partial class makers_village_invoice
     {
@@ -122,8 +122,8 @@ namespace Mms.Database
         [Column]
         public string details { get; set; }
 
-        [Column(Name = "makers_village_invoice")]
-        public int _makers_village_invoice { get; set; }
+        [Column]
+        public int makers_village_invoice_id { get; set; }
 
         [Column]
         public int month { get; set; }
@@ -132,22 +132,53 @@ namespace Mms.Database
         public string title { get; set; }
 
         [Column]
-        public decimal total_billed { get; set; }
+        public decimal total_mms_billed { get; set; }
 
         [Column]
-        public decimal total_collected { get; set; }
+        public decimal total_mms_outstanding { get; set; }
 
         [Column]
-        public decimal total_owed { get; set; }
+        public decimal total_mms_paid { get; set; }
 
         [Column]
-        public decimal total_paid { get; set; }
+        public decimal total_mms_prepaid { get; set; }
 
         [Column]
-        public decimal total_remainder { get; set; }
+        public decimal total_mv_adjustments { get; set; }
+
+        [Column]
+        public decimal total_mv_outstanding { get; set; }
+
+        [Column]
+        public decimal total_mv_owed { get; set; }
+
+        [Column]
+        public decimal total_mv_paid { get; set; }
+
+        [Column]
+        public decimal total_mv_prepaid { get; set; }
 
         [Column]
         public int year { get; set; }
+
+    }
+
+    [TableName("`billing`.`makers_village_invoice_adjustments`")]
+    [PrimaryKey("makers_village_invoice_adjustments_id")]
+    [ExplicitColumns]
+    public partial class makers_village_invoice_adjustment
+    {
+        [Column]
+        public decimal amount { get; set; }
+
+        [Column]
+        public DateTime date { get; set; }
+
+        [Column]
+        public int makers_village_invoice_adjustments_id { get; set; }
+
+        [Column]
+        public string reason { get; set; }
 
     }
 
@@ -160,16 +191,16 @@ namespace Mms.Database
         public decimal amount { get; set; }
 
         [Column]
-        public int invoice_id { get; set; }
+        public long invoice_id { get; set; }
 
         [Column]
-        public int payment_allocation_id { get; set; }
+        public long payment_allocation_id { get; set; }
 
         [Column]
         public DateTime payment_date { get; set; }
 
         [Column]
-        public int payment_id { get; set; }
+        public long payment_id { get; set; }
 
     }
 

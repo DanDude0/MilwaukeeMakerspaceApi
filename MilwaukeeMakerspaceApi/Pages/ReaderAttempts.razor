@@ -3,6 +3,9 @@
 
 <h1>Reader Attempts</h1>
 
+<button @onclick="@NextPage" disabled="@(page == 0 ? true : false)">Next</button>
+
+<button @onclick="@PreviousPage">Previous</button>
 
 @if (list == null)
 {
@@ -34,10 +37,26 @@ else
 }
 
 @code {
+	int page;
 	Attempt[] list;
 
 	protected override async Task OnInitializedAsync()
 	{
-		list = await service.List(0);
+		page = 0;
+		list = await service.List(page);
+	}
+
+	private async Task NextPage()
+	{
+		if (page > 0)
+			page -= 1;
+
+		list = await service.List(page);
+	}
+
+	private async Task PreviousPage()
+	{
+		page += 1;
+		list = await service.List(page);
 	}
 }
