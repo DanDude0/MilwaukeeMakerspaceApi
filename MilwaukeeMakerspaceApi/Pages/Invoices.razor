@@ -1,0 +1,171 @@
+@page "/invoices"
+@inject InvoiceService service
+
+<h1>Invoices</h1>
+<div class="clearfix">
+	<EditForm Model="@loadInvoiceRequest" OnValidSubmit="@LoadInvoices" class="card p-3 my-3 float-left">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<h2>Load Invoices from Wild Apricot</h2>
+		<div class="input-group">
+			<DateRangePicker Ranges="DateRanges" class="form-control" placeholder="Date Range" @bind-StartDate="loadInvoiceRequest.Start" @bind-EndDate="loadInvoiceRequest.End" required />
+			<button class="btn btn-primary">Load Invoices</button>
+		</div>
+		<div id="loadActive" hidden="@notLoading">
+			<div class="progress my-3">
+				<div id="loadProgress" class="progress-bar @loadAnimated" role="progressbar" aria-valuenow="@loadStatus.progress" aria-valuemin="0" aria-valuemax="@loadStatus.range" style="width: @loadPercent%"></div>
+			</div>
+			<div id="loadStatus">
+				@loadStatus.status
+			</div>
+		</div>
+	</EditForm>
+</div>
+<div class="clearfix">
+	<EditForm Model="@generateInvoiceRequest" OnValidSubmit="@GenerateMVInvoice" class="card p-3 my-3 float-left">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<h2>Generate Makers Village Invoice</h2>
+		<div class="input-group">
+			<InputText class="form-control" placeholder="Year-Month" @bind-Value="generateInvoiceRequest.YearMonth" required />
+			<button class="btn btn-primary">Generate Invoice</button>
+		</div>
+		<div id="generateActive" hidden="@notGenerating">
+			<div id="generateStatus">
+				@generateStatus.status
+			</div>
+		</div>
+	</EditForm>
+</div>
+
+<h2>Existing Makers Village Invoices</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th colspan="2">Name</th>
+			<th>Paid</th>
+			<th>Outstanding</th>
+			<th>Created</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in list)
+		{
+		<tr>
+			<td><a target="_blank" href="/mvinvoice/@item.Id">@item.Title</a></td>
+			<td><a target="_blank" href="/mvinvoice/@(item.Id).pdf">PDF</a></td>
+			<td style="text-align: right;">@item.TotalMvPaid</td>
+			<td style="text-align: right;">@item.TotalMvOutstanding</td>
+			<td style="text-align: right;">@item.CreatedDate</td>
+		</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	bool notLoading = true;
+	bool notGenerating = true;
+	IList<MakersVillageInvoice> list;
+	LoadInvoiceRequest loadInvoiceRequest = new LoadInvoiceRequest();
+	GenerateInvoiceRequest generateInvoiceRequest = new GenerateInvoiceRequest();
+	OperationStatus loadStatus = new OperationStatus();
+	string loadPercent = "0";
+	string loadAnimated = "";
+	OperationStatus generateStatus = new OperationStatus();
+
+	Dictionary<string, DateRange> DateRanges => new Dictionary<string, DateRange> {
+			{ "Last Month" , new DateRange
+				{
+					Start = new DateTime(DateTime.Now.AddMonths(-1).Year, DateTime.Now.AddMonths(-1).Month, 1),
+					End = new DateTime(DateTime.Now.AddMonths(-1).Year, DateTime.Now.AddMonths(-1).Month, 1).AddMonths(1).AddTicks(-1)
+				}
+			},
+			{ "Last Year" , new DateRange
+				{
+					Start = new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1),
+					End = new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1).AddYears(1).AddTicks(-1)
+				}
+			},
+			{ "Current Month" , new DateRange
+				{
+					Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+					End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddTicks(-1)
+				}
+			},
+			{ "Current Year" , new DateRange
+				{
+					Start = new DateTime(DateTime.Now.Year, 1, 1),
+					End = new DateTime(DateTime.Now.Year, 1, 1).AddYears(1).AddTicks(-1)
+				}
+			}
+		};
+
+	protected override void OnInitialized()
+	{
+		list = service.ListMVInvoices();
+	}
+
+	private async Task LoadInvoices()
+	{
+		try
+		{
+			if (loadInvoiceRequest.Start == null || loadInvoiceRequest.End == null)
+				return;
+
+			notLoading = false;
+			loadAnimated = "progress-bar-striped progress-bar-animated";
+
+			var loading = service.Load(loadInvoiceRequest.Start.Value, loadInvoiceRequest.End.Value);
+
+			while (loading.Status != TaskStatus.Faulted && loading.Status != TaskStatus.RanToCompletion)
+			{
+				loadStatus = service.loadStatus;
+				loadPercent = (100.0 * loadStatus.progress / loadStatus.range).ToString("N2");
+
+				StateHasChanged();
+
+				await Task.Delay(250);
+			}
+
+			await loading;
+
+			loadPercent = "100";
+			loadAnimated = "";
+		}
+		catch (Exception ex)
+		{
+			loadStatus.status = $"Error loading:\n\n{ex.ToString()}";
+		}
+	}
+
+	private async Task GenerateMVInvoice()
+	{
+		try
+		{
+			int year;
+			int month;
+			if (string.IsNullOrEmpty(generateInvoiceRequest.YearMonth)
+				|| generateInvoiceRequest.YearMonth.Length != 7
+				|| !int.TryParse(generateInvoiceRequest.YearMonth.Substring(0, 4), out year)
+				|| !int.TryParse(generateInvoiceRequest.YearMonth.Substring(5, 2), out month))
+				return;
+
+			notGenerating = false;
+
+			generateStatus.status = "Generating Invoice";
+
+			StateHasChanged();
+
+			await service.GenerateMVInvoice(year, month);
+
+			generateStatus.status = "Successfully Generated Invoice";
+
+			list = service.ListMVInvoices();
+		}
+		catch (Exception ex)
+		{
+			generateStatus.status = $"Error generating:\n\n{ex.ToString()}";
+		}
+
+	}
+}

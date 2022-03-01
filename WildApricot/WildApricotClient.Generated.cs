@@ -5651,7 +5651,7 @@ namespace WildApricot
 		/// <param name="refundId">Identifier of refund.</param>
 		/// <returns>Collection of allocations.</returns>
 		/// <exception cref="WildApricotException">A server side error occurred.</exception>
-		public async System.Threading.Tasks.Task<PaymentAllocation> GetPaymentAllocationsListAsync(double accountId, int? invoiceId = null, int? paymentId = null, int? refundId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PaymentAllocation>> GetPaymentAllocationsListAsync(double accountId, int? invoiceId = null, int? paymentId = null, int? refundId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 		{
 			if (accountId == null)
 				throw new System.ArgumentNullException("accountId");
@@ -5695,7 +5695,7 @@ namespace WildApricot
 
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 200) {
-							var objectResponse_ = await ReadObjectResponseAsync<PaymentAllocation>(response_, headers_).ConfigureAwait(false);
+							var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<PaymentAllocation>>(response_, headers_).ConfigureAwait(false);
 							if (objectResponse_.Object == null) {
 								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
 							}

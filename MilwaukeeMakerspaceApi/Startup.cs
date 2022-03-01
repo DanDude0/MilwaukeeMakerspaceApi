@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Mms.Api.Services;
 using Mms.Database;
+using WildApricot;
 
 namespace Mms.Api
 {
@@ -24,6 +25,9 @@ namespace Mms.Api
 
 			AreaFundingDatabase.ConnectionString = Configuration.GetConnectionString("area_funding");
 			AccessControlDatabase.ConnectionString = Configuration.GetConnectionString("access_control");
+			BillingDatabase.ConnectionString = Configuration.GetConnectionString("billing");
+			WildApricotClient.ApiKey = Configuration.GetConnectionString("wildapricot");
+			//DinkToPdfAll.LibraryLoader.Load();
 		}
 
 		public IConfigurationRoot Configuration { get; }
@@ -38,6 +42,7 @@ namespace Mms.Api
 			services.AddRouting(options => options.LowercaseUrls = true);
 			services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
 			services.AddSingleton<AttemptService>();
+			services.AddSingleton<InvoiceService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

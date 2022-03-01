@@ -29,7 +29,8 @@ namespace Mms.Api
 				{
 					webBuilder.UseKestrel()
 					.UseStartup<Startup>()
-					.UseUrls("http://*:80");
+					.UseUrls("http://*:80")
+					.UseStaticWebAssets();
 				})
 				.ConfigureLogging((hostingContext, logging) =>
 				{
