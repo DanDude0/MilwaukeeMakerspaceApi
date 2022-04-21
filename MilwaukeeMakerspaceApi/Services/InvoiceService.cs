@@ -48,9 +48,17 @@ namespace Mms.Api.Services
 
 		public async Task<object> GenerateMVInvoice(int year, int month)
 		{
-			// Pad the loading, because of time zone offset stupidity.
-			var startDate = new DateTime(year, month, 1).AddDays(-1);
-			var endDate = startDate.AddMonths(1).AddDays(1);
+			// Don't use .AddMonth(), gets weird with the 28/29/30/31.
+			var endYear = year;
+			var endMonth = month + 1;
+
+			if (month == 12) {
+				endYear = year + 1;
+				endMonth = 1;
+			}
+
+			var startDate = new DateTime(year, month, 1).AddHours(-5);
+			var endDate = new DateTime(endYear, endMonth, 1);
 			var invoice = new MakersVillageInvoice();
 
 			invoice.Title = $"Makers Village Sublet Invoice - {year}-{month:00}";
@@ -214,10 +222,11 @@ namespace Mms.Api.Services
 			loadStatus.progress = 0;
 			loadStatus.status = "Loading Invoice List";
 
+			// Pad the loading, because of time zone offset stupidity.
 			var invoiceIdList = await wildApricot.GetInvoicesListAsync(
 				accountId: wildApricot.accountId,
-				startDate: start,
-				endDate: end,
+				startDate: start.AddDays(-1),
+				endDate: end.AddDays(1),
 				idsOnly: true
 				);
 
@@ -248,8 +257,8 @@ namespace Mms.Api.Services
 
 			var paymentIdList = await wildApricot.GetPaymentsListAsync(
 				accountId: wildApricot.accountId,
-				startDate: start,
-				endDate: end,
+				startDate: start.AddDays(-1),
+				endDate: end.AddDays(1),
 				idsOnly: true
 				);
 
