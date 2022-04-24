@@ -26,11 +26,11 @@ jobs:
     - name: Install Zip
       uses: montudor/action-zip@v1
     - name: Zip Release
-      run: zip -qq -r MmsApi.zip *
+      run: zip -qq -r ../MmsApi.zip *
       working-directory: publish
     - name: Make Version Number
       run: |
-        echo "release=$(date +'%Y%m%d.%H%M%S') ARM" >> $GITHUB_ENV
+        echo "release=$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
         echo "version=$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
     - name: Publish Release
       uses: ncipollo/release-action@v1
