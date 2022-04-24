@@ -23,11 +23,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish --configuration Release -o publish
-    - name: Zip Release
+    - name: Install Zip
       uses: montudor/action-zip@v1
-      with:
-        args: zip -qq -r MmsApi.zip *
-        working-diectory: publish
+    - name: Zip Release
+      run: zip -qq -r MmsApi.zip *
+      working-directory: publish
     - name: Make Version Number
       run: |
         echo "release=$(date +'%Y%m%d.%H%M%S') ARM" >> $GITHUB_ENV
