@@ -26,7 +26,7 @@ jobs:
     - name: Zip Release
       uses: montudor/action-zip@v1
       with:
-        args: zip -qq -r -j MmsApi.zip publish
+        args: (cd publish && zip -qq -r -j ../MmsApi.zip *)
     - name: Make Version Number
       run: |
         echo "release=$(date +'%Y%m%d.%H%M%S') ARM" >> $GITHUB_ENV
