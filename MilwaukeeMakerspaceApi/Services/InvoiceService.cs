@@ -57,7 +57,7 @@ namespace Mms.Api.Services
 				endMonth = 1;
 			}
 
-			var startDate = new DateTime(year, month, 1).AddHours(-5);
+			var startDate = new DateTime(year, month, 1);
 			var endDate = new DateTime(endYear, endMonth, 1);
 			var invoice = new MakersVillageInvoice();
 
