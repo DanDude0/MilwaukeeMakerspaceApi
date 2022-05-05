@@ -1,0 +1,123 @@
+@page "/reports"
+@inject ReportService service
+@inject IJSRuntime jsRuntime
+@using System.Globalization;
+@using Mms.Database;
+
+<h1>Reports</h1>
+<div class="clearfix">
+    <EditForm Model="@generateReportRequest" OnValidSubmit="@GenerateReport" class="card p-3 my-3 float-left">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h2>Generate Treasurer Report</h2>
+        <div class="input-group">
+            <InputText class="form-control" placeholder="Year-Month" @bind-Value="generateReportRequest.YearMonth" required />
+            <button class="btn btn-primary">Generate Report</button>
+        </div>
+    </EditForm>
+</div>
+
+<div class="clearfix">
+    <EditForm Model="@updateStatementRequest" OnValidSubmit="@RecordStatement" class="card p-3 my-3 float-left">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h2>Log New Bank Statement</h2>
+        Account Name: <InputText class ="form-control" placeholder="Account Name" @bind-Value="updateStatementRequest.Name" required />
+        Date: <InputText class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.YearMonth" required />
+        Starting Balance: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.StartingBalance" required />
+        Ending Balance: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.EndingBalance" required />
+        Income: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.Income" required />
+        Spending: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.Spending" required />
+        Transfers: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.Transfers" required />
+        Fees: <InputNumber class="form-control" placeholder="Year-Month" @bind-Value="updateStatementRequest.Fees" required />
+        <button class="btn btn-primary">Record Statement</button>
+    </EditForm>
+</div>
+
+<h2>Existing Bank Statements</h2>
+
+<button @onclick="@LoadStatements">Refresh</button>
+
+@if (list == null)
+{
+    <h2 class="loading">Loading...</h2>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Account Name</th>
+                <th>Date</th>
+                <th>Starting Balance</th>
+                <th>Ending Balance</th>
+                <th>Income</th>
+                <th>Spending</th>
+                <th>Transfers</th>
+                <th>Fees</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in list)
+            {
+                <tr>
+                    <td>@item.account_name</td>
+                    <td>@item.time.ToString("yyyy-MM-dd")</td>
+                    <td style="text-align: right;">@item.starting_balance.ToString("N2", CultureInfo.InvariantCulture)</td>
+                    <td style="text-align: right;">@item.ending_balance.ToString("N2", CultureInfo.InvariantCulture)</td>
+                    <td style="text-align: right;">@item.income.ToString("N2", CultureInfo.InvariantCulture)</td>
+                    <td style="text-align: right;">@item.spending.ToString("N2", CultureInfo.InvariantCulture)</td>
+                    <td style="text-align: right;">@item.transfers.ToString("N2", CultureInfo.InvariantCulture)</td>
+                    <td style="text-align: right;">@item.fees.ToString("N2", CultureInfo.InvariantCulture)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    bank_statement[] list;
+    GenerateReportRequest generateReportRequest = new GenerateReportRequest();
+    UpdateStatementRequest updateStatementRequest = new UpdateStatementRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatements();
+    }
+
+    private async Task LoadStatements()
+    {
+        list = await service.ListStatements();
+    }
+
+    private async Task GenerateReport()
+    {
+        int year;
+        int month;
+        if (string.IsNullOrEmpty(generateReportRequest.YearMonth)
+            || generateReportRequest.YearMonth.Length != 7
+            || !int.TryParse(generateReportRequest.YearMonth.Substring(0, 4), out year)
+            || !int.TryParse(generateReportRequest.YearMonth.Substring(5, 2), out month))
+            return;
+
+        string url = $"/mmstreasurerreport/{generateReportRequest.YearMonth}";
+
+        await jsRuntime.InvokeAsync<object>("open", url, "_blank");
+    }
+
+    private async Task RecordStatement()
+    {
+        int year;
+        int month;
+        if (string.IsNullOrEmpty(updateStatementRequest.YearMonth)
+            || updateStatementRequest.YearMonth.Length != 7
+            || !int.TryParse(updateStatementRequest.YearMonth.Substring(0, 4), out year)
+            || !int.TryParse(updateStatementRequest.YearMonth.Substring(5, 2), out month))
+            return;
+
+        service.RecordStatement(updateStatementRequest);
+
+        await LoadStatements();
+    }
+}

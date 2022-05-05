@@ -1,0 +1,118 @@
+@model Mms.Api.Models.TreasurerReport
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <title>
+        @Model.Date.ToString("MMMM yyyy") Treasurer Report
+    </title>
+    <style>
+        body {
+            background-color: #fff;
+            color: #000;
+            font-size: 12pt;
+            font-family: helvetica;
+            font-weight: normal;
+        }
+
+        table {
+            font-size: inherit;
+            text-align: inherit;
+            vertical-align: inherit;
+            margin: 1em 0em;
+            border-spacing: 0;
+            border-collapse: collapse;
+            border: 1px solid #999;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 1.6em;
+            font-weight: normal;
+            margin: 30px 0 0;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        th {
+            padding: 0.4em 1em;
+            border: 1px solid #999;
+        }
+
+        td {
+            padding: 0.4em 1em;
+            border: 1px solid #999;
+        }
+
+        p {
+            padding: 0.4em 1em;
+        }
+
+        .money {
+            font-family: Courier New, Courier, monospace;
+            text-align: right;
+            font-size: 120%;
+        }
+
+        .overdue {
+            font-weight: 700;
+            color: #b00;
+        }
+
+        .subheading {
+            padding-left: 3em;
+            font-weight: 700
+        }
+    </style>
+</head>
+<body>
+    <h1>@Model.Date.ToString("MMMM yyyy") Treasurer Report</h1>
+    <h2>Membership Growth</h2>
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>General Members</th>
+            <th>Family Members</th>
+            <th>Total Members</th>
+            <th>Net Change</th>
+        </tr>
+        @foreach (var line in Model.MembershipHistory)
+        {
+            <tr>
+                <td>@line.Date.ToString("MMMM yyyy")</td>
+                <td>@line.General</td>
+                <td>@line.Family</td>
+                <td>@line.Total</td>
+                <td>@line.Net</td>
+            </tr>
+        }
+    </table>
+    <h2>Current Assets</h2>
+    <h4>As of @Model.Date.ToString("MMMM yyyy")</h4>
+    <p>Funds: $@Model.CurrentFunds</p>
+    <p>Estimated 6 Month Operating Expenses: $@Model.ReserveFunds</p>
+    <p>Current Committed Area Funding: $@Model.CommittedAreaFunding</p>
+    <p>Current General Funds (Uncommitted): $@Model.GeneralFunds</p>
+    <h2>@Model.Date.AddMonths(-1).ToString("MMMM yyyy") Cash Flow</h2>
+    <p>Income: $@Model.LastMonthIncome</p>
+    <p>Spending: $@Model.LastMonthSpending</p>
+    <p>Net: $@Model.LastMonthNetTotal</p>
+    <h2>Trailing 12 Month (@Model.Date.AddMonths(-12).ToString("MMMM yyyy") - @Model.Date.AddMonths(-1).ToString("MMMM yyyy")) Cash Flow</h2>
+    <p>Income: $@Model.LastYearIncome</p>
+    <p>Spending: $@Model.LastYearSpending</p>
+    <p>Net: $@Model.LastYearNetTotal</p>
+    <p>Net Area Funds: $@Model.LastYearNetAreaFunds</p>
+    <p>Net General Funds: $@Model.LastYearNetGeneralFunds</p>
+</body>
+</html>

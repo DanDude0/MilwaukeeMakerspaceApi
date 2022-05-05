@@ -43,6 +43,7 @@ namespace Mms.Api
 			services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
 			services.AddSingleton<AttemptService>();
 			services.AddSingleton<InvoiceService>();
+			services.AddSingleton<ReportService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
