@@ -47,6 +47,9 @@ namespace Mms.Database
         public decimal? forge { get; set; }
 
         [Column]
+        public decimal? glass_fusing { get; set; }
+
+        [Column]
         public decimal? ham_radio { get; set; }
 
         [Column]
@@ -63,6 +66,9 @@ namespace Mms.Database
 
         [Column]
         public decimal? metal { get; set; }
+
+        [Column]
+        public decimal? neon { get; set; }
 
         [Column]
         public decimal? paint { get; set; }
@@ -90,6 +96,40 @@ namespace Mms.Database
 
         [Column]
         public decimal? wood { get; set; }
+
+    }
+
+    [TableName("`area_funding`.`bank_statement`")]
+    [PrimaryKey("bank_statement_id")]
+    [ExplicitColumns]
+    public partial class bank_statement
+    {
+        [Column]
+        public string account_name { get; set; }
+
+        [Column]
+        public int bank_statement_id { get; set; }
+
+        [Column]
+        public decimal ending_balance { get; set; }
+
+        [Column]
+        public decimal fees { get; set; }
+
+        [Column]
+        public decimal income { get; set; }
+
+        [Column]
+        public decimal spending { get; set; }
+
+        [Column]
+        public decimal starting_balance { get; set; }
+
+        [Column]
+        public DateTime time { get; set; }
+
+        [Column]
+        public decimal transfers { get; set; }
 
     }
 
@@ -134,6 +174,9 @@ namespace Mms.Database
         public int general { get; set; }
 
         [Column]
+        public decimal glass_fusing { get; set; }
+
+        [Column]
         public decimal ham_radio { get; set; }
 
         [Column]
@@ -156,6 +199,9 @@ namespace Mms.Database
 
         [Column]
         public DateTime month { get; set; }
+
+        [Column]
+        public decimal neon { get; set; }
 
         [Column]
         public decimal paint { get; set; }
@@ -234,6 +280,9 @@ namespace Mms.Database
         public int general { get; set; }
 
         [Column]
+        public decimal glass_fusing { get; set; }
+
+        [Column]
         public decimal ham_radio { get; set; }
 
         [Column]
@@ -256,6 +305,9 @@ namespace Mms.Database
 
         [Column]
         public DateTime month { get; set; }
+
+        [Column]
+        public decimal neon { get; set; }
 
         [Column]
         public decimal paint { get; set; }
@@ -330,6 +382,9 @@ namespace Mms.Database
         public int general { get; set; }
 
         [Column]
+        public decimal glass_fusing { get; set; }
+
+        [Column]
         public decimal ham_radio { get; set; }
 
         [Column]
@@ -352,6 +407,9 @@ namespace Mms.Database
 
         [Column]
         public DateTime month { get; set; }
+
+        [Column]
+        public decimal neon { get; set; }
 
         [Column]
         public decimal paint { get; set; }
@@ -417,6 +475,9 @@ namespace Mms.Database
         public decimal forge { get; set; }
 
         [Column]
+        public decimal glass_fusing { get; set; }
+
+        [Column]
         public decimal ham_radio { get; set; }
 
         [Column]
@@ -433,6 +494,9 @@ namespace Mms.Database
 
         [Column]
         public decimal metal { get; set; }
+
+        [Column]
+        public decimal neon { get; set; }
 
         [Column]
         public decimal paint { get; set; }
@@ -502,6 +566,9 @@ namespace Mms.Database
         public decimal forge { get; set; }
 
         [Column]
+        public decimal glass_fusing { get; set; }
+
+        [Column]
         public decimal ham_radio { get; set; }
 
         [Column]
@@ -518,6 +585,9 @@ namespace Mms.Database
 
         [Column]
         public decimal metal { get; set; }
+
+        [Column]
+        public decimal neon { get; set; }
 
         [Column]
         public decimal paint { get; set; }
