@@ -26,9 +26,9 @@ namespace Mms.Api.Controllers
 
 			using var db = new AreaFundingDatabase();
 
-			var sql = "SELECT `month` AS 'Date', `general` AS 'General', family AS 'Family', members AS 'Total' FROM `history` WHERE `month` > @0 ORDER BY month ASC";
+			var sql = "SELECT `month` AS 'Date', `general` AS 'General', family AS 'Family', members AS 'Total' FROM `history` WHERE `month` > @0 AND `month` < @1 ORDER BY month ASC";
 
-			var membershipHistory = db.Fetch<TreasurerReport.MembershipCounts>(sql, date.AddMonths(-6));
+			var membershipHistory = db.Fetch<TreasurerReport.MembershipCounts>(sql, date.AddMonths(-6), date.AddMonths(1));
 
 			for (var i = 1; i < membershipHistory.Count; i++) {
 				membershipHistory[i].Net = membershipHistory[i].Total - membershipHistory[i - 1].Total;
