@@ -265,37 +265,43 @@ namespace Mms.Api.Services
 			loadStatus.range = invoiceIdList.InvoiceIdentifiers.Count + paymentIdList.PaymentIdentifiers.Count;
 
 			var count = 0;
+			var errors = new List<string>();
 
 			foreach (var item in paymentIdList.PaymentIdentifiers) {
 				loadStatus.progress += 1;
 				count += 1;
 				loadStatus.status = $"Loading Payment {count} of {paymentIdList.PaymentIdentifiers.Count}";
 
-				var waPaymentAllocations = await wildApricot.GetPaymentAllocationsListAsync(wildApricot.accountId, paymentId: item);
+				try {
+					var waPaymentAllocations = await wildApricot.GetPaymentAllocationsListAsync(wildApricot.accountId, paymentId: item);
 
-				foreach (var waAllocation in waPaymentAllocations) {
-					if (waAllocation.Invoice?.Id == null)
-						continue;
+					foreach (var waAllocation in waPaymentAllocations) {
+						if (waAllocation.Invoice?.Id == null)
+							continue;
 
-					if (waAllocation.InvoiceDate < start) {
-						var id = waAllocation.Invoice.Id ?? -1;
+						if (waAllocation.InvoiceDate < start) {
+							var id = waAllocation.Invoice.Id ?? -1;
 
-						if (!invoiceIdList.InvoiceIdentifiers.Contains(id)) {
-							invoiceIdList.InvoiceIdentifiers.Add(id);
-							loadStatus.range += 1;
+							if (!invoiceIdList.InvoiceIdentifiers.Contains(id)) {
+								invoiceIdList.InvoiceIdentifiers.Add(id);
+								loadStatus.range += 1;
+							}
 						}
+
+						var dbPaymentAllocation = new payment_allocation {
+							payment_allocation_id = waAllocation.Id.Value,
+							amount = (decimal)waAllocation.Value.Value,
+							invoice_id = waAllocation.Invoice.Id.Value,
+							payment_id = waAllocation.Payment.Id.Value,
+							payment_date = waAllocation.PaymentDate.Value.LocalDateTime,
+						};
+
+						db.Delete<payment_allocation>(dbPaymentAllocation.payment_allocation_id);
+						db.Insert(dbPaymentAllocation);
 					}
-
-					var dbPaymentAllocation = new payment_allocation {
-						payment_allocation_id = waAllocation.Id.Value,
-						amount = (decimal)waAllocation.Value.Value,
-						invoice_id = waAllocation.Invoice.Id.Value,
-						payment_id = waAllocation.Payment.Id.Value,
-						payment_date = waAllocation.PaymentDate.Value.LocalDateTime,
-					};
-
-					db.Delete<payment_allocation>(dbPaymentAllocation.payment_allocation_id);
-					db.Insert(dbPaymentAllocation);
+				}
+				catch (Exception ex) {
+					errors.Add($"Payment '{item}': {ex.Message}");
 				}
 			}
 
@@ -306,78 +312,87 @@ namespace Mms.Api.Services
 				count += 1;
 				loadStatus.status = $"Loading Invoice Heading {count} of {invoiceIdList.InvoiceIdentifiers.Count}";
 
-				var waInvoice = await wildApricot.GetInvoiceDetailsAsync(wildApricot.accountId, item);
+				try {
+					var waInvoice = await wildApricot.GetInvoiceDetailsAsync(wildApricot.accountId, item);
 
-				var dbInvoice = new invoice {
-					invoice_id = waInvoice.Id.Value,
-					document_number = waInvoice.DocumentNumber,
-					invoice_date = waInvoice.DocumentDate.Value.LocalDateTime,
-					amount = (decimal)waInvoice.Value.Value,
-					paid_amount = (decimal)waInvoice.PaidAmount.Value,
-					is_paid = (sbyte)((waInvoice.IsPaid ?? false) ? 1 : 0),
-					type = waInvoice.OrderType.ToString(),
-					private_notes = waInvoice.Memo ?? "",
-					public_notes = waInvoice.PublicMemo ?? "",
-					created_date = waInvoice.CreatedDate.Value.LocalDateTime,
-					updated_date = waInvoice.UpdatedDate.GetValueOrDefault().LocalDateTime,
-					voided_date = waInvoice.VoidedDate.GetValueOrDefault().LocalDateTime,
-					contact_id = waInvoice.Contact.Id.Value,
-					contact_name = waInvoice.Contact.Name,
-					creator_id = waInvoice.CreatedBy?.Id ?? -1,
-					updater_id = waInvoice.UpdatedBy?.Id ?? -1,
-				};
-
-				db.Delete<invoice>(dbInvoice.invoice_id);
-				db.Insert(dbInvoice);
-
-				var i = 0;
-				var makersVillageInvoice = false;
-
-				foreach (var waLine in waInvoice.OrderDetails) {
-					i += 1;
-					loadStatus.status = $"Loading Invoice Lines {count} of {loadStatus.range}, Line {i}";
-
-					var dbLine = new invoice_line {
-						invoice_line_id = ((long)dbInvoice.invoice_id * 100) + i,
-						invoice_id = dbInvoice.invoice_id,
-						amount = (decimal)waLine.Value.Value,
-						type = waLine.OrderDetailType.ToString(),
-						notes = waLine.Notes,
+					var dbInvoice = new invoice {
+						invoice_id = waInvoice.Id.Value,
+						document_number = waInvoice.DocumentNumber,
+						invoice_date = waInvoice.DocumentDate.Value.LocalDateTime,
+						amount = (decimal)waInvoice.Value.Value,
+						paid_amount = (decimal)waInvoice.PaidAmount.Value,
+						is_paid = (sbyte)((waInvoice.IsPaid ?? false) ? 1 : 0),
+						type = waInvoice.OrderType.ToString(),
+						private_notes = waInvoice.Memo ?? "",
+						public_notes = waInvoice.PublicMemo ?? "",
+						created_date = waInvoice.CreatedDate.Value.LocalDateTime,
+						updated_date = waInvoice.UpdatedDate.GetValueOrDefault().LocalDateTime,
+						voided_date = waInvoice.VoidedDate.GetValueOrDefault().LocalDateTime,
+						contact_id = waInvoice.Contact.Id.Value,
+						contact_name = waInvoice.Contact.Name,
+						creator_id = waInvoice.CreatedBy?.Id ?? -1,
+						updater_id = waInvoice.UpdatedBy?.Id ?? -1,
 					};
 
-					db.Delete<invoice_line>(dbLine.invoice_line_id);
-					db.Insert(dbLine);
+					db.Delete<invoice>(dbInvoice.invoice_id);
+					db.Insert(dbInvoice);
 
-					if (dbLine.notes.Contains("Makers Village"))
-						makersVillageInvoice = true;
-				}
+					var i = 0;
+					var makersVillageInvoice = false;
 
-				if (makersVillageInvoice) {
-					var waContact = await wildApricot.GetContactDetailsAsync(wildApricot.accountId, (int)dbInvoice.contact_id);
-					var note = "";
+					foreach (var waLine in waInvoice.OrderDetails) {
+						i += 1;
+						loadStatus.status = $"Loading Invoice Lines {count} of {loadStatus.range}, Line {i}";
 
-					foreach (var field in waContact.FieldValues) {
-						if (field.FieldName == "Makers Village Storage Description") {
-							note = field.Value.ToString();
+						var dbLine = new invoice_line {
+							invoice_line_id = ((long)dbInvoice.invoice_id * 100) + i,
+							invoice_id = dbInvoice.invoice_id,
+							amount = (decimal)waLine.Value.Value,
+							type = waLine.OrderDetailType.ToString(),
+							notes = waLine.Notes,
+						};
 
-							break;
-						}
+						db.Delete<invoice_line>(dbLine.invoice_line_id);
+						db.Insert(dbLine);
+
+						if (dbLine.notes.Contains("Makers Village"))
+							makersVillageInvoice = true;
 					}
 
-					var dbNote = new storage_note {
-						invoice_id = dbInvoice.invoice_id,
-						contact_id = dbInvoice.contact_id,
-						snapshot_date = DateTime.Now,
-						notes = note,
-					};
+					if (makersVillageInvoice) {
+						var waContact = await wildApricot.GetContactDetailsAsync(wildApricot.accountId, (int)dbInvoice.contact_id);
+						var note = "";
 
-					db.Insert(dbNote);
+						foreach (var field in waContact.FieldValues) {
+							if (field.FieldName == "Makers Village Storage Description") {
+								note = field.Value.ToString();
+
+								break;
+							}
+						}
+
+						var dbNote = new storage_note {
+							invoice_id = dbInvoice.invoice_id,
+							contact_id = dbInvoice.contact_id,
+							snapshot_date = DateTime.Now,
+							notes = note,
+						};
+
+						db.Insert(dbNote);
+					}
+				}
+				catch (Exception ex) {
+					errors.Add($"Invoice '{item}': {ex.Message}");
 				}
 			}
 
 			loadStatus.range = 0;
 			loadStatus.progress = 0;
-			loadStatus.status = "Load Completed";
+
+			if (errors.Count > 0)
+				loadStatus.status = "Errors: \n" + string.Join('\n', errors);
+			else
+				loadStatus.status = "Load Completed";
 		}
 	}
 }

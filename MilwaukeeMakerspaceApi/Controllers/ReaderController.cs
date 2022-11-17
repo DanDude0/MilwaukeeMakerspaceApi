@@ -110,6 +110,15 @@ namespace Mms.Api.Controllers
 						RecordAttempt(id, key, credentials, false, false, action);
 
 						return StatusCode(200);
+					case "Charge":
+						var description = request.GetProperty("Amount").GetString() ?? "";
+						var amount = request.GetProperty("Amount").GetString() ?? "";
+
+						RecordAttempt(id, key, credentials, false, false, action);
+
+						RecordCharge(id, credentials, description, amount);
+
+						return StatusCode(200);
 				}
 
 				return StatusCode(400);
@@ -139,7 +148,7 @@ namespace Mms.Api.Controllers
 			snapshot.CreateTable<keycode>();
 			snapshot.CreateTable<member>();
 			snapshot.CreateTable<reader>();
-			
+
 			using (var db = new AccessControlDatabase()) {
 				snapshot.InsertAll(db.Query<group>());
 				snapshot.InsertAll(db.Query<group_member>());
@@ -199,8 +208,8 @@ namespace Mms.Api.Controllers
 					if (groupId == null)
 						return null;
 
-				//Support checking only the lower 26 bits of the key, because of stupid Wiegand protocol!
-				if (key.StartsWith("W26#")) {
+					//Support checking only the lower 26 bits of the key, because of stupid Wiegand protocol!
+					if (key.StartsWith("W26#")) {
 						if (groupId != 0)
 							sql = @"
 							SELECT 
@@ -241,7 +250,7 @@ namespace Mms.Api.Controllers
 
 						return db.SingleOrDefault<AuthenticationResult>(sql, key.Substring(6), groupId);
 					}
-				else {
+					else {
 						if (groupId != 0)
 							sql = @"
 							SELECT 
@@ -322,6 +331,41 @@ namespace Mms.Api.Controllers
 					logout,
 					action);
 			}
+		}
+
+		private void RecordCharge(int readerId, AuthenticationResult credentials, string description, string amount)
+		{
+			decimal.TryParse(amount, out var cleanAmount);
+
+			if (cleanAmount < 0 || cleanAmount > 1000)
+				throw new Exception("'Amount' is not set to a valid dollar value. Must be between $0 and $1000");
+
+			using (var db = new AccessControlDatabase()) {
+				db.Execute(@"
+					INSERT INTO
+						charge (
+							member_id,
+							reader_id,
+							charge_time,
+							amount,
+							description,
+							updated_time
+						)
+					VALUES	(
+						@0,
+						@1,
+						NOW(),
+						@2,
+						@3,
+						NOW()
+					);",
+					credentials?.Id ?? -1,
+					readerId,
+					cleanAmount,
+					description);
+			}
+
+			// TODO Record this inside WA somehow?
 		}
 
 		private void RecordClient(int readerId, string address, string version, string status)
