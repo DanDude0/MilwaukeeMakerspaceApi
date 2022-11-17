@@ -49,6 +49,43 @@ namespace Mms.Database
 
     }
 
+    [TableName("`access_control`.`charge`")]
+    [PrimaryKey("charge_id")]
+    [ExplicitColumns]
+    public partial class charge
+    {
+        [Column]
+        public decimal amount { get; set; }
+
+        [Column]
+        public int charge_id { get; set; }
+
+        [Column]
+        public DateTime charge_time { get; set; }
+
+        [Column]
+        public string description { get; set; }
+
+        [Column]
+        public string document_number { get; set; }
+
+        [Column]
+        public long invoice_id { get; set; }
+
+        [Column]
+        public long invoice_line_id { get; set; }
+
+        [Column]
+        public int member_id { get; set; }
+
+        [Column]
+        public int reader_id { get; set; }
+
+        [Column]
+        public DateTime updated_time { get; set; }
+
+    }
+
     [TableName("`access_control`.`group`")]
     [PrimaryKey("group_id")]
     [ExplicitColumns]
