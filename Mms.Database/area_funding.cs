@@ -56,10 +56,16 @@ namespace Mms.Database
         public decimal? jewelry { get; set; }
 
         [Column]
+        public decimal? lampworking { get; set; }
+
+        [Column]
         public decimal? laser { get; set; }
 
         [Column]
         public decimal? leather { get; set; }
+
+        [Column]
+        public decimal? long_arm { get; set; }
 
         [Column]
         public decimal? makerfaire { get; set; }
@@ -87,6 +93,9 @@ namespace Mms.Database
 
         [Column]
         public decimal? threed_printer { get; set; }
+
+        [Column]
+        public decimal? tiger_lily { get; set; }
 
         [Column]
         public decimal? vacuum { get; set; }
@@ -183,10 +192,16 @@ namespace Mms.Database
         public decimal jewelry { get; set; }
 
         [Column]
+        public decimal lampworking { get; set; }
+
+        [Column]
         public decimal laser { get; set; }
 
         [Column]
         public decimal leather { get; set; }
+
+        [Column]
+        public decimal long_arm { get; set; }
 
         [Column]
         public decimal makerfaire { get; set; }
@@ -220,6 +235,9 @@ namespace Mms.Database
 
         [Column]
         public decimal threed_printer { get; set; }
+
+        [Column]
+        public decimal tiger_lily { get; set; }
 
         [Column]
         public decimal total { get; set; }
@@ -289,10 +307,16 @@ namespace Mms.Database
         public decimal jewelry { get; set; }
 
         [Column]
+        public decimal lampworking { get; set; }
+
+        [Column]
         public decimal laser { get; set; }
 
         [Column]
         public decimal leather { get; set; }
+
+        [Column]
+        public decimal long_arm { get; set; }
 
         [Column]
         public decimal makerfaire { get; set; }
@@ -326,6 +350,9 @@ namespace Mms.Database
 
         [Column]
         public decimal threed_printer { get; set; }
+
+        [Column]
+        public decimal tiger_lily { get; set; }
 
         [Column]
         public decimal total { get; set; }
@@ -391,10 +418,16 @@ namespace Mms.Database
         public decimal jewelry { get; set; }
 
         [Column]
+        public decimal lampworking { get; set; }
+
+        [Column]
         public decimal laser { get; set; }
 
         [Column]
         public decimal leather { get; set; }
+
+        [Column]
+        public decimal long_arm { get; set; }
 
         [Column]
         public decimal makerfaire { get; set; }
@@ -428,6 +461,9 @@ namespace Mms.Database
 
         [Column]
         public decimal threed_printer { get; set; }
+
+        [Column]
+        public decimal tiger_lily { get; set; }
 
         [Column]
         public decimal total { get; set; }
@@ -484,10 +520,16 @@ namespace Mms.Database
         public decimal jewelry { get; set; }
 
         [Column]
+        public decimal lampworking { get; set; }
+
+        [Column]
         public decimal laser { get; set; }
 
         [Column]
         public decimal leather { get; set; }
+
+        [Column]
+        public decimal long_arm { get; set; }
 
         [Column]
         public decimal makerfaire { get; set; }
@@ -518,6 +560,9 @@ namespace Mms.Database
 
         [Column]
         public decimal threed_printer { get; set; }
+
+        [Column]
+        public decimal tiger_lily { get; set; }
 
         [Column]
         public DateTime time { get; set; }
@@ -575,10 +620,16 @@ namespace Mms.Database
         public decimal jewelry { get; set; }
 
         [Column]
+        public decimal lampworking { get; set; }
+
+        [Column]
         public decimal laser { get; set; }
 
         [Column]
         public decimal leather { get; set; }
+
+        [Column]
+        public decimal long_arm { get; set; }
 
         [Column]
         public decimal makerfaire { get; set; }
@@ -612,6 +663,9 @@ namespace Mms.Database
 
         [Column]
         public decimal threed_printer { get; set; }
+
+        [Column]
+        public decimal tiger_lily { get; set; }
 
         [Column]
         public DateTime time { get; set; }
