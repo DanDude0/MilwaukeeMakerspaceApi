@@ -111,7 +111,7 @@ namespace Mms.Api.Controllers
 
 						return StatusCode(200);
 					case "Charge":
-						var description = request.GetProperty("Amount").GetString() ?? "";
+						var description = request.GetProperty("Description").GetString() ?? "";
 						var amount = request.GetProperty("Amount").GetString() ?? "";
 
 						RecordAttempt(id, key, credentials, false, false, action);
@@ -337,7 +337,7 @@ namespace Mms.Api.Controllers
 		{
 			decimal.TryParse(amount, out var cleanAmount);
 
-			if (cleanAmount < 0 || cleanAmount > 1000)
+			if (cleanAmount < 0m || cleanAmount > 1000m)
 				throw new Exception("'Amount' is not set to a valid dollar value. Must be between $0 and $1000");
 
 			using (var db = new AccessControlDatabase()) {
