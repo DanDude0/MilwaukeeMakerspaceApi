@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,5 +14,6 @@ namespace Mms.Api.Models
 		public DateTime Joined { get; set; }
 		public DateTime Expiration { get; set; }
 		public bool AccessGranted { get; set; }
+		public DateTime ServerUTC { get; set; }
 	}
 }

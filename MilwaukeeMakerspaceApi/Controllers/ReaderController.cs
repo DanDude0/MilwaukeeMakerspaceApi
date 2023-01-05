@@ -66,6 +66,7 @@ namespace Mms.Api.Controllers
 					Enabled = result.enabled,
 					Group = result.groupName,
 					Settings = result.settings,
+					ServerUTC = DateTime.UtcNow,
 				};
 
 				return new JsonResult(output);
@@ -101,15 +102,17 @@ namespace Mms.Api.Controllers
 						if (credentials == null)
 							return StatusCode(403);
 
+						credentials.ServerUTC = DateTime.UtcNow;	
+
 						return new JsonResult(credentials);
 					case "Logout":
 						RecordAttempt(id, key, credentials, false, true, action);
 
-						return StatusCode(200);
+						return new JsonResult(new TimeResult());
 					case "Action":
 						RecordAttempt(id, key, credentials, false, false, action);
 
-						return StatusCode(200);
+						return new JsonResult(new TimeResult());
 					case "Charge":
 						var description = request.GetProperty("Description").GetString() ?? "";
 						var amount = request.GetProperty("Amount").GetString() ?? "";
@@ -118,7 +121,7 @@ namespace Mms.Api.Controllers
 
 						RecordCharge(id, credentials, description, amount);
 
-						return StatusCode(200);
+						return new JsonResult(new TimeResult());
 				}
 
 				return StatusCode(400);
