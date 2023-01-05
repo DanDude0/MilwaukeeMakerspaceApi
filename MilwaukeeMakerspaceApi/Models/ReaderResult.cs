@@ -12,5 +12,6 @@ namespace Mms.Api.Models
 		public bool Enabled { get; set; }
 		public string Group { get; set; }
 		public string Settings { get; set; }
+		public DateTime ServerUTC { get; set; }
 	}
 }
