@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Api.Models;
 using Mms.Database;
+using MySqlX.XDevAPI;
 using SQLite;
 
 namespace Mms.Api.Controllers
@@ -31,6 +32,8 @@ namespace Mms.Api.Controllers
 
 				var id = request.GetProperty("Id").GetInt32();
 				var version = request.GetProperty("Version").GetString();
+
+				Console.WriteLine($"Reader attempting initialize: {payload}");
 
 				DbResult result;
 
@@ -58,6 +61,12 @@ namespace Mms.Api.Controllers
 
 				var clientAddress = HttpContext.Connection.RemoteIpAddress.ToString();
 
+				if (clientAddress.StartsWith("::ffff:")) {
+					clientAddress = clientAddress.Substring(7);
+				}
+
+				Console.WriteLine($"Reader initializing with Id: {id}, Version: {version}, Address: {clientAddress}");
+
 				RecordClient(id, clientAddress, version, payload);
 
 				var output = new ReaderResult {
@@ -72,7 +81,7 @@ namespace Mms.Api.Controllers
 				return new JsonResult(output);
 			}
 			catch (Exception ex) {
-				Console.Write(ex.ToString());
+				Console.WriteLine(ex.ToString());
 
 				return StatusCode(500);
 			}
@@ -89,6 +98,8 @@ namespace Mms.Api.Controllers
 				var key = request.GetProperty("Key").GetString() ?? "";
 				var type = request.GetProperty("Type").GetString() ?? "";
 				var action = request.GetProperty("Action").GetString() ?? "";
+
+				Console.WriteLine($"Reader attempting action: {payload}");
 
 				if (id < 1)
 					return StatusCode(401);
@@ -127,7 +138,45 @@ namespace Mms.Api.Controllers
 				return StatusCode(400);
 			}
 			catch (Exception ex) {
-				Console.Write(ex.ToString());
+				Console.WriteLine(ex.ToString());
+
+				return StatusCode(500);
+			}
+		}
+
+		[HttpPost]
+		[Route("reader/logdump")]
+		public IActionResult LogDump([FromBody] string payload)
+		{
+			try {
+				string filename = DateTime.UtcNow.ToString("clientlogs/yyyy-MM-ddTHH:mm:ss:fff_");
+
+				if (payload.Substring(0, 3) == "Id:" && int.TryParse(payload.Substring(3, 6), out var id)) {
+					filename += $"Id:{id}_";
+				}
+
+				if (payload.Substring(9, 2) == "V:") {
+					var version = payload.Substring(11, 19).Replace(' ', 'T');
+
+					filename += $"V:{version}_";
+				}
+
+				var clientAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+
+				if (clientAddress.StartsWith("::ffff:")) {
+					clientAddress = clientAddress.Substring(7);
+				}
+
+				filename += $"{clientAddress.Replace(':', ';')}.log";
+
+				Console.WriteLine($"Client Log Dumping to: {filename}");
+
+				System.IO.File.WriteAllText(filename, payload);
+
+				return StatusCode(200);
+			}
+			catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
 
 				return StatusCode(500);
 			}
@@ -137,6 +186,8 @@ namespace Mms.Api.Controllers
 		[Route("reader/snapshot")]
 		public IActionResult Database()
 		{
+			Console.WriteLine($"Reader attempting download database snapshot.");
+
 			var tmpFile = Path.GetTempPath() + "snapshot.sqlite3";
 
 			System.IO.File.Delete(tmpFile);
@@ -183,6 +234,8 @@ namespace Mms.Api.Controllers
 
 			snapshot.Commit();
 			snapshot.Close();
+
+			Console.WriteLine($"Database snapshot created.");
 
 			var stream = new FileStream(tmpFile, FileMode.Open, FileAccess.ReadWrite);
 
