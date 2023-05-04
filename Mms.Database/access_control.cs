@@ -70,10 +70,10 @@ namespace Mms.Database
         public string document_number { get; set; }
 
         [Column]
-        public long invoice_id { get; set; }
+        public long? invoice_id { get; set; }
 
         [Column]
-        public long invoice_line_id { get; set; }
+        public long? invoice_line_id { get; set; }
 
         [Column]
         public int member_id { get; set; }

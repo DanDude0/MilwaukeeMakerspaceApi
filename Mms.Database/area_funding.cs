@@ -20,6 +20,9 @@ namespace Mms.Database
     public partial class balance
     {
         [Column]
+        public decimal? bicycle_repair { get; set; }
+
+        [Column]
         public decimal? casting { get; set; }
 
         [Column]
@@ -45,9 +48,6 @@ namespace Mms.Database
 
         [Column]
         public decimal? forge { get; set; }
-
-        [Column]
-        public decimal? glass_fusing { get; set; }
 
         [Column]
         public decimal? ham_radio { get; set; }
@@ -147,6 +147,9 @@ namespace Mms.Database
     public partial class current
     {
         [Column]
+        public decimal bicycle_repair { get; set; }
+
+        [Column]
         public decimal building_purchase { get; set; }
 
         [Column]
@@ -181,9 +184,6 @@ namespace Mms.Database
 
         [Column]
         public int general { get; set; }
-
-        [Column]
-        public decimal glass_fusing { get; set; }
 
         [Column]
         public decimal ham_radio { get; set; }
@@ -259,6 +259,9 @@ namespace Mms.Database
     public partial class fund
     {
         [Column]
+        public decimal bicycle_repair { get; set; }
+
+        [Column]
         public decimal building_purchase { get; set; }
 
         [Column]
@@ -296,9 +299,6 @@ namespace Mms.Database
 
         [Column]
         public int general { get; set; }
-
-        [Column]
-        public decimal glass_fusing { get; set; }
 
         [Column]
         public decimal ham_radio { get; set; }
@@ -373,6 +373,9 @@ namespace Mms.Database
     public partial class history
     {
         [Column]
+        public decimal bicycle_repair { get; set; }
+
+        [Column]
         public decimal building_purchase { get; set; }
 
         [Column]
@@ -407,9 +410,6 @@ namespace Mms.Database
 
         [Column]
         public int general { get; set; }
-
-        [Column]
-        public decimal glass_fusing { get; set; }
 
         [Column]
         public decimal ham_radio { get; set; }
@@ -484,6 +484,9 @@ namespace Mms.Database
     public partial class ledger
     {
         [Column]
+        public decimal bicycle_repair { get; set; }
+
+        [Column]
         public decimal casting { get; set; }
 
         [Column]
@@ -509,9 +512,6 @@ namespace Mms.Database
 
         [Column]
         public decimal forge { get; set; }
-
-        [Column]
-        public decimal glass_fusing { get; set; }
 
         [Column]
         public decimal ham_radio { get; set; }
@@ -584,6 +584,9 @@ namespace Mms.Database
     public partial class spending
     {
         [Column]
+        public decimal bicycle_repair { get; set; }
+
+        [Column]
         public decimal casting { get; set; }
 
         [Column]
@@ -609,9 +612,6 @@ namespace Mms.Database
 
         [Column]
         public decimal forge { get; set; }
-
-        [Column]
-        public decimal glass_fusing { get; set; }
 
         [Column]
         public decimal ham_radio { get; set; }
