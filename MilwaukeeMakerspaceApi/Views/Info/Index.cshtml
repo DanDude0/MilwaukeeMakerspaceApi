@@ -1,114 +1,119 @@
 @model Mms.Database.fund
 @{
-	Layout = null;
+    Layout = null;
 }
 
 <html>
 <head>
-	<title>
-		Member Status
-	</title>
-	<style>
-		body {
-			background-color: #000;
-			color: #fff;
-			font-size: 2.4vw;
-			font-family: helvetica;
-			font-weight: normal;
-			overflow: hidden;
-		}
+    <title>
+        Member Status
+    </title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-size: 2.0vw;
+            font-family: helvetica;
+            font-weight: normal;
+            overflow: hidden;
+        }
 
-		.wrapper {
-			position: relative;
-			display: block;
-			width: 100%;
-			margin: auto;
-			vertical-align: middle;
-			text-align: center;
-		}
+        .wrapper {
+            position: relative;
+            display: block;
+            width: 100%;
+            margin: auto;
+            vertical-align: middle;
+            text-align: center;
+        }
 
-		table {
-			font-size: inherit;
-			width: 100%;
-			text-align: inherit;
-			vertical-align: inherit;
-			margin: 0;
-		}
+        table {
+            font-size: inherit;
+            width: 100%;
+            text-align: inherit;
+            vertical-align: inherit;
+            margin: 0;
+        }
 
-		h1 {
-			font-size: 4.1em;
-			font-weight: normal;
-			margin: -0.15em 0;
-		}
+        h1 {
+            font-size: 4.1em;
+            font-weight: normal;
+            margin: -0.15em 0;
+        }
 
-		h2 {
-			font-size: 2.3em;
-			font-weight: normal;
-			margin: 0;
-		}
+        h2 {
+            font-size: 2.3em;
+            font-weight: normal;
+            margin: 0;
+        }
 
-		h3 {
-			font-size: 1.7em;
-			font-weight: normal;
-			margin: 0;
-		}
-	</style>
+        h3 {
+            font-size: 1.7em;
+            font-weight: normal;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-	<div class='wrapper'>
-		<h2 style='margin: -0.23em 0 -0.1em 0;'>Member Count</h2>
-		<table style='margin: 0.1em 5em; width: 35em;'>
-			<tr>
-				<td rowspan='2'>
-					<h1>@Model.members</h1>
-				</td>
-				<td>
-					<h3>General: @Model.general</h3>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h3>Family: @Model.family</h3>
-				</td>
-			</tr>
-		</table>
-		<h2 style='margin: 0.3em 0 0.1em 0;'>This Month's Area Funding</h2>
-		<table style='line-height: 1.5em;'>
-			<tr>
-				<td>
-					Total Funds: $@Model.total<br />
-					* Not Allocated *: $@Model.building_purchase<br />
-					3D Printers: $@Model.threed_printer<br />
-					Casting: $@Model.casting<br />
-					Ceramic Studio: $@Model.ceramic<br />
-					CNC Room: $@Model.cnc<br />
-					Community Outreach: $@Model.makerfaire<br />
-					Cosplay: $@Model.cosplay<br />
-					Craft Lab: $@Model.craft<br />
-				</td>
-				<td>
-					Dalek Asylum: $@Model.dalek<br />
-					Electronic Lab: $@Model.electronic<br />
-					Finishing: $@Model.finishing<br />
-					Forge: $@Model.forge<br />
-					Ham Radio $@Model.ham_radio<br />
-					Jewelry: $@Model.jewelry<br />
-					Laser Cutters: $@Model.laser<br />
-					Leather Working: $@Model.leather<br />
-				</td>
-				<td>
-					Metal Shop: $@Model.metal<br />
-					Paint Room: $@Model.paint<br />
-					Power Wheels: $@Model.power_wheel<br />
-					Print Shop: $@Model.print<br />
-					Soda Fund: $@Model.soda<br />
-					Stained Glass: $@Model.stained_glass<br />
-					Vacuum Former: $@Model.vacuum<br />
-					Welders: $@Model.welding<br />
-					Wood Shop: $@Model.wood<br />
-				</td>
-			</tr>
-		</table>
-	</div>
+    <div class='wrapper'>
+        <h2 style='margin: -0.23em 0 -0.1em 0;'>Member Count</h2>
+        <table style='margin: 0.1em 5em; width: 35em;'>
+            <tr>
+                <td rowspan='2'>
+                    <h1>@Model.members</h1>
+                </td>
+                <td>
+                    <h3>General: @Model.general</h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Family: @Model.family</h3>
+                </td>
+            </tr>
+        </table>
+        <h2 style='margin: 0.3em 0 0.1em 0;'>This Month's Area Funding</h2>
+        <table style='line-height: 1.5em;'>
+            <tr>
+                <td>
+                    Total Funds: $@Model.total<br />
+                    * Not Allocated *: $@Model.building_purchase<br />
+                    3D Printers: $@Model.threed_printer<br />
+                    Bicycle Repair: $@Model.bicycle_repair<br />
+                    Casting: $@Model.casting<br />
+                    Ceramic Studio: $@Model.ceramic<br />
+                    CNC Room: $@Model.cnc<br />
+                    Community Outreach: $@Model.makerfaire<br />
+                    Cosplay: $@Model.cosplay<br />
+                    Craft Lab: $@Model.craft<br />
+                </td>
+                <td>
+                    Dalek Asylum: $@Model.dalek<br />
+                    Electronic Lab: $@Model.electronic<br />
+                    Finishing: $@Model.finishing<br />
+                    Forge: $@Model.forge<br />
+                    Ham Radio $@Model.ham_radio<br />
+                    Jewelry: $@Model.jewelry<br />
+                    Lampworking: $@Model.lampworking<br />
+                    Laser Cutters: $@Model.laser<br />
+                    Leather Working: $@Model.leather<br />
+                    Long Arm: $@Model.long_arm<br />
+                    Metal Shop: $@Model.metal<br />
+                </td>
+                <td>
+                    Neon Glass: $@Model.neon<br/>
+                    Paint Room: $@Model.paint<br />
+                    Power Wheels: $@Model.power_wheel<br />
+                    Print Shop: $@Model.print<br />
+                    Soda Fund: $@Model.soda<br />
+                    Stained Glass: $@Model.stained_glass<br />
+                    Tiger Lily: $@Model.tiger_lily<br />
+                    Vacuum Former: $@Model.vacuum<br />
+                    Welders: $@Model.welding<br />
+                    Wood Shop: $@Model.wood<br />
+                </td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>
