@@ -51,33 +51,38 @@ namespace Mms.Api
 		// Call this method from somewhere to actually do the publish.
 		private static void PublishDevice()
 		{
-			var ip4 = GetLocalIp4Address();
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			try {
+				var ip4 = GetLocalIp4Address();
+				var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-			var deviceDefinition4 = new SsdpRootDevice() {
-				Location = new Uri($"http://{ip4}/info/service"),
-				PresentationUrl = new Uri($"http://{ip4}/"),
-				FriendlyName = "Milwaukee Makerspace Api",
-				Manufacturer = "Milwaukee Makerspace",
-				ModelName = "Milwaukee Makerspace Api",
-				Uuid = "6111f321-2cee-455e-b203-4abfaf14b516",
-				ManufacturerUrl = new Uri("https://milwaukeemakerspace.org/"),
-				ModelUrl = new Uri("https://github.com/DanDude0/MilwaukeeMakerspaceApi/"),
-				ModelNumber = version,
-			};
+				var deviceDefinition4 = new SsdpRootDevice() {
+					Location = new Uri($"http://{ip4}/info/service"),
+					PresentationUrl = new Uri($"http://{ip4}/"),
+					FriendlyName = "Milwaukee Makerspace Api",
+					Manufacturer = "Milwaukee Makerspace",
+					ModelName = "Milwaukee Makerspace Api",
+					Uuid = "6111f321-2cee-455e-b203-4abfaf14b516",
+					ManufacturerUrl = new Uri("https://milwaukeemakerspace.org/"),
+					ModelUrl = new Uri("https://github.com/DanDude0/MilwaukeeMakerspaceApi/"),
+					ModelNumber = version,
+				};
 
-			// Have to bind to all addresses on Linux, or broadcasts don't work!
-			if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
-				ip4 = IPAddress.Any.ToString();
+				// Have to bind to all addresses on Linux, or broadcasts don't work!
+				if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
+					ip4 = IPAddress.Any.ToString();
+				}
+
+				Console.WriteLine($"Publishing SSDP on {ip4}");
+
+				SsdpPublisher4 = new SsdpDevicePublisher(new SsdpCommunicationsServer(new SocketFactory(ip4)));
+				SsdpPublisher4.StandardsMode = SsdpStandardsMode.Relaxed;
+				SsdpPublisher4.AddDevice(deviceDefinition4);
+
+				SsdpDescription = deviceDefinition4.ToDescriptionDocument();
 			}
-
-			Console.WriteLine($"Publishing SSDP on {ip4}");
-
-			SsdpPublisher4 = new SsdpDevicePublisher(new SsdpCommunicationsServer(new SocketFactory(ip4)));
-			SsdpPublisher4.StandardsMode = SsdpStandardsMode.Relaxed;
-			SsdpPublisher4.AddDevice(deviceDefinition4);
-
-			SsdpDescription = deviceDefinition4.ToDescriptionDocument();
+			catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
+			}
 		}
 
 		private static string GetLocalIp4Address()
