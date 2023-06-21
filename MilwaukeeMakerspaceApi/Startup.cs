@@ -51,73 +51,78 @@ namespace Mms.Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Add framework services.
-			services.AddAuthentication(options =>
-			{
-				options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = "WildApricot";
-			})
-				.AddCookie(options =>
+
+			// If they're not using OAuth, don't try to load it. Will break other things.
+			if (!string.IsNullOrWhiteSpace(waClientId) && !string.IsNullOrWhiteSpace(waClientId)) {
+				services.AddAuthentication(options =>
 				{
-					options.LoginPath = "/login";
-					options.LogoutPath = "/logout";
-					options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
-					options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+					options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = "WildApricot";
 				})
-				.AddOAuth("WildApricot", "WildApricot", options =>
-				{
-					options.AuthorizationEndpoint = "https://members.milwaukeemakerspace.org/sys/login/OAuthLogin";
-					options.Scope.Add("contacts_me");
-					//options.Scope.Add("identify");
-					//options.Scope.Add("email");
+					.AddCookie(options =>
+					{
+						options.LoginPath = "/login";
+						options.LogoutPath = "/logout";
+						options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+						options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+					})
+					.AddOAuth("WildApricot", "WildApricot", options =>
+					{
+						options.AuthorizationEndpoint = "https://members.milwaukeemakerspace.org/sys/login/OAuthLogin";
+						options.Scope.Add("contacts_me");
+						//options.Scope.Add("identify");
+						//options.Scope.Add("email");
 
-					options.CallbackPath = "/logincallback";
+						options.CallbackPath = "/logincallback";
 
-					options.ClientId = waClientId;
-					options.ClientSecret = waClientSecret;
+						options.ClientId = waClientId;
+						options.ClientSecret = waClientSecret;
 
-					options.TokenEndpoint = "https://oauth.wildapricot.org/auth/token";
+						options.TokenEndpoint = "https://oauth.wildapricot.org/auth/token";
 
-					var innerHandler = new HttpClientHandler();
-					options.BackchannelHttpHandler = new AuthorizingHandler(innerHandler, options);
+						var innerHandler = new HttpClientHandler();
+						options.BackchannelHttpHandler = new AuthorizingHandler(innerHandler, options);
 
-					options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "Id");
-					options.ClaimActions.MapJsonKey(ClaimTypes.Name, "DisplayName");
-					options.ClaimActions.MapJsonKey(ClaimTypes.Email, "Email");
-					options.ClaimActions.MapJsonKey(ClaimTypes.Webpage, "Url");
+						options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "Id");
+						options.ClaimActions.MapJsonKey(ClaimTypes.Name, "DisplayName");
+						options.ClaimActions.MapJsonKey(ClaimTypes.Email, "Email");
+						options.ClaimActions.MapJsonKey(ClaimTypes.Webpage, "Url");
 
-					options.AccessDeniedPath = "/loginfailed";
+						options.AccessDeniedPath = "/loginfailed";
 
-					options.Events = new OAuthEvents {
-						OnCreatingTicket = async context =>
-						{
-							var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-							request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-							request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+						options.Events = new OAuthEvents {
+							OnCreatingTicket = async context =>
+							{
+								var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+								request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+								request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
 
-							var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
+								var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
 
-							var userString = await response.Content.ReadAsStringAsync();
+								var userString = await response.Content.ReadAsStringAsync();
 
-							var user = JsonDocument.Parse(userString).RootElement;
+								var user = JsonDocument.Parse(userString).RootElement;
 
-							if (userString.Contains("\"AdministrativeRoleTypes\":[\"AccountAdministrator\"],"))
-								context.Identity.AddClaim(new Claim("AccountAdministrator", "True"));
+								if (userString.Contains("\"AdministrativeRoleTypes\":[\"AccountAdministrator\"],"))
+									context.Identity.AddClaim(new Claim("AccountAdministrator", "True"));
 
-							context.RunClaimActions(user);
+								context.RunClaimActions(user);
+							}
+						};
+
+						try {
+							var wildApricot = new WildApricotClient();
+
+							options.UserInformationEndpoint = $"https://api.wildapricot.org/v2.2/accounts/{wildApricot.accountId}/contacts/me";
 						}
-					};
+						catch {
+							// If we can't load wild apricot for remote services, don't kill local services.
+							return;
+						}
+					});
+			}
 
-					try {
-						var wildApricot = new WildApricotClient();
-
-						options.UserInformationEndpoint = $"https://api.wildapricot.org/v2.2/accounts/{wildApricot.accountId}/contacts/me";
-					}
-					catch {
-						// If we can't load wild apricot for remote services, don't kill local services.
-						return;
-					}
-				});
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
 			services.AddControllersWithViews();
