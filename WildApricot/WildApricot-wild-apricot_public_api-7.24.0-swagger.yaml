@@ -7,7 +7,7 @@ info:
 
     If you have any questions about this API, please contact our support team at support@wildapricot.com.
 
-  version: 7.15.0
+  version: 7.24.0
 host: api.wildapricot.org
 schemes:
   - https
@@ -1168,7 +1168,7 @@ paths:
           description: >
             Updated version of event information.
           schema:
-            $ref: '#/definitions/Event'
+            $ref: 'boolean'
         '401':
           $ref: '#/responses/unauthorized'
         '404':
@@ -1352,8 +1352,8 @@ paths:
       operationId: GetEventRegistrationsList
       summary: Event Registrations list
       description: >
-            ⚠ There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId, $filter or ids exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter event registrations.
-            ⚠ Request parameter is required
+            âš  There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId, $filter or ids exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter event registrations.
+            âš  Request parameter is required
       parameters:
         - $ref: '#/parameters/accountId'
   
@@ -1377,7 +1377,7 @@ paths:
             Filters the results of the Events API call so that only those records that match the filter criteria are included.
             The following filter criterias are supported:
               - Id, Supported operations: in.
-                example: ?$filter=id in [1,2,3,4….]
+                example: ?$filter=id in [1,2,3,4â€¦.]
   
         - name: includeDetails
           in: query
@@ -1563,7 +1563,7 @@ paths:
       summary: Get list of invoices by criteria.
       description: >
   
-        ⚠ There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId and eventRegistrationId exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter invoices.
+        âš  There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId and eventRegistrationId exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter invoices.
       parameters:
         - $ref: '#/parameters/accountId'
   
@@ -3052,6 +3052,180 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+  /accounts/{accountId}/store/orders/{orderNumber}:
+    get:
+      tags:
+        - OnlineStore.Orders
+      operationId: OnlineStoreOrders_GetByNumber
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - type: string
+          name: orderNumber
+          description: Order number
+          required: true
+          in: path
+          x-nullable: false
+      responses:
+        '200':
+          $ref: '#/definitions/Order'
+        '400':
+          $ref: '#/responses/badRequest'
+        '401':
+          $ref: '#/responses/unauthorized'
+        '429':
+          $ref: '#/responses/tooManyRequests'
+  /accounts/{accountId}/store/orders:
+    get:
+      tags:
+        - OnlineStore.Orders
+      operationId: OnlineStoreOrders_GetList
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - type: integer
+          name: $skip
+          description: >
+            'Specifies the number of records to skip (not include in a result set). For example if you expect about 300 records in result set and want to get them in small portions, you could make do so with 3 calls:'
+  
+            - ...&$top=100 - will return records from 0 to 99
+            - ...?$skip=100&top=100' - will return records from 100 to 199
+            - ...?$skip=200' - will return records from 199 to the end
+          in: query
+          format: int32
+          x-nullable: true
+        - type: integer
+          name: $top
+          description: this parameter specifies the maximum number of entries to be returned
+          in: query
+          format: int32
+          x-nullable: true
+        - type: string
+          name: status
+          description: Order status
+          in: query
+          x-schema:
+            $ref: '#/definitions/OrderStatus'
+          x-nullable: true
+        - type: string
+          name: paymentStatus
+          description: Invoice status
+          in: query
+          x-schema:
+            $ref: '#/definitions/PaymentStatus'
+          x-nullable: true
+        - type: string
+          name: From
+          description: Start date of the range
+          in: query
+          format: date-time
+          x-nullable: true
+        - type: string
+          name: To
+          description: End of the range
+          in: query
+          format: date-time
+          x-nullable: true
+      responses:
+        '200':
+          x-nullable: false
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        '400':
+          $ref: '#/responses/badRequest'
+        '401':
+          $ref: '#/responses/unauthorized'
+        '429':
+          $ref: '#/responses/tooManyRequests'
+  /accounts/{accountId}/store/orders/{orderNumber}/status:
+    put:
+      tags:
+        - OnlineStore.Orders.Operations
+      operationId: OnlineStoreOrdersOperations_SetOrderStatus
+      consumes:
+        - application/json
+        - text/json
+        - application/*+json
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - type: string
+          name: orderNumber
+          in: path
+          required: true
+        - name: status
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderFulfilment'
+          x-nullable: false
+      responses:
+        '200':
+          x-nullable: false
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderSetStatusResult'
+  /accounts/{accountId}/store/products/{id}:
+    get:
+      tags:
+        - OnlineStore.Products
+      operationId: OnlineStoreProducts_GetById
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - type: integer
+          name: id
+          in: path
+          required: true
+          format: int32
+          x-nullable: false
+      responses:
+        '200':
+          x-nullable: false
+          description: ''
+          schema:
+            $ref: '#/definitions/Product'
+        '400':
+          $ref: '#/responses/badRequest'
+        '401':
+          $ref: '#/responses/unauthorized'
+        '429':
+          $ref: '#/responses/tooManyRequests'
+  /accounts/{accountId}/store/products:
+    get:
+      tags:
+        - OnlineStore.Products
+      operationId: OnlineStoreProducts_GetList
+      consumes:
+        - application/json
+        - text/json
+        - application/*+json
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - type: integer
+          name: $skip
+          in: query
+          format: int32
+          x-nullable: true
+        - type: integer
+          name: $top
+          in: query
+          format: int32
+          x-nullable: true
+      responses:
+        '200':
+          x-nullable: false
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+        '400':
+          $ref: '#/responses/badRequest'
+        '401':
+          $ref: '#/responses/unauthorized'
+        '429':
+          $ref: '#/responses/tooManyRequests'
+
   '/accounts/{accountId}/features/{featureId}':
     get:
       operationId: GetFeatureAvailability
@@ -3182,7 +3356,7 @@ definitions:
         description: Human-readable currency name
       Symbol:
         type: string
-        description: Currency symbol like $ or €
+        description: Currency symbol like $ or â‚¬
 
   Feature:
     type: object
@@ -3622,7 +3796,7 @@ definitions:
             type: boolean
             description: >-
               Indicates that the field's value can be changed with create/update requests. Otherwise
-              value can’t be edited through API. If non-editable field value is
+              value canâ€™t be edited through API. If non-editable field value is
               provided in create/update contact request, the value is ignored by API.
           RulesAndTermsInfo:
             $ref: '#/definitions/RulesAndTermsInfo'
@@ -5430,7 +5604,7 @@ definitions:
         default: false
         description: >
           Indicates whether account tax scope settings should be used to calculate final price.
-          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to default value
+          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to default value
       Availability:
         $ref: '#/definitions/EventRegistrationTypeAvailability'
       RegistrationCode:
@@ -5449,13 +5623,13 @@ definitions:
         format: datetime
         description: >
           This registration type is available starting from this date. Can be null.
-          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
+          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
       AvailableThrough:
         type: string
         format: datetime
         description: >
           This registration type is available until this date. Can be null.
-          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
+          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
       MaximumRegistrantsCount:
         type: integer
         description: Maximum number of registrants for this registration type.
@@ -6298,6 +6472,402 @@ definitions:
             type: number
             format: float
             description: The previously settled amount of the payment.
+
+  Order:
+    type: object
+    required:
+      - contactId
+      - total
+      - subTotal
+      - isTaxesApplied
+      - isTaxesIncludedTotal
+      - status
+      - paymentStatus
+    properties:
+      url:
+        type: string
+      contactId:
+        type: integer
+        format: int32
+      number:
+        type: string
+      total:
+        type: number
+        format: decimal
+      subTotal:
+        type: number
+        format: decimal
+      isTaxesApplied:
+        type: boolean
+      isTaxesIncludedTotal:
+        type: boolean
+      invoiceId:
+        type: integer
+        format: int32
+      invoiceNumber:
+        type: integer
+        format: int32
+      status:
+        $ref: '#/definitions/OrderStatus'
+      paymentStatus:
+        $ref: '#/definitions/PaymentStatus'
+      internalNote:
+        $ref: '#/definitions/OrderInternalNote'
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/OrderProduct'
+      shippingAddress:
+        $ref: '#/definitions/ShippingAddress'
+      billingPerson:
+        $ref: '#/definitions/BillingPerson'
+      comment:
+        type: string
+      externalNote:
+        $ref: '#/definitions/OrderExternalNote'
+      currency:
+        $ref: '#/definitions/Currency'
+      created:
+        type: string
+        format: date-time
+      deliveryOption:
+        $ref: '#/definitions/OrderDeliveryOption'
+  OrderStatus:
+    type: string
+    description: ''
+    x-enumNames:
+      - Unfulfilled
+      - Fulfilled
+      - Cancelled
+    enum:
+      - UNFULFILLED
+      - FULFILLED
+      - CANCELLED
+  PaymentStatus:
+    type: string
+    description: ''
+    x-enumNames:
+      - Unpaid
+      - Paid
+      - PartiallyPaid
+      - NoInvoice
+      - Free
+    enum:
+      - UNPAID
+      - PAID
+      - PARTIALLYPAID
+      - NOINVOICE
+      - FREE
+  OrderInternalNote:
+    type: object
+    properties:
+      text:
+        type: string
+  OrderProduct:
+    type: object
+    required:
+      - price
+      - amount
+      - productId
+      - quantity
+      - productType
+    properties:
+      title:
+        type: string
+      price:
+        type: number
+        format: decimal
+      amount:
+        type: number
+        format: decimal
+      productId:
+        type: integer
+        format: int32
+      variantId:
+        type: integer
+        format: int32
+      quantity:
+        type: integer
+        format: int32
+      productType:
+        $ref: '#/definitions/OrderProductType'
+      digitalProduct:
+        $ref: '#/definitions/OrderDigitalProduct'
+  OrderProductType:
+    type: string
+    description: ''
+    x-enumNames:
+      - Physical
+      - Digital
+    enum:
+      - PHYSICAL
+      - DIGITAL
+  OrderDigitalProduct:
+    type: object
+    properties:
+      url:
+        type: string
+      code:
+        type: string
+      emailNote:
+        type: string
+  ShippingAddress:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      country:
+        $ref: '#/definitions/Country'
+      province:
+        type: string
+      city:
+        type: string
+      zip:
+        type: string
+  Country:
+    type: object
+    required:
+      - allowedPaymentMethods
+    properties:
+      name:
+        type: string
+      codeAlpha2:
+        type: string
+      codeAlpha3:
+        type: string
+      codeNumeric:
+        type: integer
+        format: int32
+      allowedPaymentMethods:
+        type: integer
+        format: int32
+  BillingPerson:
+    type: object
+    required:
+      - contactId
+    properties:
+      contactId:
+        type: integer
+        format: int32
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      displayName:
+        type: string
+      phone:
+        type: string
+  OrderExternalNote:
+    type: object
+    properties:
+      text:
+        type: string
+  OrderDeliveryOption:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        $ref: '#/definitions/DeliveryType'
+      title:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+        format: decimal
+  DeliveryType:
+    type: string
+    description: ''
+    x-enumNames:
+      - Shipping
+      - Pickup
+    enum:
+      - SHIPPING
+      - PICKUP
+  OrderSetStatusResult:
+    type: object
+    properties:
+      isCustomerNotified:
+        type: boolean
+  OrderFulfilment:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        $ref: '#/definitions/OrderStatus'
+  Product:
+    type: object
+    required:
+      - id
+      - status
+      - type
+      - trackInventory
+      - stock
+      - outOfStock
+      - totalStock
+    properties:
+      url:
+        type: string
+      id:
+        type: integer
+        format: int32
+      title:
+        type: string
+      description:
+        type: string
+      price:
+        $ref: '#/definitions/Price'
+      status:
+        $ref: '#/definitions/ProductStatus'
+      type:
+        $ref: '#/definitions/ProductType'
+      pictures:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+      trackInventory:
+        type: boolean
+      stock:
+        type: integer
+        format: int32
+      productOptions:
+        type: array
+        items:
+          $ref: '#/definitions/ProductOption'
+      productVariants:
+        type: array
+        items:
+          $ref: '#/definitions/ProductVariant'
+      outOfStock:
+        type: boolean
+      totalStock:
+        type: integer
+        format: int32
+      digitalProduct:
+        $ref: '#/definitions/DigitalProduct'
+      created:
+        type: string
+        format: date-time
+  Price:
+    type: object
+    required:
+      - regular
+    properties:
+      regular:
+        type: number
+        format: decimal
+      members:
+        type: number
+        format: decimal
+  ProductStatus:
+    type: string
+    description: ''
+    x-enumNames:
+      - AdminOnly
+      - Public
+    enum:
+      - ADMINONLY
+      - PUBLIC
+  ProductType:
+    type: string
+    description: ''
+    x-enumNames:
+      - Physical
+      - Digital
+    enum:
+      - PHYSICAL
+      - DIGITAL
+  ProductOption:
+    type: object
+    properties:
+      title:
+        type: string
+      values:
+        type: array
+        items:
+          type: string
+  ProductVariant:
+    type: object
+    required:
+      - id
+      - stock
+      - outOfStock
+      - trackInventory
+    properties:
+      id:
+        type: integer
+        format: int32
+      productVariantOptionValues:
+        type: array
+        items:
+          $ref: '#/definitions/ProductVariantOptionValue'
+      stock:
+        type: integer
+        format: int32
+      outOfStock:
+        type: boolean
+      trackInventory:
+        type: boolean
+  ProductVariantOptionValue:
+    type: object
+    properties:
+      title:
+        type: string
+      value:
+        type: string
+  DigitalProduct:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        $ref: '#/definitions/DigitalProductType'
+      productFile:
+        $ref: '#/definitions/ProductFile'
+      productLink:
+        $ref: '#/definitions/ProductLink'
+      emailNote:
+        type: string
+  DigitalProductType:
+    type: string
+    description: ''
+    x-enumNames:
+      - File
+      - Link
+    enum:
+      - FILE
+      - LINK
+  ProductFile:
+    type: object
+    properties:
+      name:
+        type: string
+  ProductLink:
+    type: object
+    properties:
+      url:
+        type: string
+      code:
+        type: string
+  PagingSettings:
+    type: object
+    properties:
+      skip:
+        type: integer
+        format: int32
+      top:
+        type: integer
+        format: int32
 
 parameters:
 
