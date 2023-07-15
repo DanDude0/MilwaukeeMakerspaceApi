@@ -1530,7 +1530,7 @@ paths:
           $ref: '#/responses/badRequest'
         '429':
           $ref: '#/responses/tooManyRequests'
-  
+      
   '/rpc/{accountId}/RegisterFromWaitlist':
     post:
       operationId: RegisterFromWaitlist
@@ -2799,9 +2799,9 @@ paths:
   
               only AND boolean operator supported
               - ...&$filter=LastChangedDate ge 2018-05-01 - will return records updated on or after May 1st, 2018
-              - ...&$filter=LastChangedDate ge 2010-05-01 AND CreatorId eq 123456 - will return records updated on or after May 1st, 2010 and create by a user with Contact ID 123456
+              - ...&$filter=LastChangedDate ge 2010-05-01 AND CreatorId eq 123456 - will return records updated on or after May 1st, 2010 and create by a user with Contact ID 123456      
               - ...&$filter=IsScheduled eq true - will return scheduled drafts only
-  
+        
           required: false
           type: string
       tags:
@@ -5799,7 +5799,7 @@ definitions:
       DonationDate:
         type: string
         format: date
-        description: Donation date.  
+        description: Donation date.    
       FirstName:
         type: string
         description: First name of the donor.
