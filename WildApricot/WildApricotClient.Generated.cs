@@ -9066,6 +9066,438 @@ namespace WildApricot
 		}
 
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+		/// <param name="accountId">Your account identifier</param>
+		/// <param name="orderNumber">Order number</param>
+		/// <exception cref="WildApricotException">A server side error occurred.</exception>
+		public virtual async System.Threading.Tasks.Task OnlineStoreOrders_GetByNumberAsync(double accountId, string orderNumber, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		{
+			if (accountId == null)
+				throw new System.ArgumentNullException("accountId");
+
+			if (orderNumber == null)
+				throw new System.ArgumentNullException("orderNumber");
+
+			var urlBuilder_ = new System.Text.StringBuilder();
+			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/accounts/{accountId}/store/orders/{orderNumber}");
+			urlBuilder_.Replace("{accountId}", System.Uri.EscapeDataString(ConvertToString(accountId, System.Globalization.CultureInfo.InvariantCulture)));
+			urlBuilder_.Replace("{orderNumber}", System.Uri.EscapeDataString(ConvertToString(orderNumber, System.Globalization.CultureInfo.InvariantCulture)));
+
+			var client_ = _httpClient;
+			var disposeClient_ = false;
+			try {
+				using (var request_ = new System.Net.Http.HttpRequestMessage()) {
+					request_.Method = new System.Net.Http.HttpMethod("GET");
+
+					PrepareRequest(client_, request_, urlBuilder_);
+
+					var url_ = urlBuilder_.ToString();
+					request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+					PrepareRequest(client_, request_, url_);
+
+					var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+					var disposeResponse_ = true;
+					try {
+						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						if (response_.Content != null && response_.Content.Headers != null) {
+							foreach (var item_ in response_.Content.Headers)
+								headers_[item_.Key] = item_.Value;
+						}
+
+						ProcessResponse(client_, response_);
+
+						var status_ = (int)response_.StatusCode;
+						if (status_ == 400) {
+							var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							throw new WildApricotException<Error>("On invalid parameters. See error details in response body.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+						}
+						else
+						if (status_ == 401) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("oAuth token was not provided, invalid or does not provide access to requested URL.", status_, responseText_, headers_, null);
+						}
+						else
+						if (status_ == 429) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("Too many requests from same account. Wait for a minute and try again.", status_, responseText_, headers_, null);
+						}
+						else
+
+						if (status_ == 200 || status_ == 204) {
+
+							return;
+						}
+						else {
+							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+						}
+					}
+					finally {
+						if (disposeResponse_)
+							response_.Dispose();
+					}
+				}
+			}
+			finally {
+				if (disposeClient_)
+					client_.Dispose();
+			}
+		}
+
+		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+		/// <param name="accountId">Your account identifier</param>
+		/// <param name="skip">'Specifies the number of records to skip (not include in a result set). For example if you expect about 300 records in result set and want to get them in small portions, you could make do so with 3 calls:'
+		/// <br/>- ...&amp;$top=100 - will return records from 0 to 99 - ...?$skip=100&amp;top=100' - will return records from 100 to 199 - ...?$skip=200' - will return records from 199 to the end</param>
+		/// <param name="top">this parameter specifies the maximum number of entries to be returned</param>
+		/// <param name="status">Order status</param>
+		/// <param name="paymentStatus">Invoice status</param>
+		/// <param name="from">Start date of the range</param>
+		/// <param name="to">End of the range</param>
+		/// <exception cref="WildApricotException">A server side error occurred.</exception>
+		public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Order>> OnlineStoreOrders_GetListAsync(double accountId, int? skip = null, int? top = null, OrderStatus? status = null, PaymentStatus? paymentStatus = null, System.DateTimeOffset? from = null, System.DateTimeOffset? to = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		{
+			if (accountId == null)
+				throw new System.ArgumentNullException("accountId");
+
+			var urlBuilder_ = new System.Text.StringBuilder();
+			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/accounts/{accountId}/store/orders?");
+			urlBuilder_.Replace("{accountId}", System.Uri.EscapeDataString(ConvertToString(accountId, System.Globalization.CultureInfo.InvariantCulture)));
+			if (skip != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("$skip") + "=").Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (top != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("$top") + "=").Append(System.Uri.EscapeDataString(ConvertToString(top, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (status != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("status") + "=").Append(System.Uri.EscapeDataString(ConvertToString(status, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (paymentStatus != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("paymentStatus") + "=").Append(System.Uri.EscapeDataString(ConvertToString(paymentStatus, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (from != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("From") + "=").Append(System.Uri.EscapeDataString(from.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (to != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("To") + "=").Append(System.Uri.EscapeDataString(to.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			urlBuilder_.Length--;
+
+			var client_ = _httpClient;
+			var disposeClient_ = false;
+			try {
+				using (var request_ = new System.Net.Http.HttpRequestMessage()) {
+					request_.Method = new System.Net.Http.HttpMethod("GET");
+					request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+					PrepareRequest(client_, request_, urlBuilder_);
+
+					var url_ = urlBuilder_.ToString();
+					request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+					PrepareRequest(client_, request_, url_);
+
+					var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+					var disposeResponse_ = true;
+					try {
+						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						if (response_.Content != null && response_.Content.Headers != null) {
+							foreach (var item_ in response_.Content.Headers)
+								headers_[item_.Key] = item_.Value;
+						}
+
+						ProcessResponse(client_, response_);
+
+						var status_ = (int)response_.StatusCode;
+						if (status_ == 200) {
+							var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Order>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							return objectResponse_.Object;
+						}
+						else
+						if (status_ == 400) {
+							var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							throw new WildApricotException<Error>("On invalid parameters. See error details in response body.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+						}
+						else
+						if (status_ == 401) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("oAuth token was not provided, invalid or does not provide access to requested URL.", status_, responseText_, headers_, null);
+						}
+						else
+						if (status_ == 429) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("Too many requests from same account. Wait for a minute and try again.", status_, responseText_, headers_, null);
+						}
+						else {
+							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+						}
+					}
+					finally {
+						if (disposeResponse_)
+							response_.Dispose();
+					}
+				}
+			}
+			finally {
+				if (disposeClient_)
+					client_.Dispose();
+			}
+		}
+
+		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+		/// <param name="accountId">Your account identifier</param>
+		/// <exception cref="WildApricotException">A server side error occurred.</exception>
+		public virtual async System.Threading.Tasks.Task<OrderSetStatusResult> OnlineStoreOrdersOperations_SetOrderStatusAsync(double accountId, string orderNumber, OrderFulfilment status, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		{
+			if (accountId == null)
+				throw new System.ArgumentNullException("accountId");
+
+			if (orderNumber == null)
+				throw new System.ArgumentNullException("orderNumber");
+
+			if (status == null)
+				throw new System.ArgumentNullException("status");
+
+			var urlBuilder_ = new System.Text.StringBuilder();
+			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/accounts/{accountId}/store/orders/{orderNumber}/status");
+			urlBuilder_.Replace("{accountId}", System.Uri.EscapeDataString(ConvertToString(accountId, System.Globalization.CultureInfo.InvariantCulture)));
+			urlBuilder_.Replace("{orderNumber}", System.Uri.EscapeDataString(ConvertToString(orderNumber, System.Globalization.CultureInfo.InvariantCulture)));
+
+			var client_ = _httpClient;
+			var disposeClient_ = false;
+			try {
+				using (var request_ = new System.Net.Http.HttpRequestMessage()) {
+					var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(status, _settings.Value);
+					var content_ = new System.Net.Http.StringContent(json_);
+					content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+					request_.Content = content_;
+					request_.Method = new System.Net.Http.HttpMethod("PUT");
+					request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+					PrepareRequest(client_, request_, urlBuilder_);
+
+					var url_ = urlBuilder_.ToString();
+					request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+					PrepareRequest(client_, request_, url_);
+
+					var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+					var disposeResponse_ = true;
+					try {
+						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						if (response_.Content != null && response_.Content.Headers != null) {
+							foreach (var item_ in response_.Content.Headers)
+								headers_[item_.Key] = item_.Value;
+						}
+
+						ProcessResponse(client_, response_);
+
+						var status_ = (int)response_.StatusCode;
+						if (status_ == 200) {
+							var objectResponse_ = await ReadObjectResponseAsync<OrderSetStatusResult>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							return objectResponse_.Object;
+						}
+						else {
+							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+						}
+					}
+					finally {
+						if (disposeResponse_)
+							response_.Dispose();
+					}
+				}
+			}
+			finally {
+				if (disposeClient_)
+					client_.Dispose();
+			}
+		}
+
+		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+		/// <param name="accountId">Your account identifier</param>
+		/// <exception cref="WildApricotException">A server side error occurred.</exception>
+		public virtual async System.Threading.Tasks.Task<Product> OnlineStoreProducts_GetByIdAsync(double accountId, int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		{
+			if (accountId == null)
+				throw new System.ArgumentNullException("accountId");
+
+			if (id == null)
+				throw new System.ArgumentNullException("id");
+
+			var urlBuilder_ = new System.Text.StringBuilder();
+			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/accounts/{accountId}/store/products/{id}");
+			urlBuilder_.Replace("{accountId}", System.Uri.EscapeDataString(ConvertToString(accountId, System.Globalization.CultureInfo.InvariantCulture)));
+			urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+			var client_ = _httpClient;
+			var disposeClient_ = false;
+			try {
+				using (var request_ = new System.Net.Http.HttpRequestMessage()) {
+					request_.Method = new System.Net.Http.HttpMethod("GET");
+					request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+					PrepareRequest(client_, request_, urlBuilder_);
+
+					var url_ = urlBuilder_.ToString();
+					request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+					PrepareRequest(client_, request_, url_);
+
+					var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+					var disposeResponse_ = true;
+					try {
+						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						if (response_.Content != null && response_.Content.Headers != null) {
+							foreach (var item_ in response_.Content.Headers)
+								headers_[item_.Key] = item_.Value;
+						}
+
+						ProcessResponse(client_, response_);
+
+						var status_ = (int)response_.StatusCode;
+						if (status_ == 200) {
+							var objectResponse_ = await ReadObjectResponseAsync<Product>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							return objectResponse_.Object;
+						}
+						else
+						if (status_ == 400) {
+							var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							throw new WildApricotException<Error>("On invalid parameters. See error details in response body.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+						}
+						else
+						if (status_ == 401) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("oAuth token was not provided, invalid or does not provide access to requested URL.", status_, responseText_, headers_, null);
+						}
+						else
+						if (status_ == 429) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("Too many requests from same account. Wait for a minute and try again.", status_, responseText_, headers_, null);
+						}
+						else {
+							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+						}
+					}
+					finally {
+						if (disposeResponse_)
+							response_.Dispose();
+					}
+				}
+			}
+			finally {
+				if (disposeClient_)
+					client_.Dispose();
+			}
+		}
+
+		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+		/// <param name="accountId">Your account identifier</param>
+		/// <exception cref="WildApricotException">A server side error occurred.</exception>
+		public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Product>> OnlineStoreProducts_GetListAsync(double accountId, int? skip = null, int? top = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		{
+			if (accountId == null)
+				throw new System.ArgumentNullException("accountId");
+
+			var urlBuilder_ = new System.Text.StringBuilder();
+			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/accounts/{accountId}/store/products?");
+			urlBuilder_.Replace("{accountId}", System.Uri.EscapeDataString(ConvertToString(accountId, System.Globalization.CultureInfo.InvariantCulture)));
+			if (skip != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("$skip") + "=").Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			if (top != null) {
+				urlBuilder_.Append(System.Uri.EscapeDataString("$top") + "=").Append(System.Uri.EscapeDataString(ConvertToString(top, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+			}
+			urlBuilder_.Length--;
+
+			var client_ = _httpClient;
+			var disposeClient_ = false;
+			try {
+				using (var request_ = new System.Net.Http.HttpRequestMessage()) {
+					request_.Method = new System.Net.Http.HttpMethod("GET");
+					request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+					PrepareRequest(client_, request_, urlBuilder_);
+
+					var url_ = urlBuilder_.ToString();
+					request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+					PrepareRequest(client_, request_, url_);
+
+					var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+					var disposeResponse_ = true;
+					try {
+						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						if (response_.Content != null && response_.Content.Headers != null) {
+							foreach (var item_ in response_.Content.Headers)
+								headers_[item_.Key] = item_.Value;
+						}
+
+						ProcessResponse(client_, response_);
+
+						var status_ = (int)response_.StatusCode;
+						if (status_ == 200) {
+							var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Product>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							return objectResponse_.Object;
+						}
+						else
+						if (status_ == 400) {
+							var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							if (objectResponse_.Object == null) {
+								throw new WildApricotException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+							}
+							throw new WildApricotException<Error>("On invalid parameters. See error details in response body.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+						}
+						else
+						if (status_ == 401) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("oAuth token was not provided, invalid or does not provide access to requested URL.", status_, responseText_, headers_, null);
+						}
+						else
+						if (status_ == 429) {
+							string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("Too many requests from same account. Wait for a minute and try again.", status_, responseText_, headers_, null);
+						}
+						else {
+							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							throw new WildApricotException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+						}
+					}
+					finally {
+						if (disposeResponse_)
+							response_.Dispose();
+					}
+				}
+			}
+			finally {
+				if (disposeClient_)
+					client_.Dispose();
+			}
+		}
+
+		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <summary>
 		/// Get information about feature availability for specific account.
 		/// </summary>
@@ -11148,7 +11580,8 @@ namespace WildApricot
 		/// Recipient group type.
 		/// </summary>
 		[Newtonsoft.Json.JsonProperty("Type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-		public string Type { get; set; }
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public EmailRecipientType? Type { get; set; }
 
 		/// <summary>
 		/// Display name of recipient or name of saved search.
@@ -12241,6 +12674,7 @@ namespace WildApricot
 	public partial class EventAttendeesDisplaySettings
 	{
 		[Newtonsoft.Json.JsonProperty("VisibleTo", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		//Renamed from that VisableTo typedef we commented out previously
 		public ContactFieldAccessLevel VisibleTo { get; set; }
 
 		/// <summary>
@@ -13900,6 +14334,497 @@ namespace WildApricot
 	}
 
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class Order
+	{
+		[Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Url { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("contactId", Required = Newtonsoft.Json.Required.Always)]
+		public int ContactId { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Number { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.Always)]
+		public decimal Total { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("subTotal", Required = Newtonsoft.Json.Required.Always)]
+		public decimal SubTotal { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("isTaxesApplied", Required = Newtonsoft.Json.Required.Always)]
+		public bool IsTaxesApplied { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("isTaxesIncludedTotal", Required = Newtonsoft.Json.Required.Always)]
+		public bool IsTaxesIncludedTotal { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("invoiceId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? InvoiceId { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("invoiceNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? InvoiceNumber { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public OrderStatus Status { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("paymentStatus", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public PaymentStatus PaymentStatus { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("internalNote", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public OrderInternalNote InternalNote { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("products", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<OrderProduct> Products { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("shippingAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public ShippingAddress ShippingAddress { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("billingPerson", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public BillingPerson BillingPerson { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Comment { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("externalNote", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public OrderExternalNote ExternalNote { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("currency", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public Currency Currency { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.DateTimeOffset? Created { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("deliveryOption", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public OrderDeliveryOption DeliveryOption { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum OrderStatus
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"UNFULFILLED")]
+		Unfulfilled = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"FULFILLED")]
+		Fulfilled = 1,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"CANCELLED")]
+		Cancelled = 2,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum PaymentStatus
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"UNPAID")]
+		Unpaid = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PAID")]
+		Paid = 1,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PARTIALLYPAID")]
+		PartiallyPaid = 2,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"NOINVOICE")]
+		NoInvoice = 3,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"FREE")]
+		Free = 4,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderInternalNote
+	{
+		[Newtonsoft.Json.JsonProperty("text", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Text { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderProduct
+	{
+		[Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Title { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("price", Required = Newtonsoft.Json.Required.Always)]
+		public decimal Price { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
+		public decimal Amount { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productId", Required = Newtonsoft.Json.Required.Always)]
+		public int ProductId { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("variantId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? VariantId { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("quantity", Required = Newtonsoft.Json.Required.Always)]
+		public int Quantity { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productType", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public OrderProductType ProductType { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("digitalProduct", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public OrderDigitalProduct DigitalProduct { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum OrderProductType
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PHYSICAL")]
+		Physical = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"DIGITAL")]
+		Digital = 1,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderDigitalProduct
+	{
+		[Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Url { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Code { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("emailNote", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string EmailNote { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ShippingAddress
+	{
+		[Newtonsoft.Json.JsonProperty("addressLine1", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string AddressLine1 { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("addressLine2", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string AddressLine2 { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("country", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public Country Country { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("province", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Province { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string City { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("zip", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Zip { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class Country
+	{
+		[Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Name { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("codeAlpha2", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string CodeAlpha2 { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("codeAlpha3", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string CodeAlpha3 { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("codeNumeric", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? CodeNumeric { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("allowedPaymentMethods", Required = Newtonsoft.Json.Required.Always)]
+		public int AllowedPaymentMethods { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class BillingPerson
+	{
+		[Newtonsoft.Json.JsonProperty("contactId", Required = Newtonsoft.Json.Required.Always)]
+		public int ContactId { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Email { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("firstName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string FirstName { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("lastName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string LastName { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("displayName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string DisplayName { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("phone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Phone { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderExternalNote
+	{
+		[Newtonsoft.Json.JsonProperty("text", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Text { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderDeliveryOption
+	{
+		[Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public DeliveryType Type { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Title { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Description { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("price", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public decimal? Price { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum DeliveryType
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"SHIPPING")]
+		Shipping = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PICKUP")]
+		Pickup = 1,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderSetStatusResult
+	{
+		[Newtonsoft.Json.JsonProperty("isCustomerNotified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public bool? IsCustomerNotified { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class OrderFulfilment
+	{
+		[Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public OrderStatus Status { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class Product
+	{
+		[Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Url { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
+		public int Id { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Title { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Description { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("price", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public Price Price { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public ProductStatus Status { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public ProductType Type { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("pictures", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<string> Pictures { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("tags", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<string> Tags { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("trackInventory", Required = Newtonsoft.Json.Required.Always)]
+		public bool TrackInventory { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("stock", Required = Newtonsoft.Json.Required.Always)]
+		public int Stock { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productOptions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<ProductOption> ProductOptions { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productVariants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<ProductVariant> ProductVariants { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("outOfStock", Required = Newtonsoft.Json.Required.Always)]
+		public bool OutOfStock { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("totalStock", Required = Newtonsoft.Json.Required.Always)]
+		public int TotalStock { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("digitalProduct", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public DigitalProduct DigitalProduct { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.DateTimeOffset? Created { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class Price
+	{
+		[Newtonsoft.Json.JsonProperty("regular", Required = Newtonsoft.Json.Required.Always)]
+		public decimal Regular { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("members", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public decimal? Members { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum ProductStatus
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"ADMINONLY")]
+		AdminOnly = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PUBLIC")]
+		Public = 1,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum ProductType
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"PHYSICAL")]
+		Physical = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"DIGITAL")]
+		Digital = 1,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ProductOption
+	{
+		[Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Title { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("values", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<string> Values { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ProductVariant
+	{
+		[Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
+		public int Id { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productVariantOptionValues", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public System.Collections.Generic.ICollection<ProductVariantOptionValue> ProductVariantOptionValues { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("stock", Required = Newtonsoft.Json.Required.Always)]
+		public int Stock { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("outOfStock", Required = Newtonsoft.Json.Required.Always)]
+		public bool OutOfStock { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("trackInventory", Required = Newtonsoft.Json.Required.Always)]
+		public bool TrackInventory { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ProductVariantOptionValue
+	{
+		[Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Title { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Value { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class DigitalProduct
+	{
+		[Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+		public DigitalProductType Type { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productFile", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public ProductFile ProductFile { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("productLink", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public ProductLink ProductLink { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("emailNote", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string EmailNote { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum DigitalProductType
+	{
+
+		[System.Runtime.Serialization.EnumMember(Value = @"FILE")]
+		File = 0,
+
+		[System.Runtime.Serialization.EnumMember(Value = @"LINK")]
+		Link = 1,
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ProductFile
+	{
+		[Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Name { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class ProductLink
+	{
+		[Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Url { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public string Code { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class PagingSettings
+	{
+		[Newtonsoft.Json.JsonProperty("skip", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? Skip { get; set; }
+
+		[Newtonsoft.Json.JsonProperty("top", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+		public int? Top { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public enum Size
 	{
 
@@ -14314,44 +15239,59 @@ namespace WildApricot
 
 	}
 
-	// This enum is fucked, because they declared it janky in the swagger file. defined as an integer enum, but probably supposed to be string.
-	//[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
-	//public enum EmailRecipientType
-	//{
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum EmailRecipientType
+	{
 
-	//	_IndividualContactRecipient = IndividualContactRecipient,
+		[System.Runtime.Serialization.EnumMember(Value = @"IndividualContactRecipient")]
+		IndividualContactRecipient = 0,
 
-	//	_IndividualEventRegistrationRecipient = IndividualEventRegistrationRecipient,
+		[System.Runtime.Serialization.EnumMember(Value = @"IndividualEventRegistrationRecipient")]
+		IndividualEventRegistrationRecipient = 1,
 
-	//	_EventAttendees_CheckedIn = EventAttendees_CheckedIn,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_CheckedIn")]
+		EventAttendees_CheckedIn = 2,
 
-	//	_EventAttendees_NotCheckedIn = EventAttendees_NotCheckedIn,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_NotCheckedIn")]
+		EventAttendees_NotCheckedIn = 3,
 
-	//	_EventAttendees_Paid = EventAttendees_Paid,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_Paid")]
+		EventAttendees_Paid = 4,
 
-	//	_EventAttendees_NotPaid = EventAttendees_NotPaid,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_NotPaid")]
+		EventAttendees_NotPaid = 5,
 
-	//	_EventAttendees_All = EventAttendees_All,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_All")]
+		EventAttendees_All = 6,
 
-	//	_EventAttendees_Selected = EventAttendees_Selected,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventAttendees_Selected")]
+		EventAttendees_Selected = 7,
 
-	//	_Contacts_All = Contacts_All,
+		[System.Runtime.Serialization.EnumMember(Value = @"Contacts_All")]
+		Contacts_All = 8,
 
-	//	_Contacts_Selected = Contacts_Selected,
+		[System.Runtime.Serialization.EnumMember(Value = @"Contacts_Selected")]
+		Contacts_Selected = 9,
 
-	//	_Contacts_SavedSearch = Contacts_SavedSearch,
+		[System.Runtime.Serialization.EnumMember(Value = @"Contacts_SavedSearch")]
+		Contacts_SavedSearch = 10,
 
-	//	_Members_All = Members_All,
+		[System.Runtime.Serialization.EnumMember(Value = @"Members_All")]
+		Members_All = 11,
 
-	//	_Members_SavedSearch = Members_SavedSearch,
+		[System.Runtime.Serialization.EnumMember(Value = @"Members_SavedSearch")]
+		Members_SavedSearch = 12,
 
-	//	_SentEmailRecipient = SentEmailRecipient,
+		[System.Runtime.Serialization.EnumMember(Value = @"SentEmailRecipient")]
+		SentEmailRecipient = 13,
 
-	//	_EventWaitlist_All = EventWaitlist_All,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventWaitlist_All")]
+		EventWaitlist_All = 14,
 
-	//	_EventWaitlist_Selected = EventWaitlist_Selected,
+		[System.Runtime.Serialization.EnumMember(Value = @"EventWaitlist_Selected")]
+		EventWaitlist_Selected = 15,
 
-	//}
+	}
 
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class Event2
@@ -14400,6 +15340,13 @@ namespace WildApricot
 		RSVP = 1,
 
 	}
+
+	// It's trying to use this as a typedef, can't do that to an enum in C#
+	//[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	//public partial class VisibleTo : ContactFieldAccessLevel
+	//{
+	//
+	//}
 
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class Organizer2 : LinkedResource
