@@ -1168,7 +1168,7 @@ paths:
           description: >
             Updated version of event information.
           schema:
-            $ref: 'boolean'
+            $ref: '#/definitions/Event'
         '401':
           $ref: '#/responses/unauthorized'
         '404':
@@ -1352,8 +1352,8 @@ paths:
       operationId: GetEventRegistrationsList
       summary: Event Registrations list
       description: >
-            âš  There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId, $filter or ids exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter event registrations.
-            âš  Request parameter is required
+            ⚠ There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId, $filter or ids exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter event registrations.
+            ⚠ Request parameter is required
       parameters:
         - $ref: '#/parameters/accountId'
   
@@ -1377,7 +1377,7 @@ paths:
             Filters the results of the Events API call so that only those records that match the filter criteria are included.
             The following filter criterias are supported:
               - Id, Supported operations: in.
-                example: ?$filter=id in [1,2,3,4â€¦.]
+                example: ?$filter=id in [1,2,3,4….]
   
         - name: includeDetails
           in: query
@@ -1563,7 +1563,7 @@ paths:
       summary: Get list of invoices by criteria.
       description: >
   
-        âš  There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId and eventRegistrationId exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter invoices.
+        ⚠ There are 3 parameters, which cannot be used simultaneously. API uses only one parameter of contactId, eventId and eventRegistrationId exactly in this order. For example if request contains both contactId and eventId, then API uses only contactId to filter invoices.
       parameters:
         - $ref: '#/parameters/accountId'
   
@@ -2143,7 +2143,9 @@ paths:
         '200':
           description: Collection of allocations.
           schema:
-            $ref: '#/definitions/PaymentAllocation'
+            type: array
+            items:
+              $ref: '#/definitions/PaymentAllocation'
         '400':
           $ref: '#/responses/badRequest'
         '401':
@@ -3051,8 +3053,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
-  /accounts/{accountId}/store/orders/{orderNumber}:
+  '/accounts/{accountId}/store/orders/{orderNumber}':
     get:
       tags:
         - OnlineStore.Orders
@@ -3066,15 +3067,13 @@ paths:
           in: path
           x-nullable: false
       responses:
-        '200':
-          $ref: '#/definitions/Order'
         '400':
           $ref: '#/responses/badRequest'
         '401':
           $ref: '#/responses/unauthorized'
         '429':
           $ref: '#/responses/tooManyRequests'
-  /accounts/{accountId}/store/orders:
+  '/accounts/{accountId}/store/orders':
     get:
       tags:
         - OnlineStore.Orders
@@ -3138,7 +3137,7 @@ paths:
           $ref: '#/responses/unauthorized'
         '429':
           $ref: '#/responses/tooManyRequests'
-  /accounts/{accountId}/store/orders/{orderNumber}/status:
+  '/accounts/{accountId}/store/orders/{orderNumber}/status':
     put:
       tags:
         - OnlineStore.Orders.Operations
@@ -3165,7 +3164,7 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/OrderSetStatusResult'
-  /accounts/{accountId}/store/products/{id}:
+  '/accounts/{accountId}/store/products/{id}':
     get:
       tags:
         - OnlineStore.Products
@@ -3190,7 +3189,7 @@ paths:
           $ref: '#/responses/unauthorized'
         '429':
           $ref: '#/responses/tooManyRequests'
-  /accounts/{accountId}/store/products:
+  '/accounts/{accountId}/store/products':
     get:
       tags:
         - OnlineStore.Products
@@ -3225,7 +3224,6 @@ paths:
           $ref: '#/responses/unauthorized'
         '429':
           $ref: '#/responses/tooManyRequests'
-
   '/accounts/{accountId}/features/{featureId}':
     get:
       operationId: GetFeatureAvailability
@@ -3356,7 +3354,7 @@ definitions:
         description: Human-readable currency name
       Symbol:
         type: string
-        description: Currency symbol like $ or â‚¬
+        description: Currency symbol like $ or €
 
   Feature:
     type: object
@@ -3796,7 +3794,7 @@ definitions:
             type: boolean
             description: >-
               Indicates that the field's value can be changed with create/update requests. Otherwise
-              value canâ€™t be edited through API. If non-editable field value is
+              value can’t be edited through API. If non-editable field value is
               provided in create/update contact request, the value is ignored by API.
           RulesAndTermsInfo:
             $ref: '#/definitions/RulesAndTermsInfo'
@@ -4649,7 +4647,7 @@ definitions:
           If email was sent to individual recipient, this field contains contact identifier.
           If email was sent to all recipients from some saved search, this field contains saved search identifier.
       Type:
-        type: integer
+        type: string
         description: Recipient group type.
         enum:
           - IndividualContactRecipient
@@ -5604,7 +5602,7 @@ definitions:
         default: false
         description: >
           Indicates whether account tax scope settings should be used to calculate final price.
-          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to default value
+          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to default value
       Availability:
         $ref: '#/definitions/EventRegistrationTypeAvailability'
       RegistrationCode:
@@ -5623,13 +5621,13 @@ definitions:
         format: datetime
         description: >
           This registration type is available starting from this date. Can be null.
-          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
+          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
       AvailableThrough:
         type: string
         format: datetime
         description: >
           This registration type is available until this date. Can be null.
-          âš  Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
+          ⚠ Once set, it has to be provided on every update. Otherwise, it will be overwritten to null
       MaximumRegistrantsCount:
         type: integer
         description: Maximum number of registrants for this registration type.
