@@ -42,7 +42,6 @@ namespace Mms.Api
 			WildApricotClient.ApiKey = Configuration.GetConnectionString("waApiKey");
 			waClientId = Configuration.GetConnectionString("waClientId");
 			waClientSecret = Configuration.GetConnectionString("waClientSecret");
-			//DinkToPdfAll.LibraryLoader.Load();
 		}
 
 		public IConfigurationRoot Configuration { get; }
