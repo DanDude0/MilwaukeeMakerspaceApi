@@ -1,4 +1,5 @@
 @page "/reports"
+@attribute [Authorize(Roles = "MMS Admin")]
 @inject ReportService service
 @inject IJSRuntime jsRuntime
 @using System.Globalization;

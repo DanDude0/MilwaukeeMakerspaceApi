@@ -20,6 +20,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace Mms.Api
 {
@@ -120,6 +122,7 @@ namespace Mms.Api
 							return;
 						}
 					});
+				services.AddScoped<IAuthorizationHandler, RolesAuthorizationHandler>();
 			}
 
 			services.AddRazorPages();
