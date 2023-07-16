@@ -10,7 +10,7 @@
     <PackageReference Include="MySql.Data" Version="8.0.33">
 		<NoWarn>NU1605</NoWarn>
 	</PackageReference>
-    <PackageReference Include="PetaPoco.Compiled" Version="6.0.532" />
+    <PackageReference Include="PetaPoco.Compiled" Version="6.0.566" />
     <PackageReference Include="PetaPoco.DBEntityGenerator" Version="0.1.2" />
   </ItemGroup>
 
