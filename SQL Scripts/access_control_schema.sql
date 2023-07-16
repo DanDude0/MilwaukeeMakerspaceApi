@@ -26,7 +26,7 @@ CREATE TABLE `attempt` (
   `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `attempt_time` datetime NOT NULL,
   PRIMARY KEY (`attempt_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1438443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1438479 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `audit` */
 
@@ -60,7 +60,7 @@ CREATE TABLE `group` (
   `group_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`group_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group_member` */
 
@@ -68,7 +68,7 @@ CREATE TABLE `group_member` (
   `group_id` int(11) NOT NULL,
   `member_id` int(11) NOT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`member_id`)
+  PRIMARY KEY (`member_id`,`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `keycode` */
