@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mms.Api.Models;
 using Mms.Database;
 using MySqlX.XDevAPI;
+using Serilog;
 using SQLite;
 
 namespace Mms.Api.Controllers
@@ -33,7 +34,7 @@ namespace Mms.Api.Controllers
 				var id = request.GetProperty("Id").GetInt32();
 				var version = request.GetProperty("Version").GetString();
 
-				Console.WriteLine($"Reader attempting initialize: {payload}");
+				Log.Warning($"Reader attempting initialize: {payload}");
 
 				DbResult result;
 
@@ -65,7 +66,7 @@ namespace Mms.Api.Controllers
 					clientAddress = clientAddress.Substring(7);
 				}
 
-				Console.WriteLine($"Reader initializing with Id: {id}, Version: {version}, Address: {clientAddress}");
+				Log.Warning($"Reader initializing with Id: {id}, Version: {version}, Address: {clientAddress}");
 
 				RecordClient(id, clientAddress, version, payload);
 
@@ -81,7 +82,7 @@ namespace Mms.Api.Controllers
 				return new JsonResult(output);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error initializing reader");
 
 				return StatusCode(500);
 			}
@@ -99,7 +100,7 @@ namespace Mms.Api.Controllers
 				var type = request.GetProperty("Type").GetString() ?? "";
 				var action = request.GetProperty("Action").GetString() ?? "";
 
-				Console.WriteLine($"Reader attempting action: {payload}");
+				Log.Warning($"Reader attempting action: {payload}");
 
 				if (id < 1)
 					return StatusCode(401);
@@ -138,7 +139,7 @@ namespace Mms.Api.Controllers
 				return StatusCode(400);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error attempting reader action");
 
 				return StatusCode(500);
 			}
@@ -169,14 +170,14 @@ namespace Mms.Api.Controllers
 
 				filename += $"{clientAddress.Replace(':', ';')}.log";
 
-				Console.WriteLine($"Client Log Dumping to: {filename}");
+				Log.Warning($"Client Log Dumping to: {filename}");
 
 				System.IO.File.WriteAllText(filename, payload);
 
 				return StatusCode(200);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error dumping log from client");
 
 				return StatusCode(500);
 			}
@@ -186,7 +187,7 @@ namespace Mms.Api.Controllers
 		[Route("reader/snapshot")]
 		public IActionResult Database()
 		{
-			Console.WriteLine($"Reader attempting download database snapshot.");
+			Log.Warning($"Reader attempting download database snapshot.");
 
 			var tmpFile = Path.GetTempPath() + "snapshot.sqlite3";
 
@@ -235,7 +236,7 @@ namespace Mms.Api.Controllers
 			snapshot.Commit();
 			snapshot.Close();
 
-			Console.WriteLine($"Database snapshot created.");
+			Log.Warning($"Database snapshot created.");
 
 			var stream = new FileStream(tmpFile, FileMode.Open, FileAccess.ReadWrite);
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Mms.Api.Models;
 using Mms.Database;
 using Newtonsoft.Json;
+using Serilog;
 using WildApricot;
 
 namespace Mms.Api.Services
@@ -389,8 +390,13 @@ namespace Mms.Api.Services
 			loadStatus.range = 0;
 			loadStatus.progress = 0;
 
-			if (errors.Count > 0)
-				loadStatus.status = "Errors: \n" + string.Join('\n', errors);
+			if (errors.Count > 0) {
+				var errorList = "\n" + string.Join('\n', errors);
+
+				Log.Error($"Logged the following errors while loading invoices from Wild Apricot:{errorList})");
+
+				loadStatus.status = $"Errors: {errorList}";
+			}
 			else
 				loadStatus.status = "Load Completed";
 		}
