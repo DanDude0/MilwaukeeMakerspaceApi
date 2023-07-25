@@ -37,9 +37,6 @@ namespace Mms.Api
 {
 	public class Program
 	{
-		private static string waClientId;
-		private static string waClientSecret;
-
 		private static SsdpDevicePublisher SsdpPublisher4;
 		public static string SsdpDescription { get; private set; }
 
@@ -66,8 +63,8 @@ namespace Mms.Api
 				AccessControlDatabase.ConnectionString = builder.Configuration.GetConnectionString("access_control");
 				BillingDatabase.ConnectionString = builder.Configuration.GetConnectionString("billing");
 				WildApricotClient.ApiKey = builder.Configuration.GetConnectionString("waApiKey");
-				waClientId = builder.Configuration.GetConnectionString("waClientId");
-				waClientSecret = builder.Configuration.GetConnectionString("waClientSecret");
+				var waClientId = builder.Configuration.GetConnectionString("waClientId");
+				var waClientSecret = builder.Configuration.GetConnectionString("waClientSecret");
 
 				if (!string.IsNullOrWhiteSpace(waClientId) && !string.IsNullOrWhiteSpace(waClientId)) {
 					builder.Services.AddAuthentication(options =>
@@ -173,12 +170,12 @@ namespace Mms.Api
 					KnownNetworks = { new IPNetwork(IPAddress.Parse("192.168.86.0"), 24) },
 				}); ;
 
-				//if (env.IsDevelopment()) {
-				app.UseDeveloperExceptionPage();
-				//}
-				//else {
-				//	app.UseExceptionHandler("/Error");
-				//}
+				if (app.Environment.IsDevelopment()) {
+					app.UseDeveloperExceptionPage();
+				}
+				else {
+					app.UseExceptionHandler("/Error");
+				}
 
 				app.UseStaticFiles();
 				app.UseRouting();
@@ -243,7 +240,7 @@ namespace Mms.Api
 				SsdpDescription = deviceDefinition4.ToDescriptionDocument();
 			}
 			catch (Exception ex) {
-				Log.Fatal(ex,"Error publishing device over SSDP");
+				Log.Fatal(ex, "Error publishing device over SSDP");
 			}
 		}
 
