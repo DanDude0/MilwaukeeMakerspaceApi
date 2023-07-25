@@ -59,6 +59,8 @@ namespace Mms.Api
 					.Enrich.FromLogContext()
 					.WriteTo.Console());
 
+				builder.WebHost.UseUrls("http://*:80");
+
 				AreaFundingDatabase.ConnectionString = builder.Configuration.GetConnectionString("area_funding");
 				AccessControlDatabase.ConnectionString = builder.Configuration.GetConnectionString("access_control");
 				BillingDatabase.ConnectionString = builder.Configuration.GetConnectionString("billing");
