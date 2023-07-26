@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.1.0">
-		<NoWarn>NU1605</NoWarn>
-	</PackageReference>
+    <PackageReference Include="MySqlConnector" Version="2.2.7" />
     <PackageReference Include="PetaPoco.Compiled" Version="6.0.566" />
     <PackageReference Include="PetaPoco.DBEntityGenerator" Version="0.1.2" />
   </ItemGroup>

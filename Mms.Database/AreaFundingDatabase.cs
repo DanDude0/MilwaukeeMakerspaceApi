@@ -9,7 +9,7 @@ namespace Mms.Database
 
 		public AreaFundingDatabase()
 			: base(ConnectionString,
-				new MySql.Data.MySqlClient.MySqlClientFactory())
+				  MySqlConnector.MySqlConnectorFactory.Instance)
 		{
 		}
 	}

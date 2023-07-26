@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Mms.Api.Models;
 using Mms.Database;
-using MySqlX.XDevAPI;
 using Serilog;
 using SQLite;
 
