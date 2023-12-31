@@ -1,0 +1,1 @@
+SELECT AVG(sub.members) FROM (SELECT COUNT(DISTINCT member_id) AS members FROM attempt WHERE access_granted = 1 AND login = 1 AND attempt_time > DATE_ADD(NOW(), INTERVAL -1 YEAR) GROUP BY MONTH(attempt_time)) sub;

@@ -43,7 +43,7 @@ namespace Mms.Api
 		public static int Main(string[] args)
 		{
 			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+				.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Debug)
 				.Enrich.FromLogContext()
 				.WriteTo.Console()
 				.CreateBootstrapLogger();
@@ -161,6 +161,9 @@ namespace Mms.Api
 							};
 					});
 				});
+
+				builder.WebHost.UseWebRoot("wwwroot");
+				builder.WebHost.UseStaticWebAssets();
 
 				var app = builder.Build();
 
