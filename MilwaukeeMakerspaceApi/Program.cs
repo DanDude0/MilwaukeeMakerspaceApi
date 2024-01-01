@@ -64,9 +64,11 @@ namespace Mms.Api
 				AreaFundingDatabase.ConnectionString = builder.Configuration.GetConnectionString("area_funding");
 				AccessControlDatabase.ConnectionString = builder.Configuration.GetConnectionString("access_control");
 				BillingDatabase.ConnectionString = builder.Configuration.GetConnectionString("billing");
-				WildApricotClient.ApiKey = builder.Configuration.GetConnectionString("waApiKey");
-				var waClientId = builder.Configuration.GetConnectionString("waClientId");
-				var waClientSecret = builder.Configuration.GetConnectionString("waClientSecret");
+				WildApricotClient.ApiKey = builder.Configuration["WildApricot:ApiKey"];
+				var waClientId = builder.Configuration["WildApricot:ClientId"];
+				var waClientSecret = builder.Configuration["WildApricot:ClientSecret"];
+				var reverseProxyNetwork = builder.Configuration["ReverseProxyNetwork"];
+
 
 				if (!string.IsNullOrWhiteSpace(waClientId) && !string.IsNullOrWhiteSpace(waClientId)) {
 					builder.Services.AddAuthentication(options =>
@@ -168,12 +170,20 @@ namespace Mms.Api
 				var app = builder.Build();
 
 				app.UseSerilogRequestLogging();
-				app.UseForwardedHeaders(new ForwardedHeadersOptions {
-					ForwardedHeaders = ForwardedHeaders.All,
-					RequireHeaderSymmetry = false,
-					ForwardLimit = null,
-					KnownNetworks = { new Microsoft.AspNetCore.HttpOverrides.IPNetwork(IPAddress.Parse("192.168.86.0"), 24) },
-				}); ;
+
+				if (!string.IsNullOrWhiteSpace(reverseProxyNetwork)) {
+					try {
+						app.UseForwardedHeaders(new ForwardedHeadersOptions {
+							ForwardedHeaders = ForwardedHeaders.All,
+							RequireHeaderSymmetry = false,
+							ForwardLimit = null,
+							KnownNetworks = { Microsoft.AspNetCore.HttpOverrides.IPNetwork.Parse(builder.Configuration["ReverseProxyNetwork"]) },
+						});
+					}
+					catch (Exception ex) {
+						Log.Fatal(ex, $"Error Enabling Reverse Proxy for network: {reverseProxyNetwork}");
+					}
+				}
 
 				if (app.Environment.IsDevelopment()) {
 					app.UseDeveloperExceptionPage();
