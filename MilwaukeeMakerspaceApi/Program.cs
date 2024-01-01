@@ -172,7 +172,7 @@ namespace Mms.Api
 					ForwardedHeaders = ForwardedHeaders.All,
 					RequireHeaderSymmetry = false,
 					ForwardLimit = null,
-					KnownNetworks = { new IPNetwork(IPAddress.Parse("192.168.86.0"), 24) },
+					KnownNetworks = { new Microsoft.AspNetCore.HttpOverrides.IPNetwork(IPAddress.Parse("192.168.86.0"), 24) },
 				}); ;
 
 				if (app.Environment.IsDevelopment()) {

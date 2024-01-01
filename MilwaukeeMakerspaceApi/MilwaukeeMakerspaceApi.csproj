@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
 		<WarningLevel>4</WarningLevel>
@@ -9,11 +9,11 @@
 		<NoWarn>1701;1702;NU1605</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="BlazorDateRangePicker" Version="4.3.0" />
+		<PackageReference Include="BlazorDateRangePicker" Version="4.5.0" />
 		<PackageReference Include="CronScheduler.AspNetCore" Version="3.1.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.8" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
 		<PackageReference Include="Rssdp" Version="4.0.4" />
-		<PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 	</ItemGroup>
 	<ItemGroup>
