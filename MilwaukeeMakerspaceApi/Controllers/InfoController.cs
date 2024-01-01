@@ -7,6 +7,8 @@ using Mms.Database;
 
 namespace Mms.Api.Controllers
 {
+	[ApiExplorerSettings(IgnoreApi = true)]
+
 	public class InfoController : Controller
 	{
 		public IActionResult Service()

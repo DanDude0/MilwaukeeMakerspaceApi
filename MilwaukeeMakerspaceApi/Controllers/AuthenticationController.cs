@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Mvc.Client.Controllers;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 public class AuthenticationController : Controller
 {
 	[HttpGet("/login")]

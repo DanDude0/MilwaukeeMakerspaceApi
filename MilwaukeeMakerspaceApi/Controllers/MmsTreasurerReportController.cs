@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 
 namespace Mms.Api.Controllers
 {
+	[ApiExplorerSettings(IgnoreApi = true)]
+
 	public class MmsTreasurerReportController : Controller
 	{
 		[HttpGet]

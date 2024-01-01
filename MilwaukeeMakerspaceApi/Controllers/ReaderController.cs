@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.MSIdentity.Shared;
 using Mms.Api.Models;
 using Mms.Database;
 using Serilog;
@@ -23,8 +24,16 @@ namespace Mms.Api.Controllers
 			public string settings { get; set; }
 		};
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="payload"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[Route("reader/initialize")]
+		[ProducesResponseType<ReaderResult>(200)]
+		[ProducesResponseType(401)]
+		[ProducesResponseType(500)]
 		public IActionResult Initialize([FromBody] string payload)
 		{
 			try {
@@ -89,6 +98,12 @@ namespace Mms.Api.Controllers
 
 		[HttpPost]
 		[Route("reader/action")]
+		[ProducesResponseType(typeof(TimeResult), 200)]
+		[ProducesResponseType(typeof(AuthenticationResult), 200)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(401)]
+		[ProducesResponseType(403)]
+		[ProducesResponseType(500)]
 		public IActionResult Action([FromBody] string payload)
 		{
 			try {
@@ -146,6 +161,8 @@ namespace Mms.Api.Controllers
 
 		[HttpPost]
 		[Route("reader/logdump")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(500)]
 		public IActionResult LogDump([FromBody] string payload)
 		{
 			try {
@@ -184,6 +201,8 @@ namespace Mms.Api.Controllers
 
 		[HttpGet]
 		[Route("reader/snapshot")]
+		[ProducesResponseType<byte[]>(200, "application/vnd.sqlite3")]
+		[ProducesResponseType(500)]
 		public IActionResult Database()
 		{
 			Log.Warning($"Reader attempting download database snapshot.");

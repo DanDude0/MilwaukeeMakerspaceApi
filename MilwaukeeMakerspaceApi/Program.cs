@@ -24,6 +24,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Mms.Api.Jobs;
 using Mms.Api.Services;
 using Mms.Database;
@@ -146,6 +147,7 @@ namespace Mms.Api
 				builder.Services.AddControllersWithViews();
 				builder.Services.AddRouting(options => options.LowercaseUrls = true);
 				builder.Services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
+				builder.Services.AddSwaggerGen(options => { options.SwaggerDoc("v1", new OpenApiInfo { Title = "MmsApi", Version = "v1" }); });
 				builder.Services.AddSingleton<AttemptService>();
 				builder.Services.AddSingleton<InvoiceService>();
 				builder.Services.AddSingleton<ReportService>();
@@ -206,6 +208,9 @@ namespace Mms.Api
 				app.MapControllerRoute(
 						"default",
 						"{controller}/{action=Index}");
+
+				app.UseSwagger();
+				app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "MmsApi v1"); });
 
 				var task = app.RunAsync();
 

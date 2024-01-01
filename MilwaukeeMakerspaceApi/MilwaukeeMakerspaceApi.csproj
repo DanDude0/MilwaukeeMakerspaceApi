@@ -15,9 +15,13 @@
 		<PackageReference Include="Rssdp" Version="4.0.4" />
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Mms.Database\Mms.Database.csproj" />
 		<ProjectReference Include="..\WildApricot\WildApricot.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="logs\" />
 	</ItemGroup>
 </Project>
