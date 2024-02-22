@@ -37,7 +37,7 @@ namespace Mms.Api.Services
 		{
 			var date = DateTime.ParseExact(request.YearMonth, "yyyy-MM", null);
 
-			if (request.Name != "PayPal" && request.Name != "Landmark Checking" && request.Name != "Landmark Savings")
+			if (request.Name != "PayPal" && request.Name != "Landmark Checking" && request.Name != "Landmark Savings" && request.Name != "Landmark Checking Facilities")
 				throw new Exception("Account Name is Invalid");
 
 			var statement = new bank_statement {

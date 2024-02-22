@@ -57,6 +57,7 @@ namespace Mms.Api.Controllers
 
 			model.LastYearNetAreaFunds = db.ExecuteScalar<decimal>(@"SELECT
   SUM(`ledger`.`threed_printer`) +
+  SUM(`ledger`.`bicycle_repair`) +
   SUM(`ledger`.`casting`) +
   SUM(`ledger`.`ceramic`) +
   SUM(`ledger`.`cnc`) +
@@ -66,11 +67,12 @@ namespace Mms.Api.Controllers
   SUM(`ledger`.`electronic`) +
   SUM(`ledger`.`finishing`) +
   SUM(`ledger`.`forge`) +
-  SUM(`ledger`.`glass_fusing`) +
   SUM(`ledger`.`ham_radio`) +
   SUM(`ledger`.`jewelry`) +
+  SUM(`ledger`.`lampworking`) +
   SUM(`ledger`.`laser`) +
   SUM(`ledger`.`leather`) +
+  SUM(`ledger`.`long_arm`) +
   SUM(`ledger`.`makerfaire`) +
   SUM(`ledger`.`metal`) +
   SUM(`ledger`.`neon`) +
@@ -79,6 +81,7 @@ namespace Mms.Api.Controllers
   SUM(`ledger`.`print`) +
   SUM(`ledger`.`soda`) +
   SUM(`ledger`.`stained_glass`) +
+  SUM(`ledger`.`tiger_lily`) +
   SUM(`ledger`.`vacuum`) +
   SUM(`ledger`.`welding`) +
   SUM(`ledger`.`wood`)

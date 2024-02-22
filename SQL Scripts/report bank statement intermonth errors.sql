@@ -1,0 +1,1 @@
+SELECT e.account_name, e.time, e.starting_balance, (SELECT b.ending_balance FROM bank_statement b WHERE b.time = DATE_ADD(e.time, INTERVAL -1 MONTH) AND e.account_name = b.account_name) AS previous_balance, (SELECT e.starting_balance - previous_balance) AS ERROR FROM bank_statement e ORDER BY e.time DESC, e.account_name ASC
