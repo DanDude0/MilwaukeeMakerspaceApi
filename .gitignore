@@ -3,3 +3,5 @@ packages
 bin
 obj
 PublishProfiles
+appsettings.json
+logs

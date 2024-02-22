@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.MSIdentity.Shared;
 using Mms.Api.Models;
 using Mms.Database;
-using MySqlX.XDevAPI;
+using Serilog;
 using SQLite;
 
 namespace Mms.Api.Controllers
@@ -23,8 +24,16 @@ namespace Mms.Api.Controllers
 			public string settings { get; set; }
 		};
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="payload"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[Route("reader/initialize")]
+		[ProducesResponseType<ReaderResult>(200)]
+		[ProducesResponseType(401)]
+		[ProducesResponseType(500)]
 		public IActionResult Initialize([FromBody] string payload)
 		{
 			try {
@@ -33,7 +42,7 @@ namespace Mms.Api.Controllers
 				var id = request.GetProperty("Id").GetInt32();
 				var version = request.GetProperty("Version").GetString();
 
-				Console.WriteLine($"Reader attempting initialize: {payload}");
+				Log.Warning($"Reader attempting initialize: {payload}");
 
 				DbResult result;
 
@@ -65,7 +74,7 @@ namespace Mms.Api.Controllers
 					clientAddress = clientAddress.Substring(7);
 				}
 
-				Console.WriteLine($"Reader initializing with Id: {id}, Version: {version}, Address: {clientAddress}");
+				Log.Warning($"Reader initializing with Id: {id}, Version: {version}, Address: {clientAddress}");
 
 				RecordClient(id, clientAddress, version, payload);
 
@@ -81,7 +90,7 @@ namespace Mms.Api.Controllers
 				return new JsonResult(output);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error initializing reader");
 
 				return StatusCode(500);
 			}
@@ -89,6 +98,12 @@ namespace Mms.Api.Controllers
 
 		[HttpPost]
 		[Route("reader/action")]
+		[ProducesResponseType(typeof(TimeResult), 200)]
+		[ProducesResponseType(typeof(AuthenticationResult), 200)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(401)]
+		[ProducesResponseType(403)]
+		[ProducesResponseType(500)]
 		public IActionResult Action([FromBody] string payload)
 		{
 			try {
@@ -99,7 +114,7 @@ namespace Mms.Api.Controllers
 				var type = request.GetProperty("Type").GetString() ?? "";
 				var action = request.GetProperty("Action").GetString() ?? "";
 
-				Console.WriteLine($"Reader attempting action: {payload}");
+				Log.Warning($"Reader attempting action: {payload}");
 
 				if (id < 1)
 					return StatusCode(401);
@@ -138,7 +153,7 @@ namespace Mms.Api.Controllers
 				return StatusCode(400);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error attempting reader action");
 
 				return StatusCode(500);
 			}
@@ -146,6 +161,8 @@ namespace Mms.Api.Controllers
 
 		[HttpPost]
 		[Route("reader/logdump")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(500)]
 		public IActionResult LogDump([FromBody] string payload)
 		{
 			try {
@@ -169,14 +186,14 @@ namespace Mms.Api.Controllers
 
 				filename += $"{clientAddress.Replace(':', ';')}.log";
 
-				Console.WriteLine($"Client Log Dumping to: {filename}");
+				Log.Warning($"Client Log Dumping to: {filename}");
 
 				System.IO.File.WriteAllText(filename, payload);
 
 				return StatusCode(200);
 			}
 			catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Log.Error(ex, "Error dumping log from client");
 
 				return StatusCode(500);
 			}
@@ -184,9 +201,11 @@ namespace Mms.Api.Controllers
 
 		[HttpGet]
 		[Route("reader/snapshot")]
+		[ProducesResponseType<byte[]>(200, "application/vnd.sqlite3")]
+		[ProducesResponseType(500)]
 		public IActionResult Database()
 		{
-			Console.WriteLine($"Reader attempting download database snapshot.");
+			Log.Warning($"Reader attempting download database snapshot.");
 
 			var tmpFile = Path.GetTempPath() + "snapshot.sqlite3";
 
@@ -235,7 +254,7 @@ namespace Mms.Api.Controllers
 			snapshot.Commit();
 			snapshot.Close();
 
-			Console.WriteLine($"Database snapshot created.");
+			Log.Warning($"Database snapshot created.");
 
 			var stream = new FileStream(tmpFile, FileMode.Open, FileAccess.ReadWrite);
 

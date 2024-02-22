@@ -1,4 +1,5 @@
 @page "/attempts"
+@attribute [Authorize(Roles = "Search Access Log,MMS Admin")]
 @inject AttemptService service
 
 <h1>Reader Attempts</h1>

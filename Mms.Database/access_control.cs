@@ -49,6 +49,25 @@ namespace Mms.Database
 
     }
 
+    [TableName("`access_control`.`audit`")]
+    [PrimaryKey("audit_id")]
+    [ExplicitColumns]
+    public partial class audit
+    {
+        [Column]
+        public string action { get; set; }
+
+        [Column]
+        public int audit_id { get; set; }
+
+        [Column]
+        public DateTime created { get; set; }
+
+        [Column]
+        public int member_id { get; set; }
+
+    }
+
     [TableName("`access_control`.`charge`")]
     [PrimaryKey("charge_id")]
     [ExplicitColumns]
@@ -70,10 +89,10 @@ namespace Mms.Database
         public string document_number { get; set; }
 
         [Column]
-        public long invoice_id { get; set; }
+        public long? invoice_id { get; set; }
 
         [Column]
-        public long invoice_line_id { get; set; }
+        public long? invoice_line_id { get; set; }
 
         [Column]
         public int member_id { get; set; }
@@ -104,6 +123,9 @@ namespace Mms.Database
     [ExplicitColumns]
     public partial class group_member
     {
+        [Column]
+        public DateTime created { get; set; }
+
         [Column]
         public int group_id { get; set; }
 

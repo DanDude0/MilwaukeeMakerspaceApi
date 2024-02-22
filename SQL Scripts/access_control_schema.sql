@@ -1,6 +1,6 @@
 /*
 SQLyog Community
-MySQL - 10.3.18-MariaDB-0+deb10u1 : Database - access_control
+MySQL - 10.5.15-MariaDB-0+deb11u1-log : Database - access_control
 *********************************************************************
 */
 
@@ -26,7 +26,33 @@ CREATE TABLE `attempt` (
   `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `attempt_time` datetime NOT NULL,
   PRIMARY KEY (`attempt_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=491889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1438479 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Table structure for table `audit` */
+
+CREATE TABLE `audit` (
+  `audit_id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  `action` varchar(8192) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`audit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Table structure for table `charge` */
+
+CREATE TABLE `charge` (
+  `charge_id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `reader_id` int(11) NOT NULL,
+  `charge_time` datetime NOT NULL,
+  `amount` decimal(8,2) NOT NULL,
+  `description` varchar(4096) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `invoice_id` bigint(20) DEFAULT NULL,
+  `document_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invoice_line_id` bigint(20) DEFAULT NULL,
+  `updated_time` datetime NOT NULL,
+  PRIMARY KEY (`charge_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=287 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group` */
 
@@ -34,22 +60,24 @@ CREATE TABLE `group` (
   `group_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`group_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group_member` */
 
 CREATE TABLE `group_member` (
   `group_id` int(11) NOT NULL,
   `member_id` int(11) NOT NULL,
-  PRIMARY KEY (`member_id`)
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`member_id`,`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `keycode` */
 
 CREATE TABLE `keycode` (
-  `keycode_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `keycode_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `member_id` int(11) NOT NULL,
-  `updated` datetime NOT NULL
+  `updated` datetime NOT NULL,
+  PRIMARY KEY (`keycode_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `member` */

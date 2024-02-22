@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 
 namespace Mms.Api.Controllers
 {
+	[ApiExplorerSettings(IgnoreApi = true)]
+
 	public class InvoiceController : Controller
 	{
 		[HttpGet]
@@ -22,37 +24,7 @@ namespace Mms.Api.Controllers
 
 			return View(invoice);
 		}
-		/*
-		[STAThread]
-		[HttpGet]
-		[Route("mvinvoice/{id}.pdf")]
-		public async Task<IActionResult> MvPdfInvoice(int id)
-		{
-			var invoice = GetMakersVillageInvoice(id);
 
-			var html = await this.RenderViewAsync("mvinvoice", invoice);
-
-			var converter = new SynchronizedConverter(new PdfTools());
-
-			var document = new HtmlToPdfDocument {
-				GlobalSettings = {
-					ColorMode = ColorMode.Grayscale,
-					Orientation = Orientation.Portrait,
-					PaperSize = PaperKind.Letter,
-				},
-				Objects = {
-					new ObjectSettings() {
-						PagesCount = true,
-						HtmlContent = html,
-					},
-				},
-			};
-
-			var pdf = converter.Convert(document);
-
-			return new FileContentResult(pdf, "application/pdf");
-		}
-		*/
 		private MakersVillageInvoice GetMakersVillageInvoice(int id)
 		{
 			using var db = new BillingDatabase();

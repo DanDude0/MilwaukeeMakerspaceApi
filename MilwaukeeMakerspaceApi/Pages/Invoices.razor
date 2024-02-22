@@ -1,4 +1,5 @@
 @page "/invoices"
+@attribute [Authorize(Roles = "MV Admin")]
 @inject InvoiceService service
 
 <h1>Invoices</h1>
@@ -42,7 +43,7 @@
 <table class="table">
 	<thead>
 		<tr>
-			<th colspan="2">Name</th>
+			<th>Name</th>
 			<th>Paid</th>
 			<th>Outstanding</th>
 			<th>Created</th>
@@ -53,7 +54,6 @@
 		{
 		<tr>
 			<td><a target="_blank" href="/mvinvoice/@item.Id">@item.Title</a></td>
-			<td><a target="_blank" href="/mvinvoice/@(item.Id).pdf">PDF</a></td>
 			<td style="text-align: right;">@item.TotalMvPaid</td>
 			<td style="text-align: right;">@item.TotalMvOutstanding</td>
 			<td style="text-align: right;">@item.CreatedDate</td>

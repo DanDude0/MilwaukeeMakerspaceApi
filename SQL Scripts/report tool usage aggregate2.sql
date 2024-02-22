@@ -1,15 +1,14 @@
+SELECT
+	MEMBER,
+	SEC_TO_TIME(SUM(used)) AS used
+FROM(
 SELECT  
-	m.name,
-	r.name,
-	a.attempt_time AS 'login',
-	IFNULL(
+	m.name AS 'member',
+	r.name AS 'tool',
+	TIMESTAMPDIFF(SECOND, a.attempt_time, IFNULL(
 		MIN(l.attempt_time), 
 		DATE_ADD(a.attempt_time, INTERVAL r.timeout SECOND)
-	) AS 'logout',
-	SEC_TO_TIME(TIMESTAMPDIFF(SECOND, a.attempt_time, IFNULL(
-		MIN(l.attempt_time), 
-		DATE_ADD(a.attempt_time, INTERVAL r.timeout SECOND)
-	))) AS usage_time
+	)) AS 'used'
 FROM 
 	attempt a 
 	INNER JOIN MEMBER m 
@@ -22,12 +21,18 @@ FROM
 		AND l.attempt_time > a.attempt_time
 		AND l.attempt_time < DATE_ADD(a.attempt_time, INTERVAL r.timeout SECOND)
 WHERE 
-	a.reader_id IN (6,7,8,20) 
+	a.reader_id IN (10) 
 	AND a.access_granted = 1
-	AND a.attempt_time > '2023-11-23'
+	AND a.attempt_time > '2022-09-01'
 GROUP BY
 	m.name,
 	r.name,
 	a.attempt_time
 ORDER BY 
+	m.name ASC,
+	r.name ASC,
 	a.attempt_time ASC
+) used
+GROUP BY
+	MEMBER
+ORDER BY used DESC

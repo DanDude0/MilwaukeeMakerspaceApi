@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 
 namespace Mms.Api.Controllers
 {
+	[ApiExplorerSettings(IgnoreApi = true)]
+
 	public class MmsTreasurerReportController : Controller
 	{
 		[HttpGet]
@@ -34,7 +36,7 @@ namespace Mms.Api.Controllers
 				membershipHistory[i].Net = membershipHistory[i].Total - membershipHistory[i - 1].Total;
 			}
 
-			membershipHistory.RemoveAt(1);
+			membershipHistory.RemoveAt(0);
 
 			model.MembershipHistory = membershipHistory;
 

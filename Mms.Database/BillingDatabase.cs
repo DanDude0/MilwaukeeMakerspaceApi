@@ -9,7 +9,7 @@ namespace Mms.Database
 
 		public BillingDatabase()
 			: base(ConnectionString,
-				new MySql.Data.MySqlClient.MySqlClientFactory())
+				  MySqlConnector.MySqlConnectorFactory.Instance)
 		{
 		}
 	}
