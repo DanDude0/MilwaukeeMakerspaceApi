@@ -28,7 +28,9 @@ namespace Mms.Api.Models
 		public decimal LastYearIncome { get; set; }
 		public decimal LastYearSpending { get; set; }
 		public decimal LastYearNetTotal { get; set; }
+		public decimal LastYearNetTotalLessBuilding { get; set; }
 		public decimal LastYearNetGeneralFunds { get; set; }
+		public decimal LastYearNetGeneralFundsLessBuilding { get; set; }
 		public decimal LastYearNetAreaFunds { get; set; }
 
 
@@ -42,6 +44,11 @@ namespace Mms.Api.Models
 			public int Suspended { get; set; }
 			public int Net { get; set; }
 			public double RetentionPecentage { get; set; }
+		}
+		public class MembershipRange
+		{
+			public int Min { get; set; }
+			public int Max { get; set; }
 		}
 	}
 }

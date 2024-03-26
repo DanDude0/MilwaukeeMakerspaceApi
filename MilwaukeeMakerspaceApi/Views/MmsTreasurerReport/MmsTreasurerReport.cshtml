@@ -12,7 +12,7 @@
         body {
             background-color: #fff;
             color: #000;
-            font-size: 12pt;
+            font-size: 11pt;
             font-family: helvetica;
             font-weight: normal;
         }
@@ -46,17 +46,17 @@
         }
 
         th {
-            padding: 0.4em 1em;
+            padding: 0.3em 1em;
             border: 1px solid #999;
         }
 
         td {
-            padding: 0.4em 1em;
+            padding: 0.3em 1em;
             border: 1px solid #999;
         }
 
         p {
-            padding: 0.4em 1em;
+            padding: 0em 1em;
         }
 
         .money {
@@ -81,11 +81,13 @@
     <h2>Membership Growth</h2>
     <table>
         <tr>
-            <th>Month</th>
+            <th style="width: 24em;">Month</th>
             <th>General Members</th>
             <th>Family Members</th>
             <th>Total Members</th>
             <th>Net Change</th>
+            <th>New Members</th>
+            <th>% Retention</th>
         </tr>
         @foreach (var line in Model.MembershipHistory)
         {
@@ -95,6 +97,8 @@
                 <td>@line.Family</td>
                 <td>@line.Total</td>
                 <td>@line.Net</td>
+                <td>@line.New</td>
+                <td>@line.RetentionPecentage.ToString("00.0")</td>
             </tr>
         }
     </table>
@@ -112,7 +116,9 @@
     <p>Income: $@Model.LastYearIncome</p>
     <p>Spending: $@Model.LastYearSpending</p>
     <p>Net: $@Model.LastYearNetTotal</p>
+    <p>Net (Excluding Building Purchase): $@Model.LastYearNetTotalLessBuilding</p>
     <p>Net Area Funds: $@Model.LastYearNetAreaFunds</p>
     <p>Net General Funds: $@Model.LastYearNetGeneralFunds</p>
+    <p>Net General Funds (Excluding Building Purchase): $@Model.LastYearNetGeneralFundsLessBuilding</p>
 </body>
 </html>

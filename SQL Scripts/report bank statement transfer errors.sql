@@ -1,0 +1,1 @@
+SELECT TIME, SUM(transfers) AS 'error' FROM bank_statement GROUP BY TIME ORDER BY TIME DESC
