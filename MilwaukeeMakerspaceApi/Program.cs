@@ -40,6 +40,7 @@ namespace Mms.Api
 	{
 		private static SsdpDevicePublisher SsdpPublisher4;
 		public static string SsdpDescription { get; private set; }
+		public static List<string> BackupServers { get; private set; }
 
 		public static int Main(string[] args)
 		{
@@ -69,7 +70,7 @@ namespace Mms.Api
 				var waClientId = builder.Configuration["WildApricot:ClientId"];
 				var waClientSecret = builder.Configuration["WildApricot:ClientSecret"];
 				var reverseProxyNetwork = builder.Configuration["ReverseProxyNetwork"];
-
+				BackupServers = builder.Configuration.GetSection("BackupServers").Get<List<string>>();
 
 				if (!string.IsNullOrWhiteSpace(waClientId) && !string.IsNullOrWhiteSpace(waClientId)) {
 					builder.Services.AddAuthentication(options =>
