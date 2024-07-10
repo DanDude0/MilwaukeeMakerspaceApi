@@ -214,7 +214,10 @@ namespace Mms.Database
         [Column]
         public DateTime initialized { get; set; }
 
-        [Column]
+		[Column]
+		public sbyte invert_screen { get; set; }
+
+		[Column]
         public string name { get; set; }
 
         [Column]
@@ -227,7 +230,7 @@ namespace Mms.Database
         public string status { get; set; }
 
         [Column]
-        public int timeout { get; set; }
+        public decimal timeout { get; set; }
 
         [Column]
         public string version { get; set; }

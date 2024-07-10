@@ -18,7 +18,8 @@ namespace Mms.Api.Controllers
 		private class DbResult
 		{
 			public string name { get; set; }
-			public int timeout { get; set; }
+			public decimal timeout { get; set; }
+			public bool invertScreen { get; set; }
 			public bool enabled { get; set; }
 			public string groupName { get; set; }
 			public string settings { get; set; }
@@ -51,6 +52,7 @@ namespace Mms.Api.Controllers
 						SELECT 
 							r.name,
 							r.timeout,
+							r.invert_screen AS invertScreen,
 							r.enabled,
 							g.name AS groupName,
 							r.settings
@@ -81,10 +83,12 @@ namespace Mms.Api.Controllers
 				var output = new ReaderResult {
 					Name = result.name,
 					Timeout = result.timeout,
+					InvertScreen = result.invertScreen,
 					Enabled = result.enabled,
 					Group = result.groupName,
 					Settings = result.settings,
 					ServerUTC = DateTime.UtcNow,
+					BackupServers = Program.BackupServers.ToArray(),
 				};
 
 				return new JsonResult(output);
