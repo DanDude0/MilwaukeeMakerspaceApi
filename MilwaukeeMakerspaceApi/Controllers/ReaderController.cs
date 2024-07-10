@@ -88,7 +88,7 @@ namespace Mms.Api.Controllers
 					Group = result.groupName,
 					Settings = result.settings,
 					ServerUTC = DateTime.UtcNow,
-					BackupServers = Program.BackupServers.ToArray(),
+					BackupServers = Program.BackupServers?.ToArray() ?? [],
 				};
 
 				return new JsonResult(output);
