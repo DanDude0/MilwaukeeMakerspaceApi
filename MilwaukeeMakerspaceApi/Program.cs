@@ -53,7 +53,10 @@ namespace Mms.Api
 			try {
 				Log.Information("Building Web Application");
 
-				var builder = WebApplication.CreateBuilder(args);
+				var builder = WebApplication.CreateBuilder(new WebApplicationOptions {
+					Args = args,
+					WebRootPath = "webroot",
+				});
 
 				builder.Host.UseSerilog((context, services, configuration) => configuration
 					.ReadFrom.Configuration(context.Configuration)
@@ -69,6 +72,8 @@ namespace Mms.Api
 				WildApricotClient.ApiKey = builder.Configuration["WildApricot:ApiKey"];
 				var waClientId = builder.Configuration["WildApricot:ClientId"];
 				var waClientSecret = builder.Configuration["WildApricot:ClientSecret"];
+				var qbClientId = builder.Configuration["QuickBooks:ClientId"];
+				var qbClientSecret = builder.Configuration["QuickBooks:ClientSecret"];
 				var reverseProxyNetwork = builder.Configuration["ReverseProxyNetwork"];
 				BackupServers = builder.Configuration.GetSection("BackupServers").Get<List<string>>();
 
@@ -167,7 +172,6 @@ namespace Mms.Api
 					});
 				});
 
-				builder.WebHost.UseWebRoot("wwwroot");
 				builder.WebHost.UseStaticWebAssets();
 
 				var app = builder.Build();

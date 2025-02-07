@@ -23,6 +23,25 @@
 	</EditForm>
 </div>
 <div class="clearfix">
+    <EditForm Model="@pushInvoiceRequest" OnValidSubmit="@PushInvoices" class="card p-3 my-3 float-left">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h2>Push Invoices into Quick Books</h2>
+        <div class="input-group">
+            <DateRangePicker Ranges="DateRanges" class="form-control" placeholder="Date Range" @bind-StartDate="pushInvoiceRequest.Start" @bind-EndDate="pushInvoiceRequest.End" required />
+            <button class="btn btn-primary">Load Invoices</button>
+        </div>
+        <div id="pushActive" hidden="@notPushing">
+            <div class="progress my-3">
+                <div id="pushProgress" class="progress-bar @pushAnimated" role="progressbar" aria-valuenow="@pushStatus.progress" aria-valuemin="0" aria-valuemax="@pushStatus.range" style="width: @pushPercent%"></div>
+            </div>
+            <div id="pushStatus">
+                @pushStatus.status
+            </div>
+        </div>
+    </EditForm>
+</div>
+<div class="clearfix">
 	<EditForm Model="@generateInvoiceRequest" OnValidSubmit="@GenerateMVInvoice" class="card p-3 my-3 float-left">
 		<DataAnnotationsValidator />
 		<ValidationSummary />
@@ -64,14 +83,19 @@
 
 @code {
 	bool notLoading = true;
-	bool notGenerating = true;
+    bool notPushing = true;
+    bool notGenerating = true;
 	IList<MakersVillageInvoice> list;
 	LoadInvoiceRequest loadInvoiceRequest = new LoadInvoiceRequest();
-	GenerateInvoiceRequest generateInvoiceRequest = new GenerateInvoiceRequest();
+    LoadInvoiceRequest pushInvoiceRequest = new LoadInvoiceRequest();
+    GenerateInvoiceRequest generateInvoiceRequest = new GenerateInvoiceRequest();
 	OperationStatus loadStatus = new OperationStatus();
 	string loadPercent = "0";
 	string loadAnimated = "";
-	OperationStatus generateStatus = new OperationStatus();
+    OperationStatus pushStatus = new OperationStatus();
+    string pushPercent = "0";
+    string pushAnimated = "";
+    OperationStatus generateStatus = new OperationStatus();
 
 	Dictionary<string, DateRange> DateRanges => new Dictionary<string, DateRange> {
 			{ "Last Month" , new DateRange
@@ -138,7 +162,40 @@
 		}
 	}
 
-	private async Task GenerateMVInvoice()
+    private async Task PushInvoices()
+    {
+        try
+        {
+            if (pushInvoiceRequest.Start == null || pushInvoiceRequest.End == null)
+                return;
+
+            notPushing = false;
+            pushAnimated = "progress-bar-striped progress-bar-animated";
+
+            var pushing = service.Push(pushInvoiceRequest.Start.Value, pushInvoiceRequest.End.Value);
+
+            while (pushing.Status != TaskStatus.Faulted && pushing.Status != TaskStatus.RanToCompletion)
+            {
+                pushStatus = service.pushStatus;
+                pushPercent = (100.0 * pushStatus.progress / pushStatus.range).ToString("N2");
+
+                StateHasChanged();
+
+                await Task.Delay(250);
+            }
+
+            await pushing;
+
+            pushPercent = "100";
+            pushAnimated = "";
+        }
+        catch (Exception ex)
+        {
+            pushStatus.status = $"Error loading:\n\n{ex.ToString()}";
+        }
+    }
+
+    private async Task GenerateMVInvoice()
 	{
 		try
 		{

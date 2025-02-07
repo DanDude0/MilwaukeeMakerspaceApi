@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Intuit.Ipp.Data;
 using Mms.Api.Models;
 using Mms.Database;
 using Newtonsoft.Json;
@@ -12,6 +13,7 @@ namespace Mms.Api.Services
 	public class InvoiceService
 	{
 		public OperationStatus loadStatus { get; private set; } = new OperationStatus();
+		public OperationStatus pushStatus { get; private set; } = new OperationStatus();
 
 		private class DbInvoiceResult
 		{
@@ -215,7 +217,7 @@ namespace Mms.Api.Services
 			return result;
 		}
 
-		public async Task Load(DateTimeOffset start, DateTimeOffset end)
+		public async System.Threading.Tasks.Task Load(DateTimeOffset start, DateTimeOffset end)
 		{
 			var wildApricot = new WildApricotClient();
 
@@ -399,6 +401,127 @@ namespace Mms.Api.Services
 			}
 			else
 				loadStatus.status = "Load Completed";
+		}
+
+		public async System.Threading.Tasks.Task Push(DateTimeOffset start, DateTimeOffset end)
+		{
+			var wildApricot = new WildApricotClient();
+
+			pushStatus.range = 1;
+			pushStatus.progress = 0;
+			pushStatus.status = "Pushing Invoice List to Quickbooks";
+
+			pushStatus.status = "Pushing Invoices";
+
+			//var count = 0;
+			var errors = new List<string>();
+
+			using var db = new BillingDatabase();
+			var sql = @"
+				SELECT
+					i.invoice_id, 
+					i.document_number, 
+					i.created_date,
+					i.contact_name,
+					i.public_notes,
+					i.private_notes,
+					i.amount AS billed_amount,
+					p.amount AS payment_amount,
+					i.paid_amount AS paid_amount,
+					s.notes
+				FROM 
+					invoice i 
+					INNER JOIN invoice_line il 
+						ON i.invoice_id = il.invoice_id
+					LEFT JOIN (
+						SELECT 
+							invoice_id, 
+							SUM(amount) AS amount
+						FROM 
+							payment_allocation 
+						WHERE
+							payment_date >= @0
+							AND payment_date < @1
+						GROUP BY 
+							invoice_id) p
+						ON i.invoice_id = p.invoice_id
+					LEFT JOIN (
+						SELECT 
+							invoice_id, 
+							notes 
+						FROM 
+							storage_notes 
+						GROUP BY 
+							invoice_id 
+						ORDER BY 
+							snapshot_date ASC) s
+						ON i.invoice_id = s.invoice_id					
+				WHERE
+					il.notes LIKE '%Makers Village%'
+					AND (p.amount > 0
+						OR i.paid_amount < i.amount)
+					AND voided_date < '2000-01-01'
+				GROUP BY
+					i.invoice_id
+				ORDER BY
+					i.invoice_date ASC";
+
+			var members = await db.FetchAsync<DbInvoiceResult>(sql, start, end);
+
+			var invoices = new List<MakersVillageInvoice.MemberInvoice>(members.Count);
+
+			foreach (var item in members) {
+				try {
+					var member = new MakersVillageInvoice.MemberInvoice {
+						Id = item.document_number,
+						Created = item.created_date,
+						Name = item.contact_name,
+						PublicNotes = item.public_notes,
+						PrivateNotes = item.private_notes,
+						MmsBilled = item.billed_amount,
+						MmsPrePaid = item.paid_amount - item.payment_amount,
+						MmsPaid = item.payment_amount,
+						MmsOutstanding = item.billed_amount - item.paid_amount,
+						StorageNotes = item.notes,
+					};
+
+					var sql2 = @"
+					SELECT 
+						notes, 
+						amount
+					FROM 
+						invoice_line
+					WHERE
+						invoice_id = @0
+					ORDER BY
+						invoice_line_id ASC";
+
+					var lines = await db.FetchAsync<MakersVillageInvoice.InvoiceLine>(sql2, item.invoice_id);
+
+					member.Lines = lines;
+					member.MvPrePaid = Math.Round(member.MvOwed * member.MmsPrePaid / member.MmsBilled, 2);
+					member.MvPaid = Math.Round(member.MvOwed * member.MmsPaid / member.MmsBilled, 2);
+					member.MvOutstanding = Math.Round(member.MvOwed * member.MmsOutstanding / member.MmsBilled, 2);
+				}
+				catch (Exception ex) {
+					errors.Add($"Invoice '{item}': {ex.Message}");
+				}
+			}
+
+			loadStatus.range = 0;
+			loadStatus.progress = 0;
+
+			if (errors.Count > 0) {
+				var errorList = "\n" + string.Join('\n', errors);
+
+				Log.Error($"Logged the following errors while loading invoices from Wild Apricot:{errorList})");
+
+				loadStatus.status = $"Errors: {errorList}";
+			}
+			else
+				loadStatus.status = "Load Completed";
+
+			throw new NotImplementedException();
 		}
 	}
 }
