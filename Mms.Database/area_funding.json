@@ -1,5 +1,5 @@
 {
-	"ProviderName": "MySql",
+	"ProviderName": "MySqlConnector",
 	"ConnectionString": "Server=mmsaccess.vfdworld.com;Port=3306;User=accessuser;Password=mkemaker!34;Database=area_funding;SslMode=none;convert zero datetime=True",
 	"SchemaName": "area_funding",
 	"ClassPrefix": null,

@@ -1,5 +1,5 @@
 {
-	"ProviderName": "MySql",
+	"ProviderName": "MySqlConnector",
 	"ConnectionString": "Server=mmsaccess.vfdworld.com;Port=3306;User=accessuser;Password=mkemaker!34;Database=access_control;SslMode=none;convert zero datetime=True",
 	"SchemaName": "access_control",
 	"ClassPrefix": null,
