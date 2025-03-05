@@ -11416,12 +11416,22 @@ namespace WildApricot
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class ResourceUrl
 	{
+		private readonly string _value;
+
 		[Newtonsoft.Json.JsonConstructor]
-
-		public ResourceUrl()
-
+		public ResourceUrl(string s)
 		{
+			_value = s;
+		}
 
+		public static implicit operator string(ResourceUrl r)
+		{
+			return r._value;
+		}
+
+		public static implicit operator ResourceUrl(string s)
+		{
+			return new ResourceUrl(s);
 		}
 
 		private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;

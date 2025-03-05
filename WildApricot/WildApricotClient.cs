@@ -17,8 +17,9 @@ namespace WildApricot
 		public WildApricotClient()
 		{
 			// From generated
+			BaseUrl = "https://api.wildapricot.org/v2.3";
 			_httpClient = new HttpClient();
-			_settings = new Lazy<JsonSerializerSettings>(CreateSerializerSettings);
+			Initialize();
 
 			// Get OAuth token using key
 			var authToken = Encoding.ASCII.GetBytes($"APIKEY:{ApiKey}");
