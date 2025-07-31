@@ -11,6 +11,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -219,7 +220,7 @@ namespace Mms.Api
 
 				var task = app.RunAsync();
 
-				PublishDevice();
+				_ = PublishDevice();
 
 				task.GetAwaiter().GetResult();
 			}
@@ -233,45 +234,67 @@ namespace Mms.Api
 		}
 
 		// Call this method from somewhere to actually do the publish.
-		private static void PublishDevice()
+		private static Task PublishDevice()
 		{
-			try {
-				var ip4 = GetLocalIp4Address();
-				var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			return Task.Run(async () =>
+			{
+				try {
+					var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+					var oldIp4 = "";
 
-				var deviceDefinition4 = new SsdpRootDevice() {
-					Location = new Uri($"http://{ip4}/info/service"),
-					PresentationUrl = new Uri($"http://{ip4}/"),
-					FriendlyName = "Milwaukee Makerspace Api",
-					Manufacturer = "Milwaukee Makerspace",
-					ModelName = "Milwaukee Makerspace Api",
-					Uuid = "6111f321-2cee-455e-b203-4abfaf14b516",
-					ManufacturerUrl = new Uri("https://milwaukeemakerspace.org/"),
-					ModelUrl = new Uri("https://github.com/DanDude0/MilwaukeeMakerspaceApi/"),
-					ModelNumber = version,
-				};
+					while (true) {
+						var ip4 = GetLocalIp4Address();
 
-				// Have to bind to all addresses on Linux, or broadcasts don't work!
-				if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
-					ip4 = IPAddress.Any.ToString();
+						if (ip4 != oldIp4) {
+							oldIp4 = ip4;
+							SsdpPublisher4?.Dispose();
+							SsdpPublisher4 = null;
+
+							var deviceDefinition4 = new SsdpRootDevice() {
+								Location = new Uri($"http://{ip4}/info/service"),
+								PresentationUrl = new Uri($"http://{ip4}/"),
+								FriendlyName = "Milwaukee Makerspace Api",
+								Manufacturer = "Milwaukee Makerspace",
+								ModelName = "Milwaukee Makerspace Api",
+								Uuid = "6111f321-2cee-455e-b203-4abfaf14b516",
+								ManufacturerUrl = new Uri("https://milwaukeemakerspace.org/"),
+								ModelUrl = new Uri("https://github.com/DanDude0/MilwaukeeMakerspaceApi/"),
+								ModelNumber = version,
+							};
+
+							// Have to bind to all addresses on Linux, or broadcasts don't work!
+							if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
+								ip4 = IPAddress.Any.ToString();
+							}
+
+							Log.Information($"Now Publishing SSDP on {ip4}");
+
+							SsdpPublisher4 = new SsdpDevicePublisher(new SsdpCommunicationsServer(new SocketFactory(ip4)));
+							SsdpPublisher4.StandardsMode = SsdpStandardsMode.Relaxed;
+							SsdpPublisher4.AddDevice(deviceDefinition4);
+
+							SsdpDescription = deviceDefinition4.ToDescriptionDocument();
+						}
+
+						await Task.Delay(60000);
+					};
 				}
-
-				Log.Information($"Publishing SSDP on {ip4}");
-
-				SsdpPublisher4 = new SsdpDevicePublisher(new SsdpCommunicationsServer(new SocketFactory(ip4)));
-				SsdpPublisher4.StandardsMode = SsdpStandardsMode.Relaxed;
-				SsdpPublisher4.AddDevice(deviceDefinition4);
-
-				SsdpDescription = deviceDefinition4.ToDescriptionDocument();
-			}
-			catch (Exception ex) {
-				Log.Fatal(ex, "Error publishing device over SSDP");
-			}
+				catch (Exception ex) {
+					Log.Fatal(ex, "Error publishing device over SSDP");
+				}
+			});
 		}
 
 		private static string GetLocalIp4Address()
 		{
 			var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+			var count = 0;
+
+			while (NetworkInterface.GetIsNetworkAvailable() == false && count < 10) {
+				Log.Information("Network not available, waiting for interface to go up.");
+				count += 1;
+				Thread.Sleep(5000);
+			}
 
 			foreach (var network in networkInterfaces) {
 				if (network.OperationalStatus != OperationalStatus.Up)
