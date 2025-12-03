@@ -32,7 +32,7 @@ namespace Mms.Api
 
 				// If WA Admin Status is set, they are automatically granted this role.
 				if (roles.Contains("MMS Admin")) {
-					if (claims.FirstOrDefault(c => c.Type == "AccountAdministrator").Value == "True")
+					//if (claims.FirstOrDefault(c => c.Type == "AccountAdministrator").Value == "True")
 						validRole = true;
 				}
 				else {

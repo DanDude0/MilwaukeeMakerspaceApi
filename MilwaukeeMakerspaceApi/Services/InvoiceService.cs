@@ -14,6 +14,7 @@ namespace Mms.Api.Services
 	{
 		public OperationStatus loadStatus { get; private set; } = new OperationStatus();
 		public OperationStatus pushStatus { get; private set; } = new OperationStatus();
+		public string reloadSpecificStatus { get; private set; }
 
 		private class DbInvoiceResult
 		{
@@ -401,6 +402,101 @@ namespace Mms.Api.Services
 			}
 			else
 				loadStatus.status = "Load Completed";
+		}
+
+		public async System.Threading.Tasks.Task ReloadSpecific(string documentNumber)
+		{
+
+			try {
+				var wildApricot = new WildApricotClient();
+
+				reloadSpecificStatus = "Reloading Invoice";
+
+				using var db = new BillingDatabase();
+
+				var sql = @"
+				SELECT
+					invoice_id
+				FROM
+					invoice
+				WHERE
+					document_number = @0";
+
+				var invoiceId = await db.SingleAsync<int>(sql, documentNumber);
+
+				var waInvoice = await wildApricot.GetInvoiceDetailsAsync(wildApricot.accountId, invoiceId);
+
+				var dbInvoice = new invoice {
+					invoice_id = waInvoice.Id.Value,
+					document_number = waInvoice.DocumentNumber,
+					invoice_date = waInvoice.DocumentDate.Value.LocalDateTime,
+					amount = (decimal)waInvoice.Value.Value,
+					paid_amount = (decimal)waInvoice.PaidAmount.Value,
+					is_paid = (sbyte)((waInvoice.IsPaid ?? false) ? 1 : 0),
+					type = waInvoice.OrderType.ToString(),
+					private_notes = waInvoice.Memo ?? "",
+					public_notes = waInvoice.PublicMemo ?? "",
+					created_date = waInvoice.CreatedDate.Value.LocalDateTime,
+					updated_date = waInvoice.UpdatedDate.GetValueOrDefault().LocalDateTime,
+					voided_date = waInvoice.VoidedDate.GetValueOrDefault().LocalDateTime,
+					contact_id = waInvoice.Contact.Id.Value,
+					contact_name = waInvoice.Contact.Name,
+					creator_id = waInvoice.CreatedBy?.Id ?? -1,
+					updater_id = waInvoice.UpdatedBy?.Id ?? -1,
+				};
+
+				db.Delete<invoice>(dbInvoice.invoice_id);
+				db.Insert(dbInvoice);
+
+				var i = 0;
+				var makersVillageInvoice = false;
+
+				foreach (var waLine in waInvoice.OrderDetails) {
+					i += 1;
+					loadStatus.status = $"Loading Invoice Line {i}";
+
+					var dbLine = new invoice_line {
+						invoice_line_id = ((long)dbInvoice.invoice_id * 100) + i,
+						invoice_id = dbInvoice.invoice_id,
+						amount = (decimal)waLine.Value.Value,
+						type = waLine.OrderDetailType.ToString(),
+						notes = waLine.Notes,
+					};
+
+					db.Delete<invoice_line>(dbLine.invoice_line_id);
+					db.Insert(dbLine);
+
+					if (dbLine.notes.Contains("Makers Village"))
+						makersVillageInvoice = true;
+				}
+
+				if (makersVillageInvoice) {
+					var waContact = await wildApricot.GetContactDetailsAsync(wildApricot.accountId, (int)dbInvoice.contact_id);
+					var note = "";
+
+					foreach (var field in waContact.FieldValues) {
+						if (field.FieldName == "Makers Village Storage Description") {
+							note = field.Value.ToString();
+
+							break;
+						}
+					}
+
+					var dbNote = new storage_note {
+						invoice_id = dbInvoice.invoice_id,
+						contact_id = dbInvoice.contact_id,
+						snapshot_date = DateTime.Now,
+						notes = note,
+					};
+
+					db.Insert(dbNote);
+				}
+
+				reloadSpecificStatus = "Load Completed";
+			}
+			catch (Exception ex) {
+				reloadSpecificStatus = $"Invoice '{documentNumber}': {ex.Message}";
+			}
 		}
 
 		public async System.Threading.Tasks.Task Push(DateTimeOffset start, DateTimeOffset end)

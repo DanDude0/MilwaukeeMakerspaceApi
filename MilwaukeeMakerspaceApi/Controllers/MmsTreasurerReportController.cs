@@ -48,7 +48,15 @@ namespace Mms.Api.Controllers
 
 				membershipHistory[i].New = newMembersInMonth;
 
-				membershipHistory[i].RetentionPecentage = ((double)membershipHistory[i].Total - membershipHistory[i].New) / membershipHistory[i - 1].Total * 100;
+				sql = "SELECT COUNT(*) FROM member WHERE expires BETWEEN @0 AND @1";
+
+				var lapsedMembersInMonth = accessDb.ExecuteScalar<int>(sql, membershipHistory[i].Date.AddDays(-1), membershipHistory[i].Date.AddMonths(1).AddDays(-1));
+
+				membershipHistory[i].Lapsed = lapsedMembersInMonth;
+
+				membershipHistory[i].Rejoined = membershipHistory[i].Net + membershipHistory[i].Lapsed - membershipHistory[i].New;
+
+				membershipHistory[i].RetentionPecentage = ((double)membershipHistory[i].Total - membershipHistory[i].Lapsed) / membershipHistory[i].Total * 100;
 			}
 
 			membershipHistory.RemoveAt(0);
@@ -58,7 +66,7 @@ namespace Mms.Api.Controllers
 			var lastMonth = fundingDb.Single<FlowResult>("SELECT SUM(income) AS 'Income', SUM(spending+fees) AS 'Spending', SUM(ending_balance) AS 'Balance' FROM bank_statement WHERE `time` = @0", date.AddMonths(-1));
 
 			model.CurrentFunds = lastMonth.Balance;
-			model.ReserveFunds = 64000;
+			model.ReserveFunds = 150000;
 			model.CommittedAreaFunding = fundingDb.ExecuteScalar<int>("SELECT total FROM total_committed");
 			model.GeneralFunds = model.CurrentFunds - model.ReserveFunds - model.CommittedAreaFunding;
 
@@ -71,7 +79,6 @@ namespace Mms.Api.Controllers
 			model.LastYearIncome = last12.Income;
 			model.LastYearSpending = last12.Spending;
 			model.LastYearNetTotal = last12.Income - last12.Spending;
-			model.LastYearNetTotalLessBuilding = model.LastYearNetTotal + 123764.47m;
 
 			model.LastYearNetAreaFunds = fundingDb.ExecuteScalar<decimal>(@"SELECT
   SUM(`ledger`.`threed_printer`) +
@@ -85,7 +92,10 @@ namespace Mms.Api.Controllers
   SUM(`ledger`.`electronic`) +
   SUM(`ledger`.`finishing`) +
   SUM(`ledger`.`forge`) +
+  SUM(`ledger`.`glass_fusing`) +
   SUM(`ledger`.`ham_radio`) +
+  SUM(`ledger`.`hand_tools`) +
+  SUM(`ledger`.`hand_wood_carving`) +
   SUM(`ledger`.`jewelry`) +
   SUM(`ledger`.`lampworking`) +
   SUM(`ledger`.`laser`) +
@@ -93,6 +103,7 @@ namespace Mms.Api.Controllers
   SUM(`ledger`.`long_arm`) +
   SUM(`ledger`.`makerfaire`) +
   SUM(`ledger`.`metal`) +
+  SUM(`ledger`.`models`) + 
   SUM(`ledger`.`neon`) +
   SUM(`ledger`.`paint`) +
   SUM(`ledger`.`power_wheel`) +
@@ -107,7 +118,6 @@ FROM `ledger`
 WHERE `time` >= @0 AND `time` < @1", date.AddMonths(-12), date);
 
 			model.LastYearNetGeneralFunds = model.LastYearNetTotal - model.LastYearNetAreaFunds;
-			model.LastYearNetGeneralFundsLessBuilding = model.LastYearNetGeneralFunds + 123764.47m;
 
 			return View(model);
 		}

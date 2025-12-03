@@ -1,0 +1,1 @@
+SELECT a.member_id, COUNT(a.attempt_id) AS fob_reads, m.name FROM attempt a LEFT JOIN `member` m ON a.member_id = m.member_id WHERE a.access_granted = 1 AND a.logout = 0 AND a.attempt_time > DATE_ADD(NOW(), INTERVAL -1 YEAR) GROUP BY a.member_id ORDER BY fob_reads DESC;

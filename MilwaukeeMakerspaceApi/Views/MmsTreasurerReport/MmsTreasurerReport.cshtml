@@ -81,11 +81,12 @@
     <h2>Membership Growth</h2>
     <table>
         <tr>
-            <th style="width: 24em;">Month</th>
+            <th style="width: 16em;">Month</th>
             <th>General Members</th>
             <th>Family Members</th>
             <th>Total Members</th>
             <th>Net Change</th>
+            <th>Lapsed Members</th>
             <th>New Members</th>
             <th>% Retention</th>
         </tr>
@@ -97,6 +98,7 @@
                 <td>@line.Family</td>
                 <td>@line.Total</td>
                 <td>@line.Net</td>
+                <td>@line.Lapsed</td>
                 <td>@line.New</td>
                 <td>@line.RetentionPecentage.ToString("00.0")</td>
             </tr>
@@ -116,9 +118,7 @@
     <p>Income: $@Model.LastYearIncome</p>
     <p>Spending: $@Model.LastYearSpending</p>
     <p>Net: $@Model.LastYearNetTotal</p>
-    <p>Net (Excluding Building Purchase): $@Model.LastYearNetTotalLessBuilding</p>
     <p>Net Area Funds: $@Model.LastYearNetAreaFunds</p>
     <p>Net General Funds: $@Model.LastYearNetGeneralFunds</p>
-    <p>Net General Funds (Excluding Building Purchase): $@Model.LastYearNetGeneralFundsLessBuilding</p>
 </body>
 </html>

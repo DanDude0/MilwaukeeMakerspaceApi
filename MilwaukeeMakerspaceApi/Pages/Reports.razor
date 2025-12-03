@@ -104,7 +104,7 @@ else
 
         string url = $"/mmstreasurerreport/{generateReportRequest.YearMonth}";
 
-        await jsRuntime.InvokeAsync<object>("open", url, "_blank");
+        await jsRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 
     private async Task RecordStatement()
