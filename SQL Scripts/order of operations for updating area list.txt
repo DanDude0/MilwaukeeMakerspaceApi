@@ -12,8 +12,8 @@ DELIMITER $$
 ALTER ALGORITHM=UNDEFINED DEFINER=`djonke`@`%` SQL SECURITY DEFINER VIEW `current` AS (
 SELECT
   `funds`.`month`             AS `month`,
+  `funds`.`general_fund`      AS `general_fund`,
   `funds`.`building_purchase` AS `building_purchase`,
-  `funds`.`threed_printer`    AS `threed_printer`,
   `funds`.`automotive`        AS `automotive`,
   `funds`.`bicycle_repair`    AS `bicycle_repair`,
   `funds`.`casting`           AS `casting`,
@@ -65,6 +65,7 @@ DELIMITER $$
 ALTER ALGORITHM=UNDEFINED DEFINER=`djonke`@`%` SQL SECURITY DEFINER VIEW `history` AS (
 SELECT
   `funds`.`month`             AS `month`,
+  `funds`.`general_fund`      AS `general_fund`,
   `funds`.`building_purchase` AS `building_purchase`,
   `funds`.`threed_printer`    AS `threed_printer`,
   `funds`.`automotive`        AS `automotive`,
@@ -119,9 +120,9 @@ DELIMITER $$
 
 ALTER ALGORITHM=UNDEFINED DEFINER=`djonke`@`%` SQL SECURITY DEFINER VIEW `ledger` AS 
 (
-(SELECT `funds`.`month` AS `time`,'Monthly Funding' AS `reason`,`funds`.`threed_printer` AS `threed_printer`,`funds`.`automotive` AS `automotive`,`funds`.`bicycle_repair` AS `bicycle_repair`,`funds`.`casting` AS `casting`,`funds`.`ceramic` AS `ceramic`,`funds`.`cnc` AS `cnc`,`funds`.`cosplay` AS `cosplay`,`funds`.`craft` AS `craft`,`funds`.`dalek` AS `dalek`,`funds`.`electronic` AS `electronic`,`funds`.`finishing` AS `finishing`,`funds`.`forge` AS `forge`,`funds`.`glass_fusing` AS `glass_fusing`,`funds`.`ham_radio` AS `ham_radio`,`funds`.`hand_tools` AS `hand_tools`,`funds`.`hand_wood_carving` AS `hand_wood_carving`,`funds`.`jewelry` AS `jewelry`,`funds`.`lampworking` AS `lampworking`,`funds`.`laser` AS `laser`,`funds`.`leather` AS `leather`,`funds`.`long_arm` AS `long_arm`,`funds`.`makerfaire` AS `makerfaire`,`funds`.`metal` AS `metal`,`funds`.`models` AS `models`,`funds`.`neon` AS `neon`,`funds`.`paint` AS `paint`,`funds`.`power_wheel` AS `power_wheel`,`funds`.`print` AS `print`,`funds`.`small_engine` AS `small_engine`,`funds`.`soda` AS `soda`,`funds`.`stained_glass` AS `stained_glass`,`funds`.`sublimation` AS `sublimation`,`funds`.`tiger_lily` AS `tiger_lily`,`funds`.`vacuum` AS `vacuum`,`funds`.`welding` AS `welding`,`funds`.`wood` AS `wood` FROM `funds` WHERE DAYOFMONTH(`funds`.`month`) = 1 AND HOUR(`funds`.`month`) = 0 GROUP BY YEAR(`funds`.`month`),MONTH(`funds`.`month`))
+(SELECT `funds`.`month` AS `time`,'Monthly Funding' AS `reason`,`funds`.`general_fund`,`funds`.`threed_printer` AS `threed_printer`,`funds`.`automotive` AS `automotive`,`funds`.`bicycle_repair` AS `bicycle_repair`,`funds`.`casting` AS `casting`,`funds`.`ceramic` AS `ceramic`,`funds`.`cnc` AS `cnc`,`funds`.`cosplay` AS `cosplay`,`funds`.`craft` AS `craft`,`funds`.`dalek` AS `dalek`,`funds`.`electronic` AS `electronic`,`funds`.`finishing` AS `finishing`,`funds`.`forge` AS `forge`,`funds`.`glass_fusing` AS `glass_fusing`,`funds`.`ham_radio` AS `ham_radio`,`funds`.`hand_tools` AS `hand_tools`,`funds`.`hand_wood_carving` AS `hand_wood_carving`,`funds`.`jewelry` AS `jewelry`,`funds`.`lampworking` AS `lampworking`,`funds`.`laser` AS `laser`,`funds`.`leather` AS `leather`,`funds`.`long_arm` AS `long_arm`,`funds`.`makerfaire` AS `makerfaire`,`funds`.`metal` AS `metal`,`funds`.`models` AS `models`,`funds`.`neon` AS `neon`,`funds`.`paint` AS `paint`,`funds`.`power_wheel` AS `power_wheel`,`funds`.`print` AS `print`,`funds`.`small_engine` AS `small_engine`,`funds`.`soda` AS `soda`,`funds`.`stained_glass` AS `stained_glass`,`funds`.`sublimation` AS `sublimation`,`funds`.`tiger_lily` AS `tiger_lily`,`funds`.`vacuum` AS `vacuum`,`funds`.`welding` AS `welding`,`funds`.`wood` AS `wood` FROM `funds` WHERE DAYOFMONTH(`funds`.`month`) = 1 AND HOUR(`funds`.`month`) = 0 GROUP BY YEAR(`funds`.`month`),MONTH(`funds`.`month`))
 UNION 
-(SELECT `spending`.`time` AS `time`,`spending`.`reason` AS `reason`,-`spending`.`threed_printer` AS `threed_printer`,-`spending`.`automotive` AS `automotive`,-`spending`.`bicycle_repair` AS `bicycle_repair`,-`spending`.`casting` AS `casting`,-`spending`.`ceramic` AS `ceramic`,-`spending`.`cnc` AS `cnc`,-`spending`.`cosplay` AS `cosplay`,-`spending`.`craft` AS `craft`,-`spending`.`dalek` AS `dalek`,-`spending`.`electronic` AS `electronic`,-`spending`.`finishing` AS `finishing`,-`spending`.`forge` AS `forge`,-`spending`.`glass_fusing` AS `glass_fusing`,-`spending`.`ham_radio` AS `ham_radio`,-`spending`.`hand_tools` AS `hand_tools`,-`spending`.`hand_wood_carving` AS `hand_wood_carving`,-`spending`.`jewelry` AS `jewelry`,-`spending`.`lampworking` AS `lampworking`,-`spending`.`laser` AS `laser`,-`spending`.`leather` AS `leather`,-`spending`.`long_arm` AS `long_arm`,-`spending`.`makerfaire` AS `makerfaire`,-`spending`.`metal` AS `metal`,-`spending`.`models` AS `models`,-`spending`.`neon` AS `neon`,-`spending`.`paint` AS `paint`,-`spending`.`power_wheel` AS `power_wheel`,-`spending`.`print` AS `print`,-`spending`.`small_engine` AS `small_engine`,-`spending`.`soda` AS `soda`,-`spending`.`stained_glass` AS `stained_glass`,-`spending`.`sublimation` AS `sublimation`,-`spending`.`tiger_lily` AS `tiger_lily`,-`spending`.`vacuum` AS `vacuum`,-`spending`.`welding` AS `welding`,-`spending`.`wood` AS `wood` FROM `spending` ORDER BY `time`)
+(SELECT `spending`.`time` AS `time`,`spending`.`reason` AS `reason`,-`spending`.`general_fund`,-`spending`.`threed_printer` AS `threed_printer`,-`spending`.`automotive` AS `automotive`,-`spending`.`bicycle_repair` AS `bicycle_repair`,-`spending`.`casting` AS `casting`,-`spending`.`ceramic` AS `ceramic`,-`spending`.`cnc` AS `cnc`,-`spending`.`cosplay` AS `cosplay`,-`spending`.`craft` AS `craft`,-`spending`.`dalek` AS `dalek`,-`spending`.`electronic` AS `electronic`,-`spending`.`finishing` AS `finishing`,-`spending`.`forge` AS `forge`,-`spending`.`glass_fusing` AS `glass_fusing`,-`spending`.`ham_radio` AS `ham_radio`,-`spending`.`hand_tools` AS `hand_tools`,-`spending`.`hand_wood_carving` AS `hand_wood_carving`,-`spending`.`jewelry` AS `jewelry`,-`spending`.`lampworking` AS `lampworking`,-`spending`.`laser` AS `laser`,-`spending`.`leather` AS `leather`,-`spending`.`long_arm` AS `long_arm`,-`spending`.`makerfaire` AS `makerfaire`,-`spending`.`metal` AS `metal`,-`spending`.`models` AS `models`,-`spending`.`neon` AS `neon`,-`spending`.`paint` AS `paint`,-`spending`.`power_wheel` AS `power_wheel`,-`spending`.`print` AS `print`,-`spending`.`small_engine` AS `small_engine`,-`spending`.`soda` AS `soda`,-`spending`.`stained_glass` AS `stained_glass`,-`spending`.`sublimation` AS `sublimation`,-`spending`.`tiger_lily` AS `tiger_lily`,-`spending`.`vacuum` AS `vacuum`,-`spending`.`welding` AS `welding`,-`spending`.`wood` AS `wood` FROM `spending` ORDER BY `time`)
 )
 $$
 
@@ -133,6 +134,7 @@ DELIMITER $$
 ALTER ALGORITHM=UNDEFINED DEFINER=`djonke`@`%` SQL SECURITY DEFINER VIEW `balances` AS 
 SELECT
   SUM(`ledger`.`threed_printer`) AS `threed_printer`,
+  SUM(`ledger`.`general_fund`) AS `general_fund`,
   SUM(`ledger`.`automotive`) AS `automotive`,
   SUM(`ledger`.`bicycle_repair`) AS `bicycle_repair`,
   SUM(`ledger`.`casting`) AS `casting`,
