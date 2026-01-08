@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Intuit.Ipp.Data;
 using Mms.Api.Models;
@@ -220,21 +221,35 @@ namespace Mms.Api.Services
 
 		public async System.Threading.Tasks.Task Load(DateTimeOffset start, DateTimeOffset end)
 		{
+			var invoiceIdList = new SortedSet<int>();
+			var paymentIdList = new SortedSet<int>();
+			var maxLoadLength = 100;
+			var skip = 0;
+			var loadLength = 0;
+
 			var wildApricot = new WildApricotClient();
 
 			loadStatus.range = 1;
 			loadStatus.progress = 0;
 			loadStatus.status = "Loading Invoice List";
 
-			// Pad the loading, because of time zone offset stupidity.
-			var invoiceIdList = await wildApricot.GetInvoicesListAsync(
-				accountId: wildApricot.accountId,
-				startDate: start.AddDays(-1),
-				endDate: end.AddDays(1),
-				idsOnly: true
-				);
+			do {
+				// Pad the loading, because of time zone offset stupidity.
+				var loadResponse = await wildApricot.GetInvoicesListAsync(
+					accountId: wildApricot.accountId,
+					startDate: start.AddDays(-1),
+					endDate: end.AddDays(1),
+					idsOnly: true,
+					top: maxLoadLength,
+					skip: skip
+					);
 
-			loadStatus.status = "Loading Voidable Invoices";
+				loadLength = loadResponse.InvoiceIdentifiers.Count;
+				invoiceIdList.UnionWith(loadResponse.InvoiceIdentifiers);
+				skip += maxLoadLength;
+
+				loadStatus.status = $"Loading Voidable Invoices from {skip} to {skip + maxLoadLength}";
+			} while (loadLength == maxLoadLength);
 
 			var sql = @"
 				SELECT
@@ -250,8 +265,8 @@ namespace Mms.Api.Services
 			var voidableInvoices = await db.FetchAsync<int>(sql, start.AddMonths(-2));
 
 			foreach (var voidableId in voidableInvoices) {
-				if (!invoiceIdList.InvoiceIdentifiers.Contains(voidableId)) {
-					invoiceIdList.InvoiceIdentifiers.Add(voidableId);
+				if (!invoiceIdList.Contains(voidableId)) {
+					invoiceIdList.Add(voidableId);
 					loadStatus.range += 1;
 				}
 
@@ -259,22 +274,35 @@ namespace Mms.Api.Services
 
 			loadStatus.status = "Loading Payment List";
 
-			var paymentIdList = await wildApricot.GetPaymentsListAsync(
-				accountId: wildApricot.accountId,
-				startDate: start.AddDays(-1),
-				endDate: end.AddDays(1),
-				idsOnly: true
-				);
+			skip = 0;
 
-			loadStatus.range = invoiceIdList.InvoiceIdentifiers.Count + paymentIdList.PaymentIdentifiers.Count;
+			do {
+				var loadResponse = await wildApricot.GetPaymentsListAsync(
+					accountId: wildApricot.accountId,
+					startDate: start.AddDays(-1),
+					endDate: end.AddDays(1),
+					idsOnly: true,
+					top: maxLoadLength,
+					skip: skip
+					);
+
+				loadLength = loadResponse.PaymentIdentifiers.Count;
+				paymentIdList.UnionWith(loadResponse.PaymentIdentifiers);
+				skip += maxLoadLength;
+
+				loadStatus.status = $"Loading Payments from {skip} to {skip + maxLoadLength}";
+			} while (loadLength == maxLoadLength);
+
+
+			loadStatus.range = invoiceIdList.Count + paymentIdList.Count;
 
 			var count = 0;
 			var errors = new List<string>();
 
-			foreach (var item in paymentIdList.PaymentIdentifiers) {
+			foreach (var item in paymentIdList) {
 				loadStatus.progress += 1;
 				count += 1;
-				loadStatus.status = $"Loading Payment {count} of {paymentIdList.PaymentIdentifiers.Count}";
+				loadStatus.status = $"Loading Payment {count} of {paymentIdList.Count}";
 
 				try {
 					var waPaymentAllocations = await wildApricot.GetPaymentAllocationsListAsync(wildApricot.accountId, paymentId: item);
@@ -286,8 +314,8 @@ namespace Mms.Api.Services
 						if (waAllocation.InvoiceDate < start) {
 							var id = waAllocation.Invoice.Id ?? -1;
 
-							if (!invoiceIdList.InvoiceIdentifiers.Contains(id)) {
-								invoiceIdList.InvoiceIdentifiers.Add(id);
+							if (!invoiceIdList.Contains(id)) {
+								invoiceIdList.Add(id);
 								loadStatus.range += 1;
 							}
 						}
@@ -311,10 +339,10 @@ namespace Mms.Api.Services
 
 			count = 0;
 
-			foreach (var item in invoiceIdList.InvoiceIdentifiers) {
+			foreach (var item in invoiceIdList) {
 				loadStatus.progress += 1;
 				count += 1;
-				loadStatus.status = $"Loading Invoice Heading {count} of {invoiceIdList.InvoiceIdentifiers.Count}";
+				loadStatus.status = $"Loading Invoice Heading {count} of {invoiceIdList.Count}";
 
 				try {
 					var waInvoice = await wildApricot.GetInvoiceDetailsAsync(wildApricot.accountId, item);

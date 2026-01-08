@@ -14,6 +14,7 @@ SELECT
   `funds`.`month`             AS `month`,
   `funds`.`general_fund`      AS `general_fund`,
   `funds`.`building_purchase` AS `building_purchase`,
+  `funds`.`threed_printer`    AS `threed_printer`,
   `funds`.`automotive`        AS `automotive`,
   `funds`.`bicycle_repair`    AS `bicycle_repair`,
   `funds`.`casting`           AS `casting`,
