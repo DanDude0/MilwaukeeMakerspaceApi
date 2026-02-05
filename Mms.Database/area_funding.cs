@@ -20,6 +20,9 @@ namespace Mms.Database
     public partial class balance
     {
         [Column]
+        public decimal? automotive { get; set; }
+
+        [Column]
         public decimal? bicycle_repair { get; set; }
 
         [Column]
@@ -48,6 +51,9 @@ namespace Mms.Database
 
         [Column]
         public decimal? forge { get; set; }
+
+        [Column]
+        public decimal? general_fund { get; set; }
 
         [Column]
         public decimal? glass_fusing { get; set; }
@@ -98,10 +104,16 @@ namespace Mms.Database
         public decimal? print { get; set; }
 
         [Column]
+        public decimal? small_engine { get; set; }
+
+        [Column]
         public decimal? soda { get; set; }
 
         [Column]
         public decimal? stained_glass { get; set; }
+
+        [Column]
+        public decimal? sublimation { get; set; }
 
         [Column]
         public decimal? threed_printer { get; set; }
@@ -159,6 +171,9 @@ namespace Mms.Database
     public partial class current
     {
         [Column]
+        public decimal automotive { get; set; }
+
+        [Column]
         public decimal bicycle_repair { get; set; }
 
         [Column]
@@ -196,6 +211,9 @@ namespace Mms.Database
 
         [Column]
         public int general { get; set; }
+
+        [Column]
+        public decimal general_fund { get; set; }
 
         [Column]
         public decimal glass_fusing { get; set; }
@@ -252,10 +270,16 @@ namespace Mms.Database
         public decimal print { get; set; }
 
         [Column]
+        public decimal small_engine { get; set; }
+
+        [Column]
         public decimal soda { get; set; }
 
         [Column]
         public decimal stained_glass { get; set; }
+
+        [Column]
+        public decimal sublimation { get; set; }
 
         [Column]
         public decimal threed_printer { get; set; }
@@ -282,6 +306,9 @@ namespace Mms.Database
     [ExplicitColumns]
     public partial class fund
     {
+        [Column]
+        public decimal automotive { get; set; }
+
         [Column]
         public decimal bicycle_repair { get; set; }
 
@@ -325,6 +352,9 @@ namespace Mms.Database
         public int general { get; set; }
 
         [Column]
+        public decimal general_fund { get; set; }
+
+        [Column]
         public decimal glass_fusing { get; set; }
 
         [Column]
@@ -379,10 +409,16 @@ namespace Mms.Database
         public decimal print { get; set; }
 
         [Column]
+        public decimal small_engine { get; set; }
+
+        [Column]
         public decimal soda { get; set; }
 
         [Column]
         public decimal stained_glass { get; set; }
+
+        [Column]
+        public decimal sublimation { get; set; }
 
         [Column]
         public decimal threed_printer { get; set; }
@@ -408,6 +444,9 @@ namespace Mms.Database
     [ExplicitColumns]
     public partial class history
     {
+        [Column]
+        public decimal automotive { get; set; }
+
         [Column]
         public decimal bicycle_repair { get; set; }
 
@@ -448,6 +487,9 @@ namespace Mms.Database
         public int general { get; set; }
 
         [Column]
+        public decimal general_fund { get; set; }
+
+        [Column]
         public decimal glass_fusing { get; set; }
 
         [Column]
@@ -502,10 +544,16 @@ namespace Mms.Database
         public decimal print { get; set; }
 
         [Column]
+        public decimal small_engine { get; set; }
+
+        [Column]
         public decimal soda { get; set; }
 
         [Column]
         public decimal stained_glass { get; set; }
+
+        [Column]
+        public decimal sublimation { get; set; }
 
         [Column]
         public decimal threed_printer { get; set; }
@@ -531,6 +579,9 @@ namespace Mms.Database
     [ExplicitColumns]
     public partial class ledger
     {
+        [Column]
+        public decimal automotive { get; set; }
+
         [Column]
         public decimal bicycle_repair { get; set; }
 
@@ -560,6 +611,9 @@ namespace Mms.Database
 
         [Column]
         public decimal forge { get; set; }
+
+        [Column]
+        public decimal general_fund { get; set; }
 
         [Column]
         public decimal glass_fusing { get; set; }
@@ -613,10 +667,16 @@ namespace Mms.Database
         public string reason { get; set; }
 
         [Column]
+        public decimal small_engine { get; set; }
+
+        [Column]
         public decimal soda { get; set; }
 
         [Column]
         public decimal stained_glass { get; set; }
+
+        [Column]
+        public decimal sublimation { get; set; }
 
         [Column]
         public decimal threed_printer { get; set; }
@@ -644,6 +704,9 @@ namespace Mms.Database
     public partial class spending
     {
         [Column]
+        public decimal automotive { get; set; }
+
+        [Column]
         public decimal bicycle_repair { get; set; }
 
         [Column]
@@ -672,6 +735,9 @@ namespace Mms.Database
 
         [Column]
         public decimal forge { get; set; }
+
+        [Column]
+        public decimal general_fund { get; set; }
 
         [Column]
         public decimal glass_fusing { get; set; }
@@ -725,6 +791,9 @@ namespace Mms.Database
         public string reason { get; set; }
 
         [Column]
+        public decimal small_engine { get; set; }
+
+        [Column]
         public decimal soda { get; set; }
 
         [Column]
@@ -732,6 +801,9 @@ namespace Mms.Database
 
         [Column]
         public decimal stained_glass { get; set; }
+
+        [Column]
+        public decimal sublimation { get; set; }
 
         [Column]
         public decimal threed_printer { get; set; }

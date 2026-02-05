@@ -1,18 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Net.Sockets;
 using System.Reflection.Emit;
+using System.Security.Policy;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CronScheduler.Extensions.Scheduler;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using Mms.Database;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PetaPoco;
-using static SQLite.SQLite3;
+using Serilog;
 using WildApricot;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Security.Policy;
-using Serilog;
+using static SQLite.SQLite3;
 
 namespace Mms.Api.Jobs
 {
@@ -26,38 +33,58 @@ namespace Mms.Api.Jobs
 
 			var wildApricot = new WildApricotClient();
 
-			var contactsCount = await wildApricot.GetContactsListAsync(
-				accountId: wildApricot.accountId,
-				//count: true,
-				filter: "Archived eq false"
-				);
+			var contacts = new List<Contact>();
 
-			ContactsResponse contacts = null;
+			var maxLoadLength = 100;
+			var skip = 0;
+			var loadLength = 0;
 
-			var attempts = 0;
+#if DEBUG
+			if (System.IO.File.Exists("cache.json")) {
+				Log.Debug($"Loading previous version of contacts from local cache.json, to avoid getting banned by apricot API for too many hits.");
 
-			while (attempts < 10 && string.IsNullOrWhiteSpace(contacts?.Processed) && contacts?.ProcessingState != ContactsAsyncResponseProcessingState.Complete) {
-				await Task.Delay(5000);
+				contacts = JsonConvert.DeserializeObject<List<Contact>>(System.IO.File.ReadAllText("cache.json"));
+			}
+			else {
+#endif
 
-				contacts = await wildApricot.GetContactsListAsync(
+				Log.Debug($"Connecting to Wild Apricot API");
+
+				do {
+					// Pad the loading, because of time zone offset stupidity.
+					var loadResponse = await wildApricot.GetContactsListAsync(
 					accountId: wildApricot.accountId,
-					resultId: contactsCount.ResultId
+					filter: "Archived eq false",
+					async: false,
+					top: maxLoadLength,
+					skip: skip
 					);
 
-				attempts += 1;
+					loadLength = loadResponse.Contacts.Count;
+					contacts.AddRange(loadResponse.Contacts);
+					skip += maxLoadLength;
+
+					Log.Debug($"Loaded {skip} contacts...");
+				} while (loadLength == maxLoadLength);
+
+				if (contacts.Count < 1)
+					throw new Exception("Wild Apricot did not return members list!");
+
+#if DEBUG
+				System.IO.File.WriteAllText("cache.json", JsonConvert.SerializeObject(contacts));
+				Log.Debug($"Stored new local copy of contacts to local cache.json, to avoid getting banned by apricot API for too many hits. Delete this file to try with new data.");
 			}
+#endif
 
-			if ((string.IsNullOrWhiteSpace(contacts?.Processed) && contacts?.ProcessingState != ContactsAsyncResponseProcessingState.Complete) || contacts?.Contacts?.Count < 101)
-				throw new Exception("Wild Apricot did not return complete members list!");
-
-			using var accessDb = new AccessControlDatabase();
-			using var fundingDb = new AreaFundingDatabase();
-
-			Log.Information($"Contacts Returned: {contacts.Contacts.Count}");
+			Log.Information($"Contacts Returned: {contacts.Count}");
 
 			var totalFunding = new fund();
 
-		foreach (var contact in contacts.Contacts) {
+			var accessDb = new AccessControlDatabase();
+
+			for (int count = 0; count < contacts.Count; count += 1) {
+				var contact = contacts[count];
+
 				// For Keys
 				string key1 = null;
 				string key2 = null;
@@ -72,7 +99,9 @@ namespace Mms.Api.Jobs
 				// For Funding
 				var active = false;
 				var specialPurpose = false;
+				var forceExpire = false;
 				var amount = 0m;
+				var memberFunding = new List<string>();
 
 				// If a member is currently pending renewal (during last 10 days of month, for instance), we count them as active
 				switch (contact.Status ?? ContactStatus.Lapsed) {
@@ -90,6 +119,10 @@ namespace Mms.Api.Jobs
 					active = false;
 					specialPurpose = true;
 				}
+				else if (contact.MembershipLevel?.Name == "Self sign up") {
+					active = false;
+					specialPurpose = false;
+				}
 
 				foreach (var field in contact.FieldValues) {
 					switch (field.FieldName) {
@@ -104,45 +137,36 @@ namespace Mms.Api.Jobs
 							break;
 						case "Renewal due":
 							renewal = DateTime.Parse(field.Value?.ToString() ?? "2000-01-01");
+
+							var gracePeriod = DateTime.Now.AddDays(-7);
+
+							if (renewal < gracePeriod)
+								active = false;
 							break;
 						case "Member role":
-							switch (field.Value?.ToString() ?? "") {
-								case "Bundle Administrator":
-								case "Bundle administrator":
-								case "Individual":
+							var rawType = field.Value?.ToString().ToLowerInvariant() ?? "";
+
+							switch (rawType) {
+								case "bundle administrator":
+								case "individual":
 								case "":
 									type = "General";
-
-									if (active) {
-										totalFunding.general += 1;
-										amount = 1.5m;
-									}
 									break;
-								case "Bundle Member":
-								case "Bundle member":
+								case "bundle member":
 									type = "Family";
-
-									if (active) {
-										totalFunding.family += 1;
-										amount = 0.38m;
-									}
+									break;
+								default:
+									// Copy it now for debugging, but expect this to blow up later.
+									type = rawType;
 									break;
 							}
 							break;
 						case "Suspended member":
 						case "Archived":
 							// If the BOD suspends someone before they expire, we immediately disable their key
-							if (field.Value?.ToString() == "1") {
+							if (field.Value?.ToString().ToLowerInvariant() == "true") {
 								active = false;
-								var sql = @"
-									UPDATE
-										member
-									SET
-										expires = '2000-01-01'
-									WHERE
-										member_id = @0;";
-
-								accessDb.Execute(sql, id);
+								forceExpire = true;
 							}
 							break;
 						case "$1.50/Month Area #1":
@@ -150,67 +174,124 @@ namespace Mms.Api.Jobs
 						case "$1.50/Month Area #3":
 						case "$1.50/Month Area #4":
 						case "$1.50/Month Area #5":
-							if (active) {
-								if (field.Value == null)
-									Log.Error($"Null Area Selection! - {fullname} - {field.FieldName} - {field.Value}");
-								else {
-									TabulateFunds(totalFunding, field.FieldName, amount);
-									totalFunding.total += amount;
-								}
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+
+								memberFunding.Add(fieldContents.GetProperty("Label").GetString());
 							}
 							break;
 					}
 				}
-
-				if (active)
-					totalFunding.members += 1;
 
 				if (specialPurpose) {
 					// Always set special purpose accounts to expire one month into the future.
 					renewal = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).AddMonths(1);
 				}
 
-				// Record keys into access database
-				if (active || specialPurpose) {
-					if (!string.IsNullOrEmpty(key1)) {
-						var sql2 = @$"
+				// Update Database with current information about member.
+				try {
+					// Record keys into access database
+					if (forceExpire) {
+						var sql = @"
+									UPDATE
+										member
+									SET
+										expires = '2000-01-01'
+									WHERE
+										member_id = @0;";
+
+						accessDb.Execute(sql, id);
+
+						Log.Debug($"Forcing Expiration of '{fullname}' from database.");
+					}
+					else if (active || specialPurpose) {
+						Log.Debug($"Recording '{fullname}' in database.");
+
+						if (!string.IsNullOrEmpty(key1)) {
+							var sql2 = @$"
+								REPLACE INTO
+									keycode(keycode_id, member_id, updated)
+								VALUES
+									(@0, @1, NOW()); ";
+
+							accessDb.Execute(sql2, key1, id);
+						}
+
+						if (!string.IsNullOrEmpty(key2)) {
+							var sql3 = @$"
+								REPLACE INTO
+									keycode(keycode_id, member_id, updated)
+								VALUES
+									(@0, @1, NOW()); ";
+
+							accessDb.Execute(sql3, key2, id);
+						}
+
+						var sql4 = @$"
 							REPLACE INTO
 								keycode(keycode_id, member_id, updated)
 							VALUES
-								(@0, @1, NOW()); ";
+									(@0, @1, NOW()); ";
 
-						accessDb.Execute(sql2, key1, id);
-					}
+						accessDb.Execute(sql4, key3, id);
 
-					if (!string.IsNullOrEmpty(key2)) {
-						var sql3 = @$"
+						var sql5 = @"
 							REPLACE INTO
-								keycode(keycode_id, member_id, updated)
+								member(member_id, name, type, apricot_admin, joined, expires, updated)
 							VALUES
-								(@0, @1, NOW()); ";
+								(@0, @1, @2, @3, @4, @5, NOW()); ";
 
-						accessDb.Execute(sql3, key2, id);
+						accessDb.Execute(sql5, id, fullname, type, apricot_admin, joined, renewal);
 					}
+					else
+						Log.Debug($"Excluding '{fullname}' from database.");
 
-					var sql4 = @$"
-						REPLACE INTO
-							keycode(keycode_id, member_id, updated)
-						VALUES
-								(@0, @1, NOW()); ";
+					// Only update totals if database update was successful.
+					if (active) {
+						totalFunding.members += 1;
 
-					accessDb.Execute(sql4, key3, id);
+						if (type == "Family") {
+							totalFunding.family += 1;
+							amount = 0.38m;
+						}
+						else if (type == "General") {
+							totalFunding.general += 1;
+							amount = 1.50m;
+						}
+						else {
+							Log.Error($"Unknown member type! - '{fullname}' - '{type}'");
+						}
 
-					var sql5 = @"
-						REPLACE INTO
-							member(member_id, name, type, apricot_admin, joined, expires, updated)
-						VALUES
-							(@0, @1, @2, @3, @4, @5, NOW()); ";
+						var fundCount = memberFunding.Count;
 
-					accessDb.Execute(sql5, id, fullname, type, apricot_admin, joined, renewal);
+						if (fundCount < 5)
+							Log.Error($"Recorded too few '{fundCount}' Area Funding selections for '{fullname}'");
+						else if (fundCount > 5)
+							Log.Fatal($"Recorded too many '{fundCount}' Area Funding selections for '{fullname}'");
+
+						foreach (var area in memberFunding) {
+							TabulateFunds(totalFunding, area, amount);
+							totalFunding.total += amount;
+						}
+					}
+				}
+				catch (Exception ex) {
+					Log.Error(ex, "Database Error while importing contacts");
+
+					accessDb.Dispose();
+					accessDb = new AccessControlDatabase();
+
+					// This happens with some regularity, given that there are thousands of queries executed in this loop. Reconnecting fixes it.
+					// Backup and try again.
+					count -= 1;
 				}
 			}
 
+			accessDb?.Dispose();
+
 			totalFunding.month = DateTime.Now;
+
+			using var fundingDb = new AreaFundingDatabase();
 
 			fundingDb.Insert(totalFunding);
 		}
@@ -257,8 +338,14 @@ namespace Mms.Api.Jobs
 				case "Finishing":
 					total.finishing += amount;
 					break;
+				case "Glass Fusing":
+					total.glass_fusing += amount;
+					break;
 				case "Ham Radio":
 					total.ham_radio += amount;
+					break;
+				case "Hand Wood Carving":
+					total.hand_wood_carving += amount;
 					break;
 				case "Jewelry and Non Ferrous Metals":
 					total.jewelry += amount;
@@ -281,14 +368,23 @@ namespace Mms.Api.Jobs
 				case "Metal Shop":
 					total.metal += amount;
 					break;
+				case "Model and Miniatures":
+					total.models += amount;
+					break;
 				case "Neon":
 					total.neon += amount;
 					break;
 				case "Paint Room":
 					total.paint += amount;
 					break;
+				case "Small Engine":
+					total.small_engine += amount;
+					break;
 				case "Stained Glass":
 					total.stained_glass += amount;
+					break;
+				case "Sublimation":
+					total.sublimation += amount;
 					break;
 				case "Tiger Lily Sculpture Gang":
 					total.tiger_lily += amount;
