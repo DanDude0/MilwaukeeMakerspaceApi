@@ -6,3 +6,4 @@ PublishProfiles
 appsettings.json
 logs
 /MilwaukeeMakerspaceApi/cache.json
+/MilwaukeeMakerspaceApi/publish

@@ -1,0 +1,45 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">MilwaukeeMakerspaceApi</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <AuthorizeView>
+                <Authorized>
+                    <p class="text-white">Hello, @context.User.Identity?.Name!</p>
+                    <a href="/logout">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="attempts">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Reader Attempts
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="reports">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> MMS Treasurer Reports
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="invoices">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> MV Invoices
+            </NavLink>
+        </li>
+    </ul>
+</div>

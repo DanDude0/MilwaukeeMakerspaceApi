@@ -3,7 +3,9 @@
 @inject ReportService service
 @inject IJSRuntime jsRuntime
 @using System.Globalization;
+@using Microsoft.AspNetCore.Mvc
 @using Mms.Database;
+@attribute [IgnoreAntiforgeryToken]
 
 <h1>Reports</h1>
 <div class="clearfix">

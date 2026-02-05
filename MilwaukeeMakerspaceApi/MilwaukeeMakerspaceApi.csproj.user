@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>Mms.Api</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>LinuxProfile</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Projects\MilwaukeeMakerspaceApi\MilwaukeeMakerspaceApi\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
     <_SelectedScaffolderID>ApiControllerWithActionsScaffolder</_SelectedScaffolderID>
     <_SelectedScaffolderCategoryPath>root/Common</_SelectedScaffolderCategoryPath>
     <WebStackScaffolding_ViewDialogWidth>600</WebStackScaffolding_ViewDialogWidth>

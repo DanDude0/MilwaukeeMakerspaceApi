@@ -143,11 +143,10 @@ namespace Mms.Api
 							}
 						});
 					builder.Services.AddScoped<IAuthorizationHandler, RolesAuthorizationHandler>();
+					builder.Services.AddCascadingAuthenticationState();
 				}
-
-				builder.Services.AddRazorPages();
-				builder.Services.AddServerSideBlazor();
-				builder.Services.AddControllersWithViews();
+		
+				builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 				builder.Services.AddRouting(options => options.LowercaseUrls = true);
 				builder.Services.AddMvc(options => options.InputFormatters.Insert(0, new RawStringInputFormatter()));
 				builder.Services.AddSwaggerGen(options => { options.SwaggerDoc("v1", new OpenApiInfo { Title = "MmsApi", Version = "v1" }); });
@@ -163,7 +162,7 @@ namespace Mms.Api
 						return
 							(sender, args) =>
 							{
-								Log.Error(args.Exception, "Unhandled Exception Running Job");
+								Log.Fatal(args.Exception, "Unhandled Exception Running Job");
 								args.SetObserved();
 							};
 					});
@@ -196,17 +195,19 @@ namespace Mms.Api
 					app.UseExceptionHandler("/Error");
 				}
 
-				app.UseStaticFiles();
-				app.UseRouting();
 				app.UseCookiePolicy(new CookiePolicyOptions {
 					MinimumSameSitePolicy = SameSiteMode.None,
 					Secure = CookieSecurePolicy.Always
 				});
+
+				app.UseRouting();
 				app.UseAuthentication();
 				app.UseAuthorization();
+				app.UseAntiforgery();
 
-				app.MapBlazorHub();
-				app.MapFallbackToPage("/_Host");
+				app.MapStaticAssets();
+				app.MapRazorComponents<App>()
+					.AddInteractiveServerRenderMode();
 				app.MapControllerRoute(
 						"default",
 						"{controller}/{action=Index}");
