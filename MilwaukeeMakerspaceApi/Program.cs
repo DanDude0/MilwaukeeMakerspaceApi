@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -20,8 +18,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,7 +52,7 @@ namespace Mms.Api
 
 				var builder = WebApplication.CreateBuilder(new WebApplicationOptions {
 					Args = args,
-					WebRootPath = "webroot",
+					WebRootPath = "wwwroot",
 				});
 
 				builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -182,10 +178,10 @@ namespace Mms.Api
 				if (!string.IsNullOrWhiteSpace(reverseProxyNetwork)) {
 					try {
 						app.UseForwardedHeaders(new ForwardedHeadersOptions {
-							ForwardedHeaders = ForwardedHeaders.All,
+							ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.All,
 							RequireHeaderSymmetry = false,
 							ForwardLimit = null,
-							KnownNetworks = { Microsoft.AspNetCore.HttpOverrides.IPNetwork.Parse(builder.Configuration["ReverseProxyNetwork"]) },
+							KnownIPNetworks = { IPNetwork.Parse(builder.Configuration["ReverseProxyNetwork"]) },
 						});
 					}
 					catch (Exception ex) {

@@ -41,7 +41,7 @@ namespace Mms.Api.Jobs
 
 #if DEBUG
 			if (System.IO.File.Exists("cache.json")) {
-				Log.Debug($"Loading previous version of contacts from local cache.json, to avoid getting banned by apricot API for too many hits.");
+				Log.Fatal($"Loading previous version of contacts from local cache.json, to avoid getting banned by apricot API for too many hits.");
 
 				contacts = JsonConvert.DeserializeObject<List<Contact>>(System.IO.File.ReadAllText("cache.json"));
 			}
@@ -72,7 +72,7 @@ namespace Mms.Api.Jobs
 
 #if DEBUG
 				System.IO.File.WriteAllText("cache.json", JsonConvert.SerializeObject(contacts));
-				Log.Debug($"Stored new local copy of contacts to local cache.json, to avoid getting banned by apricot API for too many hits. Delete this file to try with new data.");
+				Log.Fatal($"Stored new local copy of contacts to local cache.json, to avoid getting banned by apricot API for too many hits. Delete this file to try with new data.");
 			}
 #endif
 
@@ -287,6 +287,8 @@ namespace Mms.Api.Jobs
 				}
 			}
 
+			Log.Information("Finished Parsing Contacts");
+
 			accessDb?.Dispose();
 
 			totalFunding.month = DateTime.Now;
@@ -294,6 +296,8 @@ namespace Mms.Api.Jobs
 			using var fundingDb = new AreaFundingDatabase();
 
 			fundingDb.Insert(totalFunding);
+
+			Log.Information("Finished Wild Apricot Sync");
 		}
 
 		private void TabulateFunds(fund total, string area, decimal amount)
