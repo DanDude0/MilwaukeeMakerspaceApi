@@ -1,6 +1,6 @@
 /*
 SQLyog Community
-MySQL - 10.5.18-MariaDB-0+deb11u1-log : Database - billing
+MySQL - 10.11.14-MariaDB-0+deb12u2-log : Database - billing
 *********************************************************************
 */
 
@@ -75,7 +75,7 @@ CREATE TABLE `makers_village_invoice` (
   `created_date` datetime NOT NULL,
   `details` text NOT NULL,
   PRIMARY KEY (`makers_village_invoice_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=349 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Table structure for table `makers_village_invoice_adjustments` */
 
@@ -85,7 +85,7 @@ CREATE TABLE `makers_village_invoice_adjustments` (
   `reason` varchar(4096) DEFAULT NULL,
   `amount` decimal(8,2) NOT NULL,
   PRIMARY KEY (`makers_village_invoice_adjustments_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Table structure for table `payment_allocation` */
 
@@ -107,7 +107,7 @@ CREATE TABLE `storage_notes` (
   `snapshot_date` datetime NOT NULL,
   `notes` varchar(4096) NOT NULL,
   PRIMARY KEY (`storage_notes_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9319 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27853 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

@@ -1,6 +1,6 @@
 /*
 SQLyog Community
-MySQL - 10.11.6-MariaDB-0+deb12u1-log : Database - access_control
+MySQL - 10.11.14-MariaDB-0+deb12u2-log : Database - access_control
 *********************************************************************
 */
 
@@ -26,7 +26,7 @@ CREATE TABLE `attempt` (
   `action` varchar(255) NOT NULL DEFAULT '',
   `attempt_time` datetime /* mariadb-5.3 */ NOT NULL,
   PRIMARY KEY (`attempt_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1981581 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2878910 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `audit` */
 
@@ -52,7 +52,7 @@ CREATE TABLE `charge` (
   `invoice_line_id` bigint(20) DEFAULT NULL,
   `updated_time` datetime NOT NULL,
   PRIMARY KEY (`charge_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=434 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=611 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group` */
 
@@ -60,7 +60,7 @@ CREATE TABLE `group` (
   `group_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`group_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `group_member` */
 
@@ -86,10 +86,22 @@ CREATE TABLE `member` (
   `member_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
+  `primary_family` int(11) NOT NULL,
   `apricot_admin` tinyint(1) NOT NULL,
-  `joined` datetime /* mariadb-5.3 */ NOT NULL,
-  `expires` datetime /* mariadb-5.3 */ NOT NULL,
-  `updated` datetime /* mariadb-5.3 */ NOT NULL,
+  `joined` datetime NOT NULL,
+  `expires` datetime NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `last_paypal` varchar(255) NOT NULL,
+  `mms_storage` varchar(255) NOT NULL,
+  `mv_storage` varchar(255) NOT NULL,
+  `area_funding_1` varchar(255) NOT NULL,
+  `area_funding_2` varchar(255) NOT NULL,
+  `area_funding_3` varchar(255) NOT NULL,
+  `area_funding_4` varchar(255) NOT NULL,
+  `area_funding_5` varchar(255) NOT NULL,
+  `updated` datetime NOT NULL,
   PRIMARY KEY (`member_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -119,6 +131,21 @@ CREATE TABLE `reader` (
   `status` varchar(4096) NOT NULL DEFAULT '',
   PRIMARY KEY (`reader_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Table structure for table `session` */
+
+CREATE TABLE `session` (
+  `session_id` int(11) NOT NULL,
+  `start_attempt_id` int(11) NOT NULL,
+  `keycode` varchar(255) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `reader_id` int(11) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `duration` int(11) NOT NULL,
+  `access_granted` tinyint(1) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  PRIMARY KEY (`session_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

@@ -301,6 +301,34 @@ namespace Mms.Database
 
     }
 
+    [TableName("`area_funding`.`donation`")]
+    [PrimaryKey("donation_id", AutoIncrement=false)]
+    [ExplicitColumns]
+    public partial class donation
+    {
+        [Column]
+        public decimal amount { get; set; }
+
+        [Column]
+        public string area { get; set; }
+
+        [Column]
+        public string comment { get; set; }
+
+        [Column]
+        public DateTime donation_date { get; set; }
+
+        [Column]
+        public long donation_id { get; set; }
+
+        [Column]
+        public string paypal_account { get; set; }
+
+        [Column]
+        public string type { get; set; }
+
+    }
+
     [TableName("`area_funding`.`funds`")]
     [PrimaryKey("funds_id")]
     [ExplicitColumns]

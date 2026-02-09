@@ -156,7 +156,28 @@ namespace Mms.Database
     public partial class member
     {
         [Column]
+        public string address { get; set; }
+
+        [Column]
         public sbyte apricot_admin { get; set; }
+
+        [Column]
+        public string area_funding_1 { get; set; }
+
+        [Column]
+        public string area_funding_2 { get; set; }
+
+        [Column]
+        public string area_funding_3 { get; set; }
+
+        [Column]
+        public string area_funding_4 { get; set; }
+
+        [Column]
+        public string area_funding_5 { get; set; }
+
+        [Column]
+        public string email { get; set; }
 
         [Column]
         public DateTime expires { get; set; }
@@ -165,10 +186,25 @@ namespace Mms.Database
         public DateTime joined { get; set; }
 
         [Column]
+        public string last_paypal { get; set; }
+
+        [Column]
         public int member_id { get; set; }
 
         [Column]
+        public string mms_storage { get; set; }
+
+        [Column]
+        public string mv_storage { get; set; }
+
+        [Column]
         public string name { get; set; }
+
+        [Column]
+        public string phone { get; set; }
+
+        [Column]
+        public int primary_family { get; set; }
 
         [Column]
         public string type { get; set; }
@@ -234,6 +270,40 @@ namespace Mms.Database
 
         [Column]
         public string version { get; set; }
+
+    }
+
+    [TableName("`access_control`.`session`")]
+    [PrimaryKey("session_id", AutoIncrement=false)]
+    [ExplicitColumns]
+    public partial class session
+    {
+        [Column]
+        public sbyte access_granted { get; set; }
+
+        [Column]
+        public string action { get; set; }
+
+        [Column]
+        public int duration { get; set; }
+
+        [Column]
+        public string keycode { get; set; }
+
+        [Column]
+        public int member_id { get; set; }
+
+        [Column]
+        public int reader_id { get; set; }
+
+        [Column]
+        public int session_id { get; set; }
+
+        [Column]
+        public int start_attempt_id { get; set; }
+
+        [Column]
+        public DateTime start_time { get; set; }
 
     }
 
