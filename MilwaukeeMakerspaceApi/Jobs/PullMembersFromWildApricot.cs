@@ -73,23 +73,35 @@ namespace Mms.Api.Jobs
 			for (int count = 0; count < contacts.Count; count += 1) {
 				var contact = contacts[count];
 
-				// For Keys
+				var id = contact.Id ?? -1;
+				var fullname = $"{contact.FirstName} {contact.LastName}";
+				string type = null;
+				var primaryFamily = 0;
+				var apricotAdmin = contact.IsAccountAdministrator ?? false;
+				DateTime? joined = null;
+				DateTime? expires = null;
+				var email = contact.Email ?? "";
+				var phone = "";
+				var address = "";
+				var city = "";
+				var zip = "";
+				var lastPayPal = "";
+				var mmsStorage = "";
+				var mvStorage = "";
+				var areaFunding1 = "";
+				var areaFunding2 = "";
+				var areaFunding3 = "";
+				var areaFunding4 = "";
+				var areaFunding5 = "";
+
 				string key1 = null;
 				string key2 = null;
-				string type = null;
-				DateTime? joined = null;
-				DateTime? renewal = null;
-				var id = contact.Id ?? -1;
 				var key3 = $"{id}#";
-				var fullname = $"{contact.FirstName} {contact.LastName}";
-				var apricot_admin = contact.IsAccountAdministrator ?? false;
 
-				// For Funding
 				var active = false;
 				var specialPurpose = false;
 				var forceExpire = false;
 				var amount = 0m;
-				var memberFunding = new List<string>();
 
 				// If a member is currently pending renewal (during last 10 days of month, for instance), we count them as active
 				switch (contact.Status ?? ContactStatus.Lapsed) {
@@ -114,6 +126,18 @@ namespace Mms.Api.Jobs
 
 				foreach (var field in contact.FieldValues) {
 					switch (field.FieldName) {
+						case "Phone":
+							phone = field.Value?.ToString().ToUpperInvariant().Trim();
+							break;
+						case "Address":
+							address = field.Value?.ToString().Trim();
+							break;
+						case "City":
+							city = field.Value?.ToString().Trim();
+							break;
+						case "Zip Code":
+							zip = field.Value?.ToString().Trim();
+							break;
 						case "Key Fob Code":
 							key1 = field.Value?.ToString().ToUpperInvariant().Trim();
 							break;
@@ -124,11 +148,11 @@ namespace Mms.Api.Jobs
 							joined = DateTime.Parse(field.Value?.ToString() ?? "2000-01-01");
 							break;
 						case "Renewal due":
-							renewal = DateTime.Parse(field.Value?.ToString() ?? "2000-01-01");
+							expires = DateTime.Parse(field.Value?.ToString() ?? "2000-01-01");
 
 							var gracePeriod = DateTime.Now.AddDays(-7);
 
-							if (renewal < gracePeriod)
+							if (expires < gracePeriod)
 								active = false;
 							break;
 						case "Member role":
@@ -158,22 +182,94 @@ namespace Mms.Api.Jobs
 							}
 							break;
 						case "$1.50/Month Area #1":
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+
+								areaFunding1 = fieldContents.GetProperty("Label").GetString();
+							}
+							break;
 						case "$1.50/Month Area #2":
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+
+								areaFunding2 = fieldContents.GetProperty("Label").GetString();
+							}
+							break;
 						case "$1.50/Month Area #3":
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+
+								areaFunding3 = fieldContents.GetProperty("Label").GetString();
+							}
+							break;
 						case "$1.50/Month Area #4":
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+
+								areaFunding4 = fieldContents.GetProperty("Label").GetString();
+							}
+							break;
 						case "$1.50/Month Area #5":
 							if (field.Value != null) {
 								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
 
-								memberFunding.Add(fieldContents.GetProperty("Label").GetString());
+								areaFunding5 = fieldContents.GetProperty("Label").GetString();
 							}
+							break;
+						case "Primary Workspace Location Id":
+						case "Lenox Add-on Paid Workspace Location Id":
+						case "Lenox Add-on Paid, Short Term Project Workspace - East Room Floor Space ID":
+							if (field.Value != null) {
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+								string storageId = null;
+
+								if (fieldContents.ValueKind == JsonValueKind.Array) {
+									if (fieldContents.GetArrayLength() > 0)
+										storageId = fieldContents.GetString().Trim();
+								}
+								else
+									storageId = fieldContents.GetProperty("Label").GetString().Trim();
+
+								if (storageId != null) {
+									if (mmsStorage.Length > 0)
+										mmsStorage += "\n";
+
+									mmsStorage += "Lenox: " + storageId.Trim();
+								}
+							}
+							break;
+						case "Norwich Shelf Id":
+						case "Norwich Pallet Location Id #1":
+						case "Norwich Pallet Location Id #2":
+							if (field.Value != null) {
+								if (mmsStorage.Length > 0)
+									mmsStorage += "\n";
+
+								var fieldContents = JsonDocument.Parse(field.Value.ToString()).RootElement;
+								mmsStorage += "Norwich: " + fieldContents.GetProperty("Label").GetString().Trim();
+							}
+							break;
+						case "Member Workspace Notes":
+							var storageNotes = field.Value?.ToString().Trim() ?? "";
+
+							if (storageNotes.Length > 0) {
+								if (mmsStorage.Length > 0)
+									mmsStorage += "\n";
+
+								mmsStorage += field.Value?.ToString().Trim();
+							}
+							break;
+						case "Makers Village Storage Description":
+							mvStorage = field.Value?.ToString().Trim() ?? "";
 							break;
 					}
 				}
 
+				address = $"{address}\n{city} WI {zip}";
+
 				if (specialPurpose) {
 					// Always set special purpose accounts to expire one month into the future.
-					renewal = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).AddMonths(1);
+					expires = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).AddMonths(1);
 				}
 
 				// Update Database with current information about member.
@@ -225,11 +321,11 @@ namespace Mms.Api.Jobs
 
 						var sql5 = @"
 							REPLACE INTO
-								member(member_id, name, type, apricot_admin, joined, expires, updated)
+								member(member_id, name, type, primary_family, apricot_admin, joined, expires, email, phone, address, last_paypal, mms_storage, mv_storage, area_funding_1, area_funding_2, area_funding_3, area_funding_4, area_funding_5, updated)
 							VALUES
-								(@0, @1, @2, @3, @4, @5, NOW()); ";
+								(@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, NOW()); ";
 
-						accessDb.Execute(sql5, id, fullname, type, apricot_admin, joined, renewal);
+						accessDb.Execute(sql5, id, fullname, type, primaryFamily, apricotAdmin, joined, expires, email, phone, address, lastPayPal, mmsStorage, mvStorage, areaFunding1, areaFunding2, areaFunding3, areaFunding4, areaFunding5);
 					}
 					else
 						Log.Debug($"Excluding '{fullname}' from database.");
@@ -250,17 +346,13 @@ namespace Mms.Api.Jobs
 							Log.Error($"Unknown member type! - '{fullname}' - '{type}'");
 						}
 
-						var fundCount = memberFunding.Count;
+						TabulateFunds(totalFunding, areaFunding1, amount);
+						TabulateFunds(totalFunding, areaFunding2, amount);
+						TabulateFunds(totalFunding, areaFunding3, amount);
+						TabulateFunds(totalFunding, areaFunding4, amount);
+						TabulateFunds(totalFunding, areaFunding5, amount);
 
-						if (fundCount < 5)
-							Log.Error($"Recorded too few '{fundCount}' Area Funding selections for '{fullname}'");
-						else if (fundCount > 5)
-							Log.Fatal($"Recorded too many '{fundCount}' Area Funding selections for '{fullname}'");
-
-						foreach (var area in memberFunding) {
-							TabulateFunds(totalFunding, area, amount);
-							totalFunding.total += amount;
-						}
+						totalFunding.total += amount * 5;
 					}
 				}
 				catch (Exception ex) {
