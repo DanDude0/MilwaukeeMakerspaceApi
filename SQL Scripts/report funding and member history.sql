@@ -1,0 +1,1 @@
+SELECT month, MAX(members), MAX(general), MAX(family) FROM funds WHERE DAY(month) = 1 GROUP BY YEAR(`month`), MONTH(`month`) ORDER BY `month`;
