@@ -9,7 +9,7 @@ FROM
 	INNER JOIN reader r 
 		ON a.reader_id = r.reader_id 
 WHERE 
-	m.name LIKE 'Karen P%' 
+	m.name LIKE 'Daniel Jonke' 
 	AND a.attempt_time > '2023-12-01' 
 ORDER BY 
 	a.attempt_time DESC
