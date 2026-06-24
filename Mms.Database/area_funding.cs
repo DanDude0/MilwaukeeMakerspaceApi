@@ -89,6 +89,9 @@ namespace Mms.Database
         public decimal? metal { get; set; }
 
         [Column]
+        public decimal? metal_laser { get; set; }
+
+        [Column]
         public decimal? models { get; set; }
 
         [Column]
@@ -250,6 +253,9 @@ namespace Mms.Database
 
         [Column]
         public decimal metal { get; set; }
+
+        [Column]
+        public decimal metal_laser { get; set; }
 
         [Column]
         public decimal models { get; set; }
@@ -419,6 +425,9 @@ namespace Mms.Database
         public decimal metal { get; set; }
 
         [Column]
+        public decimal metal_laser { get; set; }
+
+        [Column]
         public decimal models { get; set; }
 
         [Column]
@@ -554,6 +563,9 @@ namespace Mms.Database
         public decimal metal { get; set; }
 
         [Column]
+        public decimal metal_laser { get; set; }
+
+        [Column]
         public decimal models { get; set; }
 
         [Column]
@@ -675,6 +687,9 @@ namespace Mms.Database
 
         [Column]
         public decimal metal { get; set; }
+
+        [Column]
+        public decimal metal_laser { get; set; }
 
         [Column]
         public decimal models { get; set; }
@@ -799,6 +814,9 @@ namespace Mms.Database
 
         [Column]
         public decimal metal { get; set; }
+
+        [Column]
+        public decimal metal_laser { get; set; }
 
         [Column]
         public decimal models { get; set; }

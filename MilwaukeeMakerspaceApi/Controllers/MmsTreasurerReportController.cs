@@ -82,6 +82,7 @@ namespace Mms.Api.Controllers
 
 			model.LastYearNetAreaFunds = fundingDb.ExecuteScalar<decimal>(@"SELECT
   SUM(`ledger`.`threed_printer`) +
+  SUM(`ledger`.`automotive`) +
   SUM(`ledger`.`bicycle_repair`) +
   SUM(`ledger`.`casting`) +
   SUM(`ledger`.`ceramic`) +
@@ -103,11 +104,13 @@ namespace Mms.Api.Controllers
   SUM(`ledger`.`long_arm`) +
   SUM(`ledger`.`makerfaire`) +
   SUM(`ledger`.`metal`) +
+  SUM(`ledger`.`metal_laser`) +
   SUM(`ledger`.`models`) + 
   SUM(`ledger`.`neon`) +
   SUM(`ledger`.`paint`) +
   SUM(`ledger`.`power_wheel`) +
   SUM(`ledger`.`print`) +
+  SUM(`ledger`.`small_engine`) +
   SUM(`ledger`.`soda`) +
   SUM(`ledger`.`stained_glass`) +
   SUM(`ledger`.`tiger_lily`) +

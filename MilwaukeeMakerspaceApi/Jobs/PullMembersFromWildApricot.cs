@@ -449,6 +449,9 @@ namespace Mms.Api.Jobs
 				case "Community Outreach":
 					total.makerfaire += amount;
 					break;
+				case "Metal Laser":
+					total.metal_laser += amount;
+					break;
 				case "Metal Shop":
 					total.metal += amount;
 					break;

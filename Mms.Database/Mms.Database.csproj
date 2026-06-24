@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,8 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="MySqlConnector" Version="2.5.0" />
+    <PackageReference Include="NuGet.Packaging" Version="7.3.1" />
     <PackageReference Include="PetaPoco.Compiled" Version="6.0.683" />
-    <PackageReference Include="PetaPoco.DBEntityGenerator" Version="0.1.6" />
+    <PackageReference Include="PetaPoco.DBEntityGenerator" Version="0.1.7" />
   </ItemGroup>
 
   <ItemGroup>

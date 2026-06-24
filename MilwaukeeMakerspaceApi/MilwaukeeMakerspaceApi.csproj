@@ -11,7 +11,7 @@
 		<WarningsAsErrors />
 		<WarningLevel>4</WarningLevel>
 		<RootNamespace>Mms.Api</RootNamespace>
-		<NoWarn>1701;1702;NU1605</NoWarn>
+		<NoWarn>1701;1702;NU1605;NU1903</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 
@@ -26,13 +26,14 @@
 	<ItemGroup>
 		<PackageReference Include="BlazorDateRangePicker" Version="6.2.0" />
 		<PackageReference Include="CronScheduler.AspNetCore" Version="3.2.0" />
-		<PackageReference Include="IppDotNetSdkForQuickBooksApiV3" Version="14.7.0.3" />
-		<PackageReference Include="Microsoft.Build" Version="18.0.2" />
+		<PackageReference Include="IppDotNetSdkForQuickBooksApiV3" Version="14.7.1.1" />
+		<PackageReference Include="Microsoft.Build" Version="18.4.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+		<PackageReference Include="NuGet.Protocol" Version="7.3.1" />
 		<PackageReference Include="Rssdp" Version="5.0.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Mms.Database\Mms.Database.csproj" />
